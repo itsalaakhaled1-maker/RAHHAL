@@ -203,7 +203,6 @@ export const iataToCityName: Record<string, string> = {
   "GIZ": "Jazan",
   "HAS": "Hail",
   "HOF": "Hofuf",
-  "JED": "Jeddah",
   "MED": "Madinah",
   "NUM": "Neom",
   "RAE": "Arar",
