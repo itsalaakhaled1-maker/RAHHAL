@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sun, Moon, Menu, X } from "lucide-react"; // ← حذفنا Heart و Bookmark
+import { Sun, Moon, Menu, X, LogIn, LogOut, User } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Header() {
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const { user, loading, signInWithGoogle, signOut } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -48,8 +50,8 @@ export default function Header() {
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b transition-colors ${
-        darkMode 
-          ? "bg-gray-900/90 border-gray-800" 
+        darkMode
+          ? "bg-gray-900/90 border-gray-800"
           : "bg-white/90 border-gray-100"
       }`}
     >
@@ -83,9 +85,9 @@ export default function Header() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`px-4 py-2 text-base font-medium rounded-lg hover:bg-ocean/5 transition-all ${  // ← text-sm → text-base
-                  darkMode 
-                    ? "text-gray-400 hover:text-ocean" 
+                className={`px-4 py-2 text-base font-medium rounded-lg hover:bg-ocean/5 transition-all ${
+                  darkMode
+                    ? "text-gray-400 hover:text-ocean"
                     : "text-gray-600 hover:text-ocean"
                 }`}
               >
@@ -96,23 +98,61 @@ export default function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            {/* Dark Mode Toggle فقط */}
+            {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                darkMode 
-                  ? "text-gray-400 hover:bg-gray-800" 
+                darkMode
+                  ? "text-gray-400 hover:bg-gray-800"
                   : "text-gray-500 hover:bg-gray-100"
               }`}
             >
               {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            {/* ← حذفنا أزرار Heart و Bookmark */}
+
+            {/* Auth Button */}
+            {!loading && (
+              <>
+                {user ? (
+                  <div className="flex items-center gap-2">
+                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
+                      darkMode ? "bg-gray-800" : "bg-gray-100"
+                    }`}>
+                      <User className="w-4 h-4 text-ocean" />
+                      <span className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                        {user.user_metadata?.full_name || user.email?.split("@")[0] || "مستخدم"}
+                      </span>
+                    </div>
+                    <button
+                      onClick={signOut}
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                        darkMode
+                          ? "text-red-400 hover:bg-red-900/20"
+                          : "text-red-500 hover:bg-red-50"
+                      }`}
+                      title="تسجيل الخروج"
+                    >
+                      <LogOut className="w-5 h-5" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={signInWithGoogle}
+                    className="flex items-center gap-2 px-4 py-2 bg-ocean text-white rounded-xl hover:bg-ocean-dark transition-all text-sm font-medium"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>تسجيل الدخول</span>
+                  </button>
+                )}
+              </>
+            )}
+
+            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className={`md:hidden w-10 h-10 rounded-xl flex items-center justify-center ${
-                darkMode 
-                  ? "text-gray-400 hover:bg-gray-800" 
+                darkMode
+                  ? "text-gray-400 hover:bg-gray-800"
                   : "text-gray-500 hover:bg-gray-100"
               }`}
             >
@@ -128,8 +168,8 @@ export default function Header() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           className={`md:hidden border-t ${
-            darkMode 
-              ? "bg-gray-900 border-gray-800" 
+            darkMode
+              ? "bg-gray-900 border-gray-800"
               : "bg-white border-gray-100"
           }`}
         >
@@ -140,8 +180,8 @@ export default function Header() {
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
                 className={`block px-4 py-3 rounded-xl font-medium ${
-                  darkMode 
-                    ? "text-gray-300 hover:bg-ocean/5" 
+                  darkMode
+                    ? "text-gray-300 hover:bg-ocean/5"
                     : "text-gray-700 hover:bg-ocean/5"
                 }`}
               >
