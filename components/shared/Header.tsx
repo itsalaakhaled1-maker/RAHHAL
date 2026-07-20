@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sun, Moon, Menu, X, Heart, Bookmark } from "lucide-react";
+import { Sun, Moon, Menu, X } from "lucide-react"; // ← حذفنا Heart و Bookmark
 import Link from "next/link";
 import Image from "next/image";
 
@@ -83,7 +83,7 @@ export default function Header() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`px-4 py-2 text-sm font-medium rounded-lg hover:bg-ocean/5 transition-all ${
+                className={`px-4 py-2 text-base font-medium rounded-lg hover:bg-ocean/5 transition-all ${  // ← text-sm → text-base
                   darkMode 
                     ? "text-gray-400 hover:text-ocean" 
                     : "text-gray-600 hover:text-ocean"
@@ -96,6 +96,7 @@ export default function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
+            {/* Dark Mode Toggle فقط */}
             <button
               onClick={toggleDarkMode}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
@@ -106,20 +107,7 @@ export default function Header() {
             >
               {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            <button className={`hidden sm:flex w-10 h-10 rounded-xl items-center justify-center transition-all ${
-              darkMode 
-                ? "text-gray-400 hover:bg-gray-800" 
-                : "text-gray-500 hover:bg-gray-100"
-            }`}>
-              <Heart className="w-5 h-5" />
-            </button>
-            <button className={`hidden sm:flex w-10 h-10 rounded-xl items-center justify-center transition-all ${
-              darkMode 
-                ? "text-gray-400 hover:bg-gray-800" 
-                : "text-gray-500 hover:bg-gray-100"
-            }`}>
-              <Bookmark className="w-5 h-5" />
-            </button>
+            {/* ← حذفنا أزرار Heart و Bookmark */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className={`md:hidden w-10 h-10 rounded-xl flex items-center justify-center ${

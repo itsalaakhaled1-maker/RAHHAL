@@ -207,7 +207,6 @@ export const iataToCityName: Record<string, string> = {
   "NUM": "Neom",
   "RAE": "Arar",
   "RAH": "Rafha",
-  "RUH": "Riyadh",
   "SHW": "Sharurah",
   "SLF": "Sulayel",
   "TIF": "Taif",
