@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Plane, MapPin, Calendar, ArrowRight, Trash2, Eye,
-  X, Hotel, DollarSign, Clock,
+  Plane, MapPin, Calendar, ArrowRight, Trash2, Eye, X,
+  Hotel, DollarSign, Clock,
 } from "lucide-react";
 import Link from "next/link";
 import { useTripStore } from "@/hooks/useTripStore";
@@ -15,12 +15,12 @@ export default function TripsPage() {
   const { savedTrips, deleteTrip, loadTrip } = useTripStore();
   const [selectedTrip, setSelectedTrip] = useState<any>(null);
 
-  // امسح الرحلات الفارغة تلقائياً
+  // ✅ FIX: استخدم any بدل SavedTrip
   useEffect(() => {
     const emptyTrips = savedTrips.filter(
-      (t) => !t.tripData?.to && !t.to && !t.title
+      (t: any) => !t.tripData?.to && !t.to && !t.title
     );
-    emptyTrips.forEach((t) => deleteTrip(t.id));
+    emptyTrips.forEach((t: any) => deleteTrip(t.id));
   }, []);
 
   const getTripTitle = (trip: any) => {
@@ -37,6 +37,7 @@ export default function TripsPage() {
       return `${formatDate(trip.tripData.departDate)} - ${formatDate(trip.tripData.returnDate)}`;
     }
     if (trip.dates) return trip.dates;
+    if (trip.tripData?.departDate) return formatDate(trip.tripData.departDate);
     return "تاريخ غير محدد";
   };
 
@@ -84,7 +85,7 @@ export default function TripsPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {savedTrips.map((trip) => (
+            {savedTrips.map((trip: any) => (
               <div
                 key={trip.id}
                 className="bg-white rounded-2xl p-6 shadow-card border border-gray-100 hover:shadow-card-lg transition-all"
@@ -138,11 +139,10 @@ export default function TripsPage() {
         )}
       </div>
 
-      {/* ===== MODAL: تفاصيل الرحلة ===== */}
+      {/* Modal */}
       {selectedTrip && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
-            {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-100 p-6 flex items-center justify-between rounded-t-3xl">
               <h2 className="text-xl font-bold text-gray-800">تفاصيل الرحلة</h2>
               <button
@@ -154,7 +154,6 @@ export default function TripsPage() {
             </div>
 
             <div className="p-6 space-y-6">
-              {/* Trip Info */}
               <div className="text-center">
                 <h3 className="text-2xl font-black text-gray-800">
                   {selectedTrip.tripData?.from} → {selectedTrip.tripData?.to}
@@ -164,7 +163,6 @@ export default function TripsPage() {
                 </p>
               </div>
 
-              {/* Flight */}
               {selectedTrip.selectedFlight && (
                 <div className="bg-gray-50 rounded-2xl p-5">
                   <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -185,7 +183,6 @@ export default function TripsPage() {
                 </div>
               )}
 
-              {/* Hotel */}
               {selectedTrip.selectedHotel && (
                 <div className="bg-gray-50 rounded-2xl p-5">
                   <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -204,7 +201,6 @@ export default function TripsPage() {
                 </div>
               )}
 
-              {/* Daily Plan */}
               {selectedTrip.dailyPlans?.length > 0 && (
                 <div>
                   <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -236,7 +232,6 @@ export default function TripsPage() {
                 </div>
               )}
 
-              {/* Budget */}
               {selectedTrip.budgetItems?.length > 0 && (
                 <div className="bg-gray-50 rounded-2xl p-5">
                   <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -261,7 +256,6 @@ export default function TripsPage() {
                 </div>
               )}
 
-              {/* Actions */}
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={() => {
