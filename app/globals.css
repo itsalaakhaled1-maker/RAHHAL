@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@theme {
+  --font-tajawal: "Tajawal", sans-serif;
+
+  --color-sky: #4FC3F7;
+  --color-ocean: #0288D1;
+  --color-turquoise: #00BCD4;
+  --color-warm: #FFD54F;
+  --color-sunset: #FF8A65;
+  --color-sand: #FFF8E1;
+  --color-success: #66BB6A;
+  --color-warning: #FFA726;
+  --color-danger: #EF5350;
+}
+
+@layer base {
+  body {
+    font-family: "Tajawal", sans-serif;
+    line-height: 1.7;
+  }
+}
+
+@layer utilities {
+  .gradient-ocean {
+    background: linear-gradient(135deg, #0288D1 0%, #00BCD4 100%);
+  }
+  .gradient-warm {
+    background: linear-gradient(135deg, #FFD54F 0%, #FF8A65 100%);
+  }
+  .gradient-hero {
+    background: linear-gradient(135deg, #E3F2FD 0%, #B3E5FC 30%, #81D4FA 60%, #4FC3F7 100%);
+  }
+  .shadow-card {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  .shadow-card-lg {
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+  }
+  .text-shadow {
+    text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+}
+
+/* RTL specific */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* Print styles */
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #0288D1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #01579B; }
+
+/* Dark mode */
+.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+.dark .bg-white {
+  background-color: #1e293b;
+}
+.dark .bg-gray-50 {
+  background-color: #334155;
+}
+.dark .bg-gray-100 {
+  background-color: #475569;
+}
+.dark .text-gray-800 {
+  color: #f1f5f9;
+}
+.dark .text-gray-700 {
+  color: #cbd5e1;
+}
+.dark .text-gray-600 {
+  color: #94a3b8;
+}
+.dark .text-gray-500 {
+  color: #64748b;
+}
+.dark .border-gray-100 {
+  border-color: #334155;
+}
+.dark .border-gray-200 {
+  border-color: #475569;
+}
