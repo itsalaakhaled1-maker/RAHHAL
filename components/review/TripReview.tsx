@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useTripStore } from "@/hooks/useTripStore";
 import { formatCurrency, formatDate, calculateNights } from "@/lib/utils";
-import html2canvas from "html2canvas";
+import { domToPng } from "modern-screenshot";
 import jsPDF from "jspdf";
 import Booklet from "./Booklet";
 
@@ -58,34 +58,39 @@ export default function TripReview() {
     setPdfLoading(true);
 
     try {
-      const element = contentRef.current;
-      const canvas = await html2canvas(element, {
+      // ✅ استخدم modern-screenshot بدل html2canvas
+      const dataUrl = await domToPng(contentRef.current, {
         scale: 2,
-        useCORS: true,
-        logging: false,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
+        backgroundColor: "#ffffff",
       });
 
-      const imgData = canvas.toDataURL("image/png");
+      // Get dimensions
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      const imgWidth = img.width;
+      const imgHeight = img.height;
+
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
 
       let heightLeft = imgHeight * ratio;
       let position = 0;
       let pageCount = 0;
 
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth * ratio, imgHeight * ratio);
+      pdf.addImage(dataUrl, "PNG", 0, position, imgWidth * ratio, imgHeight * ratio);
       heightLeft -= pdfHeight;
 
       while (heightLeft > 0) {
         position = heightLeft - imgHeight * ratio;
         pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth * ratio, imgHeight * ratio);
+        pdf.addImage(dataUrl, "PNG", 0, position, imgWidth * ratio, imgHeight * ratio);
         heightLeft -= pdfHeight;
         pageCount++;
         if (pageCount > 50) break; // Safety limit
