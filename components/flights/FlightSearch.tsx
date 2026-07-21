@@ -129,7 +129,7 @@ export default function FlightSearch() {
           </div>
 
           {/* Depart Date - Custom Date Input */}
-          <div className="md:col-span-2.5">
+          <div className="md:col-span-3">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">المغادرة</label>
             <div className="relative group">
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
@@ -154,7 +154,7 @@ export default function FlightSearch() {
           </div>
 
           {/* Return Date - Custom Date Input */}
-          <div className="md:col-span-2.5">
+          <div className="md:col-span-3">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">العودة</label>
             <div className="relative group">
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
