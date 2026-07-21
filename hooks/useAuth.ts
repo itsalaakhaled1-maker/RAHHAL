@@ -28,10 +28,16 @@ export function useAuth() {
 
   const signInWithGoogle = async () => {
     const supabase = createClient();
+    
+    // استخدم NEXT_PUBLIC_SITE_URL لو موجود، وإلا استخدم window.location.origin
+    const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL 
+      ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
+      : `${window.location.origin}/auth/callback`;
+
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://rahhal-taupe.vercel.app/auth/callback",
+        redirectTo: redirectUrl,
       },
     });
   };
