@@ -24,7 +24,7 @@ const travelClasses = [
 
 export default function FlightSearch() {
   const router = useRouter();
-  const { tripData, setTripData, setCurrentStep } = useTripStore();
+  const { tripData, setTripData } = useTripStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = () => {
@@ -41,7 +41,6 @@ export default function FlightSearch() {
   const handleSearch = () => {
     if (!validate()) return;
 
-    // ✅ دائماً roundtrip
     setTripData({ tripType: "roundtrip" });
 
     const fromIata = getIataCode(tripData.from);
@@ -64,9 +63,7 @@ export default function FlightSearch() {
 
   return (
     <div className="w-full max-w-5xl mx-auto">
-      {/* ✅ إخفاء toggle - دائماً roundtrip */}
-
-      {/* Search Form - استايل جديد */}
+      {/* Search Form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -78,7 +75,7 @@ export default function FlightSearch() {
           <div className="md:col-span-3">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">من</label>
             <div className="relative group">
-              <Plane className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean group-focus-within:text-ocean transition-colors" />
+              <Plane className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
               <input
                 type="text"
                 placeholder="مدينة المغادرة (مثال: دبي)"
@@ -114,7 +111,7 @@ export default function FlightSearch() {
           <div className="md:col-span-3">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">إلى</label>
             <div className="relative group">
-              <Plane className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean rotate-90 group-focus-within:text-ocean transition-colors" />
+              <Plane className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean rotate-90 pointer-events-none" />
               <input
                 type="text"
                 placeholder="مدينة الوصول (مثال: نيويورك)"
@@ -131,19 +128,24 @@ export default function FlightSearch() {
             {errors.to && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.to}</p>}
           </div>
 
-          {/* Depart Date */}
+          {/* Depart Date - Custom Date Input */}
           <div className="md:col-span-2.5">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">المغادرة</label>
             <div className="relative group">
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean group-focus-within:text-ocean transition-colors" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
               <input
-                type="date"
+                type="text"
+                placeholder="YYYY-MM-DD"
                 value={tripData.departDate}
+                onFocus={(e) => (e.target.type = "date")}
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
+                }}
                 onChange={(e) => {
                   setTripData({ departDate: e.target.value });
                   setErrors((prev) => ({ ...prev, departDate: "" }));
                 }}
-                className={`w-full pr-10 pl-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 rounded-2xl text-gray-800 dark:text-white font-medium focus:border-ocean focus:ring-4 focus:ring-ocean/10 transition-all outline-none hover:border-gray-300 dark:hover:border-gray-500 ${
+                className={`w-full pr-10 pl-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 rounded-2xl text-gray-800 dark:text-white font-medium placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-ocean focus:ring-4 focus:ring-ocean/10 transition-all outline-none hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer ${
                   errors.departDate ? "border-red-400 dark:border-red-500" : "border-gray-200 dark:border-gray-600"
                 }`}
               />
@@ -151,19 +153,24 @@ export default function FlightSearch() {
             {errors.departDate && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.departDate}</p>}
           </div>
 
-          {/* Return Date - دائماً ظاهر (لأنه roundtrip فقط) */}
+          {/* Return Date - Custom Date Input */}
           <div className="md:col-span-2.5">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">العودة</label>
             <div className="relative group">
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean group-focus-within:text-ocean transition-colors" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
               <input
-                type="date"
+                type="text"
+                placeholder="YYYY-MM-DD"
                 value={tripData.returnDate}
+                onFocus={(e) => (e.target.type = "date")}
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
+                }}
                 onChange={(e) => {
                   setTripData({ returnDate: e.target.value });
                   setErrors((prev) => ({ ...prev, returnDate: "" }));
                 }}
-                className={`w-full pr-10 pl-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 rounded-2xl text-gray-800 dark:text-white font-medium focus:border-ocean focus:ring-4 focus:ring-ocean/10 transition-all outline-none hover:border-gray-300 dark:hover:border-gray-500 ${
+                className={`w-full pr-10 pl-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 rounded-2xl text-gray-800 dark:text-white font-medium placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-ocean focus:ring-4 focus:ring-ocean/10 transition-all outline-none hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer ${
                   errors.returnDate ? "border-red-400 dark:border-red-500" : "border-gray-200 dark:border-gray-600"
                 }`}
               />
@@ -178,7 +185,7 @@ export default function FlightSearch() {
           <div>
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">المسافرين</label>
             <div className="relative group">
-              <Users className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean group-focus-within:text-ocean transition-colors" />
+              <Users className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
               <select
                 value={tripData.adults}
                 onChange={(e) => setTripData({ adults: parseInt(e.target.value) })}
@@ -256,7 +263,7 @@ export default function FlightSearch() {
           </div>
         </div>
 
-        {/* Search Button - استايل جديد */}
+        {/* Search Button */}
         <motion.button
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
