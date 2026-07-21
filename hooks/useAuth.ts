@@ -30,9 +30,7 @@ export function useAuth() {
     const supabase = createClient();
     
     // استخدم الـ URL الحالي (Vercel أو localhost)
-    const redirectUrl = typeof window !== "undefined" 
-      ? `${window.location.origin}/auth/callback`
-      : "https://rahhal-taupe.vercel.app/auth/callback";
+    const redirectUrl = "https://rahhal-taupe.vercel.app/auth/callback";
 
     await supabase.auth.signInWithOAuth({
       provider: "google",
