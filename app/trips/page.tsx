@@ -25,40 +25,57 @@ export default function TripsPage() {
     }
   }, [user, loadUserTrips]);
 
+  // ✅ قراءة البيانات من Supabase trip_data (JSONB) أو من الخصائص القديمة
+  const getTripData = (trip: any) => {
+    // Supabase يخزن في trip_data (snake_case)
+    if (trip.trip_data) return trip.trip_data;
+    // أو tripData (camelCase)
+    if (trip.tripData) return trip.tripData;
+    // أو مباشرة على الـ trip
+    return trip;
+  };
+
   const getTripTitle = (trip: any) => {
-    if (trip.tripData?.from && trip.tripData?.to) {
-      return `${trip.tripData.from} → ${trip.tripData.to}`;
-    }
-    if (trip.from && trip.to) return `${trip.from} → ${trip.to}`;
-    if (trip.title) return trip.title;
-    return "رحلة بدون اسم";
+    const data = getTripData(trip);
+    const from = data?.from || trip?.from || "غير معروف";
+    const to = data?.to || trip?.to || "غير معروف";
+    return `${from} → ${to}`;
   };
 
   const getTripDates = (trip: any) => {
-    if (trip.tripData?.departDate && trip.tripData?.returnDate) {
-      return `${formatDate(trip.tripData.departDate)} - ${formatDate(trip.tripData.returnDate)}`;
-    }
-    if (trip.dates) return trip.dates;
-    if (trip.tripData?.departDate) return formatDate(trip.tripData.departDate);
-    return "تاريخ غير محدد";
+    const data = getTripData(trip);
+    const depart = data?.departDate || trip?.departDate;
+    const ret = data?.returnDate || trip?.returnDate;
+    if (!depart) return "تاريخ غير محدد";
+    if (!ret) return formatDate(depart);
+    return `${formatDate(depart)} - ${formatDate(ret)}`;
   };
 
   const getTripDays = (trip: any) => {
-    if (trip.dailyPlans?.length) return `${trip.dailyPlans.length} أيام`;
+    // من Supabase: daily_plans (snake_case) أو dailyPlans (camelCase)
+    const plans = trip.daily_plans || trip.dailyPlans;
+    if (plans?.length) return `${plans.length} أيام`;
     if (trip.days) return `${trip.days} أيام`;
     return "";
   };
 
   const getTripCost = (trip: any) => {
-    const cost = trip.totalCost || 0;
-    const currency = trip.tripData?.currency || trip.currency || "AED";
+    // من Supabase: total_cost (snake_case) أو totalCost (camelCase)
+    const cost = trip.total_cost ?? trip.totalCost ?? 0;
+    const data = getTripData(trip);
+    const currency = data?.currency || trip.currency || "USD";
     return formatCurrency(cost, currency);
   };
 
   const handleView = (trip: any) => {
-    if (trip.tripData && trip.dailyPlans) {
-      loadTrip(trip.id);
-      setSelectedTrip(trip);
+    // ✅ حمل الرحلة في الـ store ثم اعرضها
+    loadTrip(trip.id);
+    setSelectedTrip(trip);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm("هل أنت متأكد من حذف هذه الرحلة؟")) {
+      await deleteTrip(id);
     }
   };
 
@@ -71,7 +88,12 @@ export default function TripsPage() {
             <p className="text-gray-500">جميع رحلاتك المحفوظة في مكان واحد</p>
           </div>
 
-          {savedTrips.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="w-12 h-12 border-4 border-ocean border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-gray-500">جاري تحميل الرحلات...</p>
+            </div>
+          ) : savedTrips.length === 0 ? (
             <div className="bg-white rounded-2xl p-12 shadow-card border border-gray-100 text-center">
               <div className="w-20 h-20 rounded-2xl bg-ocean/10 flex items-center justify-center mx-auto mb-6">
                 <Plane className="w-10 h-10 text-ocean" />
@@ -91,7 +113,8 @@ export default function TripsPage() {
               {savedTrips.map((trip: any) => (
                 <div
                   key={trip.id}
-                  className="bg-white rounded-2xl p-6 shadow-card border border-gray-100 hover:shadow-card-lg transition-all"
+                  className="bg-white rounded-2xl p-6 shadow-card border border-gray-100 hover:shadow-card-lg transition-all cursor-pointer"
+                  onClick={() => handleView(trip)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -121,14 +144,20 @@ export default function TripsPage() {
                         {getTripCost(trip)}
                       </span>
                       <button
-                        onClick={() => handleView(trip)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleView(trip);
+                        }}
                         className="w-10 h-10 rounded-xl bg-ocean/10 flex items-center justify-center text-ocean hover:bg-ocean hover:text-white transition-all"
                         title="عرض الرحلة"
                       >
                         <Eye className="w-5 h-5" />
                       </button>
                       <button
-                        onClick={() => deleteTrip(trip.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(trip.id);
+                        }}
                         className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all"
                         title="حذف"
                       >
@@ -142,11 +171,18 @@ export default function TripsPage() {
           )}
         </div>
 
-        {/* Modal */}
+        {/* ✅ Modal قابل للـ SCROLL */}
         {selectedTrip && (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b border-gray-100 p-6 flex items-center justify-between rounded-t-3xl">
+          <div 
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+            onClick={() => setSelectedTrip(null)}
+          >
+            <div 
+              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header - sticky */}
+              <div className="sticky top-0 bg-white border-b border-gray-100 p-6 flex items-center justify-between rounded-t-3xl z-10">
                 <h2 className="text-xl font-bold text-gray-800">تفاصيل الرحلة</h2>
                 <button
                   onClick={() => setSelectedTrip(null)}
@@ -156,37 +192,50 @@ export default function TripsPage() {
                 </button>
               </div>
 
-              <div className="p-6 space-y-6">
-                <div className="text-center">
+              {/* Content - scrollable */}
+              <div className="overflow-y-auto p-6 space-y-6">
+                {/* Trip Header */}
+                <div className="text-center pb-4 border-b border-gray-100">
                   <h3 className="text-2xl font-black text-gray-800">
-                    {selectedTrip.tripData?.from} → {selectedTrip.tripData?.to}
+                    {getTripTitle(selectedTrip)}
                   </h3>
                   <p className="text-gray-500 mt-1">
-                    {formatDate(selectedTrip.tripData?.departDate)} - {formatDate(selectedTrip.tripData?.returnDate)}
+                    {getTripDates(selectedTrip)}
+                  </p>
+                  <p className="text-ocean font-bold text-lg mt-2">
+                    {getTripCost(selectedTrip)}
                   </p>
                 </div>
 
-                {selectedTrip.selectedFlight && (
+                {/* Flight Details */}
+                {(selectedTrip.selected_flight || selectedTrip.selectedFlight) && (
                   <div className="bg-gray-50 rounded-2xl p-5">
                     <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                       <Plane className="w-5 h-5 text-ocean" />
-                      تفاصيل الرحلة
+                      تفاصيل الطيران
                     </h4>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-bold">{selectedTrip.selectedFlight.airline}</p>
+                        <p className="font-bold">{(selectedTrip.selected_flight || selectedTrip.selectedFlight).airline}</p>
                         <p className="text-sm text-gray-500">
-                          {selectedTrip.selectedFlight.fromCode} → {selectedTrip.selectedFlight.toCode}
+                          {(selectedTrip.selected_flight || selectedTrip.selectedFlight).fromCode} → {(selectedTrip.selected_flight || selectedTrip.selectedFlight).toCode}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {(selectedTrip.selected_flight || selectedTrip.selectedFlight).duration}
                         </p>
                       </div>
                       <p className="font-bold text-ocean">
-                        {formatCurrency(selectedTrip.selectedFlight.price, selectedTrip.selectedFlight.currency)}
+                        {formatCurrency(
+                          (selectedTrip.selected_flight || selectedTrip.selectedFlight).price,
+                          (selectedTrip.selected_flight || selectedTrip.selectedFlight).currency
+                        )}
                       </p>
                     </div>
                   </div>
                 )}
 
-                {selectedTrip.selectedHotel && (
+                {/* Hotel Details */}
+                {(selectedTrip.selected_hotel || selectedTrip.selectedHotel) && (
                   <div className="bg-gray-50 rounded-2xl p-5">
                     <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                       <Hotel className="w-5 h-5 text-ocean" />
@@ -194,24 +243,30 @@ export default function TripsPage() {
                     </h4>
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-bold">{selectedTrip.selectedHotel.name}</p>
-                        <p className="text-sm text-gray-500">{selectedTrip.selectedHotel.area}</p>
+                        <p className="font-bold">{(selectedTrip.selected_hotel || selectedTrip.selectedHotel).name}</p>
+                        <p className="text-sm text-gray-500">
+                          {(selectedTrip.selected_hotel || selectedTrip.selectedHotel).area || (selectedTrip.selected_hotel || selectedTrip.selectedHotel).stars + " نجوم"}
+                        </p>
                       </div>
                       <p className="font-bold text-ocean">
-                        {formatCurrency(selectedTrip.selectedHotel.totalPrice, selectedTrip.selectedHotel.currency)}
+                        {formatCurrency(
+                          (selectedTrip.selected_hotel || selectedTrip.selectedHotel).totalPrice || (selectedTrip.selected_hotel || selectedTrip.selectedHotel).price,
+                          (selectedTrip.selected_hotel || selectedTrip.selectedHotel).currency
+                        )}
                       </p>
                     </div>
                   </div>
                 )}
 
-                {selectedTrip.dailyPlans?.length > 0 && (
+                {/* Daily Plans */}
+                {(selectedTrip.daily_plans || selectedTrip.dailyPlans)?.length > 0 && (
                   <div>
                     <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                       <Calendar className="w-5 h-5 text-ocean" />
                       الخطة اليومية
                     </h4>
                     <div className="space-y-4">
-                      {selectedTrip.dailyPlans.map((day: any) => (
+                      {(selectedTrip.daily_plans || selectedTrip.dailyPlans).map((day: any) => (
                         <div key={day.day} className="border-r-2 border-ocean/20 pr-4">
                           <h5 className="font-bold text-gray-700 mb-2">
                             اليوم {day.day}: {day.title}
@@ -235,14 +290,15 @@ export default function TripsPage() {
                   </div>
                 )}
 
-                {selectedTrip.budgetItems?.length > 0 && (
+                {/* Budget */}
+                {(selectedTrip.budget_items || selectedTrip.budgetItems)?.length > 0 && (
                   <div className="bg-gray-50 rounded-2xl p-5">
                     <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                       <DollarSign className="w-5 h-5 text-ocean" />
-                      الميزانية
+                      تفاصيل الميزانية
                     </h4>
                     <div className="space-y-2">
-                      {selectedTrip.budgetItems.map((item: any) => (
+                      {(selectedTrip.budget_items || selectedTrip.budgetItems).map((item: any) => (
                         <div key={item.id} className="flex items-center justify-between text-sm">
                           <div className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
@@ -259,7 +315,8 @@ export default function TripsPage() {
                   </div>
                 )}
 
-                <div className="flex gap-3 pt-4">
+                {/* Actions */}
+                <div className="flex gap-3 pt-4 sticky bottom-0 bg-white pb-2">
                   <button
                     onClick={() => {
                       setSelectedTrip(null);
