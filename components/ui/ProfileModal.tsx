@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, User, Mail, LogOut, Edit3, Check } from "lucide-react";
 import { useState } from "react";
+import Portal from "@/components/ui/Portal";
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -40,10 +41,11 @@ export default function ProfileModal({ isOpen, onClose, user, onSignOut, onUpdat
     onClose();
   };
 
-  return (
+    return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <Portal>
+          <>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -245,6 +247,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSignOut, onUpdat
             )}
           </AnimatePresence>
         </>
+        </Portal>
       )}
     </AnimatePresence>
   );
