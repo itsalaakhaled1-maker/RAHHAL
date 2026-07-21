@@ -69,10 +69,10 @@ export default function FlightSearch() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 md:p-8 border border-white/50 dark:border-gray-700/50"
       >
-        {/* ✅ الصف الأول: من - إلى - المغادرة - العودة (كلهم في نفس السطر) */}
+        {/* ✅ الصف الأول: من - إلى */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          {/* From - col-span-3 */}
-          <div className="md:col-span-3">
+          {/* From */}
+          <div className="md:col-span-5">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">من</label>
             <div className="relative group">
               <Plane className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
@@ -92,8 +92,8 @@ export default function FlightSearch() {
             {errors.from && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.from}</p>}
           </div>
 
-          {/* Swap Button - col-span-1 */}
-          <div className="hidden md:flex md:col-span-1 items-end justify-center pb-3">
+          {/* Swap Button */}
+          <div className="hidden md:flex md:col-span-2 items-end justify-center pb-3">
             <motion.button
               whileHover={{ scale: 1.1, rotate: 180 }}
               whileTap={{ scale: 0.9 }}
@@ -107,8 +107,8 @@ export default function FlightSearch() {
             </motion.button>
           </div>
 
-          {/* To - col-span-3 */}
-          <div className="md:col-span-3">
+          {/* To */}
+          <div className="md:col-span-5">
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">إلى</label>
             <div className="relative group">
               <Plane className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean rotate-90 pointer-events-none" />
@@ -127,9 +127,12 @@ export default function FlightSearch() {
             </div>
             {errors.to && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.to}</p>}
           </div>
+        </div>
 
-          {/* ✅ المغادرة - col-span-2.5 (تكون جنب العودة) */}
-          <div className="md:col-span-2.5">
+        {/* ✅ الصف الثاني: المغادرة - العودة */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+          {/* المغادرة */}
+          <div>
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">المغادرة</label>
             <div className="relative group">
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
@@ -153,8 +156,8 @@ export default function FlightSearch() {
             {errors.departDate && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.departDate}</p>}
           </div>
 
-          {/* ✅ العودة - col-span-2.5 (جنب المغادرة في نفس السطر) */}
-          <div className="md:col-span-2.5">
+          {/* العودة */}
+          <div>
             <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">العودة</label>
             <div className="relative group">
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
@@ -179,7 +182,7 @@ export default function FlightSearch() {
           </div>
         </div>
 
-        {/* الصف الثاني: المسافرين - درجة السفر - العملة - الميزانية */}
+        {/* ✅ الصف الثالث: المسافرين - درجة السفر - العملة - الميزانية */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5">
           {/* Passengers */}
           <div>
