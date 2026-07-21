@@ -15,16 +15,15 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 export default function TripsPage() {
   const router = useRouter();
   const { user, signInWithGoogle } = useAuth();
-  const { savedTrips, deleteTrip, loadTrip } = useTripStore();
+  const { savedTrips, deleteTrip, loadTrip, loadUserTrips, isLoading } = useTripStore();
   const [selectedTrip, setSelectedTrip] = useState<any>(null);
 
-  // ✅ FIX: استخدم any بدل SavedTrip
+  // ✅ تحميل رحلات المستخدم من Supabase
   useEffect(() => {
-    const emptyTrips = savedTrips.filter(
-      (t: any) => !t.tripData?.to && !t.to && !t.title
-    );
-    emptyTrips.forEach((t: any) => deleteTrip(t.id));
-  }, []);
+    if (user) {
+      loadUserTrips();
+    }
+  }, [user, loadUserTrips]);
 
   const getTripTitle = (trip: any) => {
     if (trip.tripData?.from && trip.tripData?.to) {
