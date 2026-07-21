@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ProfileModal from "@/components/ui/ProfileModal";
 import { motion } from "framer-motion";
 import { Sun, Moon, Menu, X, LogIn, LogOut, User } from "lucide-react";
 import Link from "next/link";
@@ -11,7 +12,8 @@ export default function Header() {
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const { user, loading, signInWithGoogle, signOut } = useAuth();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { user, loading, signInWithGoogle, signOut, updateName } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -114,27 +116,29 @@ export default function Header() {
             {!loading && (
               <>
                 {user ? (
-                  <div className="flex items-center gap-2">
-                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
-                      darkMode ? "bg-gray-800" : "bg-gray-100"
-                    }`}>
+                  <>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setIsProfileOpen(true)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
+                        darkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-100 hover:bg-gray-200"
+                      } transition-all`}
+                    >
                       <User className="w-4 h-4 text-ocean" />
                       <span className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
                         {user.user_metadata?.full_name || user.email?.split("@")[0] || "مستخدم"}
                       </span>
-                    </div>
-                    <button
-                      onClick={signOut}
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                        darkMode
-                          ? "text-red-400 hover:bg-red-900/20"
-                          : "text-red-500 hover:bg-red-50"
-                      }`}
-                      title="تسجيل الخروج"
-                    >
-                      <LogOut className="w-5 h-5" />
-                    </button>
-                  </div>
+                    </motion.button>
+
+                    <ProfileModal
+                      isOpen={isProfileOpen}
+                      onClose={() => setIsProfileOpen(false)}
+                      user={user}
+                      onSignOut={signOut}
+                      onUpdateName={updateName}
+                    />
+                  </>
                 ) : (
                   <button
                     onClick={signInWithGoogle}

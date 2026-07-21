@@ -28,9 +28,9 @@ export function useAuth() {
 
   const signInWithGoogle = async () => {
     const supabase = createClient();
-    
-    // استخدم الـ URL الحالي (Vercel أو localhost)
-    const redirectUrl = "https://rahhal-taupe.vercel.app/auth/callback";
+    const redirectUrl = typeof window !== "undefined" 
+      ? `${window.location.origin}/auth/callback`
+      : "https://rahhal-taupe.vercel.app/auth/callback";
 
     await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -46,5 +46,21 @@ export function useAuth() {
     setUser(null);
   };
 
-  return { user, loading, signInWithGoogle, signOut };
+  const updateName = async (name: string) => {
+    const supabase = createClient();
+    const { error } = await supabase.auth.updateUser({
+      data: { full_name: name }
+    });
+    
+    if (!error && user) {
+      setUser({
+        ...user,
+        user_metadata: { ...user.user_metadata, full_name: name }
+      });
+    }
+    
+    return !error;
+  };
+
+  return { user, loading, signInWithGoogle, signOut, updateName };
 }
