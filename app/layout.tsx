@@ -15,9 +15,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ar" dir="rtl">
       <head>
-        <link rel="icon" href="/icon1.png" type="image/png" />
-        <link rel="shortcut icon" href="/icon1.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/icon1.png" />
+        {/* Favicon */}
+        <link rel="icon" href="/icon.png" type="image/png" />
+        <link rel="shortcut icon" href="/icon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/icon.png" />
+  
+        {/* Open Graph / WhatsApp Preview */}
+        <meta property="og:title" content="رحال - مخطط رحلاتك الذكي" />
+        <meta property="og:description" content="خطط رحلتك بذكاء مع رحال! ابحث عن رحلات، فنادق، وخطط يومية كاملة." />
+        <meta property="og:image" content="https://www.tryrahhal.com/logo.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:url" content="https://www.tryrahhal.com" />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="ar_AR" />
+  
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="رحال - مخطط رحلاتك الذكي" />
+        <meta name="twitter:description" content="خطط رحلتك بذكاء مع رحال!" />
+        <meta name="twitter:image" content="https://www.tryrahhal.com/logo.png" />
+  
+        {/* Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
