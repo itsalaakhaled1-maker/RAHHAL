@@ -55,7 +55,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSignOut, onUpdat
           />
 
           {/* Profile Modal - Centered with flex */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+          <div className="fixed top-0 left-0 w-full h-full z-50 flex items-center justify-center pointer-events-none overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -65,7 +65,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSignOut, onUpdat
                 stiffness: 300,
                 damping: 25
               }}
-              className="pointer-events-auto w-full max-w-md mx-4"
+              className="pointer-events-auto w-full max-w-md mx-auto my-auto"
             >
               <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden relative">
                 {/* Close Button - Top Right */}
