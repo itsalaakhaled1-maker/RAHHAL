@@ -21,12 +21,17 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Center: Made with love */}
-          <div className="flex items-center gap-1 text-sm text-gray-500">
-            <span>صنع بـ</span>
-            <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-            <span>من قبل شركة حكيم</span>
-          </div>
+          {/* Center: HAKIM Link */}
+          <a
+            href="https://www.hakim1.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-ocean transition-colors"
+          >
+            <span>من حكيم</span>
+            <span className="font-bold text-ocean">by HAKIM</span>
+            <span className="text-xs">™</span>
+          </a>
 
           {/* Right: Links */}
           <div className="flex items-center gap-4 md:gap-6 flex-wrap justify-center">
