@@ -29,12 +29,24 @@ export default function Footer() {
           </div>
 
           {/* Right: Links */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 md:gap-6 flex-wrap justify-center">
             <Link
               href="/privacy"
               className="text-sm text-gray-400 hover:text-ocean transition-colors"
             >
               سياسة الخصوصية
+            </Link>
+            <Link
+              href="/terms"
+              className="text-sm text-gray-400 hover:text-ocean transition-colors"
+            >
+              الشروط والأحكام
+            </Link>
+            <Link
+              href="/refund"
+              className="text-sm text-gray-400 hover:text-ocean transition-colors"
+            >
+              سياسة الاسترداد
             </Link>
             <Link
               href="/trip"
