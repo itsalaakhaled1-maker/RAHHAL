@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           )}
         </main>
         <Footer />
+            <Analytics />  {/* ✅ أضف هذا السطر */}
       </body>
     </html>
   );
