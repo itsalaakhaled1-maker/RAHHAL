@@ -151,7 +151,7 @@ export default function RefundPage() {
               لأي استفسار حول سياسة الاسترداد:
             </p>
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 space-y-2 border border-gray-100 dark:border-gray-700">
-              <p className="text-gray-600 dark:text-gray-300"><strong>البريد الإلكتروني:</strong> support@hakim.tech</p>
+              <p className="text-gray-600 dark:text-gray-300"><strong>البريد الإلكتروني:</strong> info@hakim1.com</p>
               <p className="text-gray-600 dark:text-gray-300"><strong>وقت الاستجابة:</strong> 24-48 ساعة عمل</p>
               <p className="text-gray-600 dark:text-gray-300"><strong>الشركة:</strong> سمارت حكيم للتكنولوجيا (Smart Hakim Technology)</p>
               <p className="text-gray-600 dark:text-gray-300"><strong>الرخصة:</strong> 1639246 — دائرة الاقتصاد والسياحة بدبي</p>
