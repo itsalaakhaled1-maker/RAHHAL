@@ -149,7 +149,7 @@ export default function PrivacyPage() {
           <section className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-3">12. التواصل معنا</h2>
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-6 space-y-2">
-              <p className="text-gray-600 dark:text-gray-300"><strong>البريد الإلكتروني:</strong> privacy@hakim.tech</p>
+              <p className="text-gray-600 dark:text-gray-300"><strong>البريد الإلكتروني:</strong> info@hakim.com</p>
               <p className="text-gray-600 dark:text-gray-300"><strong>الشركة:</strong> سمارت حكيم للتكنولوجيا (Smart Hakim Technology)</p>
               <p className="text-gray-600 dark:text-gray-300"><strong>الرخصة:</strong> 1639246 — دائرة الاقتصاد والسياحة بدبي</p>
               <p className="text-gray-600 dark:text-gray-300"><strong>العنوان:</strong> منطقة الورقاء — دبي، الإمارات العربية المتحدة</p>
