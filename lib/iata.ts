@@ -2348,10 +2348,7 @@ export const searchAliases: Record<string, string> = {
   "كرواتيا": "كرواتيا",
   "croatia": "كرواتيا",
   // 🇮🇱 إسرائيل
-  "اسرائيل": "إسرائيل",
-  "israel": "إسرائيل",
-  "tel aviv": "تل أبيب",
-  "تل أبيب": "تل أبيب",
+  "palastien": "فلسطين",
   "jerusalem": "القدس",
   "القدس": "القدس",
   
