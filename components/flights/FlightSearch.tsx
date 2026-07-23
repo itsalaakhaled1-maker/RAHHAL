@@ -91,9 +91,18 @@ function LocationAutocomplete({ label, value, onChange, icon: Icon, error, place
   const inputRef = useRef<HTMLInputElement>(null);
 
   const allItems = getAllSearchableItems();
-  const filtered = input.trim()
-    ? allItems.filter((item) => item.name.includes(input.trim()))
-    : [];
+   const normalizedInput = input.trim();
+   const filtered = normalizedInput
+    ? allItems.filter((item) => {
+      // Match by main name
+      if (item.name.includes(normalizedInput)) return true;
+      // Match by aliases
+      if (item.aliases?.some(alias => alias.includes(normalizedInput))) return true;
+      // Match by IATA code (for cities)
+      if (item.iata && item.iata.toLowerCase() === normalizedInput.toLowerCase()) return true;
+      return false;
+    })
+  : [];
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

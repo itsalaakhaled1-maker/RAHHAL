@@ -1678,6 +1678,249 @@ const arabicToIata: Record<string, string> = {
   "مولوكاي": "MKK", "molokai": "MKK",
   "لاناي": "LNY", "lanai": "LNY",
 };
+
+// ============================================
+// Search Aliases — طرق بحث بديلة
+// ============================================
+export const searchAliases: Record<string, string> = {
+  // إندونيسيا
+  "اندونيسيا": "إندونيسيا",
+  "اندونيسية": "إندونيسيا",
+  "indonesia": "إندونيسيا",
+  
+  // السعودية
+  "السعوديه": "السعودية",
+  "سعودية": "السعودية",
+  "سعوديه": "السعودية",
+  "ksa": "السعودية",
+  "saudi": "السعودية",
+  "saudi arabia": "السعودية",
+  
+  // الإمارات
+  "الامارات": "الإمارات",
+  "امارات": "الإمارات",
+  "uae": "الإمارات",
+  "emirates": "الإمارات",
+  "dubai": "دبي",
+  "دوباي": "دبي",
+  
+  // مصر
+  "مصر": "مصر",
+  "egypt": "مصر",
+  "masr": "مصر",
+  
+  // تركيا
+  "تركيه": "تركيا",
+  "turkey": "تركيا",
+  "turkiye": "تركيا",
+  
+  // فرنسا
+  "فرنسه": "فرنسا",
+  "france": "فرنسا",
+  "باريس": "باريس",
+  "paris": "باريس",
+  
+  // بريطانيا
+  "بريطانيا": "بريطانيا",
+  "انجلترا": "بريطانيا",
+  "england": "بريطانيا",
+  "uk": "بريطانيا",
+  "britain": "بريطانيا",
+  "london": "لندن",
+  "لندن": "لندن",
+  
+  // أمريكا
+  "امريكا": "أمريكا",
+  "الولايات المتحده": "أمريكا",
+  "usa": "أمريكا",
+  "america": "أمريكا",
+  "united states": "أمريكا",
+  "new york": "نيويورك",
+  "نيويورك": "نيويورك",
+  "نيو يورك": "نيويورك",
+  
+  // الأردن
+  "الاردن": "الأردن",
+  "jordan": "الأردن",
+  
+  // قطر
+  "قطر": "قطر",
+  "qatar": "قطر",
+  
+  // الكويت
+  "الكويت": "الكويت",
+  "kuwait": "الكويت",
+  
+  // البحرين
+  "البحرين": "البحرين",
+  "bahrain": "البحرين",
+  
+  // عمان
+  "عمان": "عمان",
+  "oman": "عمان",
+  
+  // لبنان
+  "لبنان": "لبنان",
+  "lebanon": "لبنان",
+  
+  // المغرب
+  "المغرب": "المغرب",
+  "morocco": "المغرب",
+  
+  // تونس
+  "تونس": "تونس",
+  "tunisia": "تونس",
+  
+  // الجزائر
+  "الجزائر": "الجزائر",
+  "algeria": "الجزائر",
+  
+  // إيطاليا
+  "ايطاليا": "إيطاليا",
+  "italy": "إيطاليا",
+  "italia": "إيطاليا",
+  "rome": "روما",
+  "روما": "روما",
+  "milan": "ميلان",
+  "ميلان": "ميلان",
+  
+  // ألمانيا
+  "المانيا": "ألمانيا",
+  "germany": "ألمانيا",
+  "berlin": "برلين",
+  "برلين": "برلين",
+  
+  // إسبانيا
+  "اسبانيا": "إسبانيا",
+  "spain": "إسبانيا",
+  "madrid": "مدريد",
+  "مدريد": "مدريد",
+  "barcelona": "برشلونة",
+  "برشلونة": "برشلونة",
+  
+  // اليونان
+  "اليونان": "اليونان",
+  "greece": "اليونان",
+  "athens": "أثينا",
+  "أثينا": "أثينا",
+  
+  // تايلاند
+  "تايلاند": "تايلاند",
+  "thailand": "تايلاند",
+  "bangkok": "بانكوك",
+  "بانكوك": "بانكوك",
+  "phuket": "بوكيت",
+  "بوكيت": "بوكيت",
+  
+  // ماليزيا
+  "ماليزيا": "ماليزيا",
+  "malaysia": "ماليزيا",
+  "kuala lumpur": "كوالالمبور",
+  "كوالالمبور": "كوالالمبور",
+  
+  // سنغافورة
+  "سنغافوره": "سنغافورة",
+  "singapore": "سنغافورة",
+  
+  // الهند
+  "الهند": "الهند",
+  "india": "الهند",
+  "mumbai": "مومباي",
+  "مومباي": "مومباي",
+  "delhi": "دلهي",
+  "دلهي": "دلهي",
+  
+  // اليابان
+  "اليابان": "اليابان",
+  "japan": "اليابان",
+  "tokyo": "طوكيو",
+  "طوكيو": "طوكيو",
+  "osaka": "أوساكا",
+  "أوساكا": "أوساكا",
+  
+  // أستراليا
+  "استراليا": "أستراليا",
+  "australia": "أستراليا",
+  "sydney": "سيدني",
+  "سيدني": "سيدني",
+  
+  // كندا
+  "كندا": "كندا",
+  "canada": "كندا",
+  "toronto": "تورنتو",
+  "تورنتو": "تورنتو",
+  
+  // روسيا
+  "روسيا": "روسيا",
+  "russia": "روسيا",
+  "moscow": "موسكو",
+  "موسكو": "موسكو",
+  
+  // النمسا
+  "النمسا": "النمسا",
+  "austria": "النمسا",
+  "vienna": "فيينا",
+  "فيينا": "فيينا",
+  
+  // سويسرا
+  "سويسرا": "سويسرا",
+  "switzerland": "سويسرا",
+  "zurich": "زيورخ",
+  "زيورخ": "زيورخ",
+  
+  // هولندا
+  "هولندا": "هولندا",
+  "netherlands": "هولندا",
+  "amsterdam": "أمستردام",
+  "أمستردام": "أمستردام",
+  
+  // بلجيكا
+  "بلجيكا": "بلجيكا",
+  "belgium": "بلجيكا",
+  
+  // السويد
+  "السويد": "السويد",
+  "sweden": "السويد",
+  
+  // النرويج
+  "النرويج": "النرويج",
+  "norway": "النرويج",
+  
+  // الدنمارك
+  "الدنمارك": "الدنمارك",
+  "denmark": "الدنمارك",
+  
+  // فنلندا
+  "فنلندا": "فنلندا",
+  "finland": "فنلندا",
+  
+  // بولندا
+  "بولندا": "بولندا",
+  "poland": "بولندا",
+  
+  // التشيك
+  "التشيك": "التشيك",
+  "czech": "التشيك",
+  "prague": "براغ",
+  "براغ": "براغ",
+  
+  // المجر
+  "المجر": "المجر",
+  "hungary": "المجر",
+  
+  // البرتغال
+  "البرتغال": "البرتغال",
+  "portugal": "البرتغال",
+  
+  // أيرلندا
+  "ايرلندا": "أيرلندا",
+  "ireland": "أيرلندا",
+  
+  // كرواتيا
+  "كرواتيا": "كرواتيا",
+  "croatia": "كرواتيا",
+};
+
 // ============================================
 // Countries → Main Cities (for search fallback)
 // ============================================
@@ -2053,11 +2296,11 @@ export const countries: Record<string, { name: string; cities: { name: string; i
 };
 
 // Helper to get all searchable items (cities + countries)
-export function getAllSearchableItems(): { name: string; type: "city" | "country"; iata?: string; country?: string }[] {
-  const items: { name: string; type: "city" | "country"; iata?: string; country?: string }[] = [];
+export function getAllSearchableItems(): { name: string; type: "city" | "country"; iata?: string; country?: string; aliases?: string[] }[] {
+  const items: { name: string; type: "city" | "country"; iata?: string; country?: string; aliases?: string[] }[] = [];
   const added = new Set<string>();
   
-  // Add ALL cities from arabicToIata (both Arabic and English)
+  // Add ALL cities from arabicToIata
   Object.entries(arabicToIata).forEach(([name, iata]) => {
     if (!added.has(name)) {
       items.push({ name, type: "city", iata });
@@ -2065,10 +2308,20 @@ export function getAllSearchableItems(): { name: string; type: "city" | "country
     }
   });
   
-  // Add countries
+  // Add countries with their aliases
   Object.entries(countries).forEach(([name, data]) => {
+    // Find aliases for this country
+    const countryAliases = Object.entries(searchAliases)
+      .filter(([, target]) => target === name)
+      .map(([alias]) => alias);
+    
     if (!added.has(name)) {
-      items.push({ name, type: "country", country: data.name });
+      items.push({ 
+        name, 
+        type: "country", 
+        country: data.name,
+        aliases: countryAliases.length > 0 ? countryAliases : undefined
+      });
       added.add(name);
     }
   });
@@ -2089,18 +2342,36 @@ export function getCityName(iataCode: string): string {
 }
 
 export function getIataCode(cityName: string): string {
-  // Try Arabic first
   const normalized = cityName.trim().toLowerCase();
+  
+  // 1. Try direct Arabic city match
   if (arabicToIata[normalized]) {
     return arabicToIata[normalized];
   }
   
-  // Try English (reverse lookup)
+  // 2. Try search aliases (e.g., "indonesia" → "إندونيسيا" → country → first city)
+  const aliasTarget = searchAliases[normalized];
+  if (aliasTarget) {
+    // Check if alias points to a country
+    if (countries[aliasTarget]) {
+      return countries[aliasTarget].cities[0]?.iata || aliasTarget;
+    }
+    // Check if alias points to a city
+    const cityIata = arabicToIata[aliasTarget.toLowerCase()];
+    if (cityIata) return cityIata;
+  }
+  
+  // 3. Try country direct match (e.g., "إندونيسيا")
+  if (countries[cityName]) {
+    return countries[cityName].cities[0]?.iata || cityName;
+  }
+  
+  // 4. Try English reverse lookup
   const entries = Object.entries(iataToCityName);
   const found = entries.find(([, name]) => name.toLowerCase() === normalized);
   if (found) return found[0];
   
-  // Return as-is if it's already an IATA code
+  // 5. Return as-is if it's already an IATA code
   if (/^[A-Z]{3}$/i.test(normalized)) {
     return normalized.toUpperCase();
   }
