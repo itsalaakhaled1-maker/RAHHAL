@@ -2106,7 +2106,6 @@ const arabicToIata: Record<string, string> = {
   "تيموتسوي": "GBE",
   "tsimane": "GBE",
 };
-};
 
 // ============================================
 // Search Aliases — طرق بحث بديلة
