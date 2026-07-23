@@ -416,6 +416,97 @@ export const iataToCityName: Record<string, string> = {
   "KRK": "Krakow",
   "WAW": "Warsaw",
   "BZG": "Bydgoszcz",
+  // 🇮🇱 إسرائيل
+  "TLV": "Tel Aviv",
+  "JRS": "Jerusalem",
+  
+  // 🇵🇰 باكستان
+  "KHI": "Karachi",
+  "LHE": "Lahore",
+  "ISB": "Islamabad",
+  "MUX": "Multan",
+  "LYP": "Faisalabad",
+  "SKT": "Sialkot",
+  "PEW": "Peshawar",
+  
+  // 🇧🇩 بنغلاديش
+  "DAC": "Dhaka",
+  "CGP": "Chittagong",
+  
+  // 🇲🇻 جزر المالديف
+  "MLE": "Male",
+  
+  // 🇳🇿 نيوزيلندا
+  "AKL": "Auckland",
+  "CHC": "Christchurch",
+  "WLG": "Wellington",
+  "ZQN": "Queenstown",
+  
+  // 🇲🇺 موريشيوس
+  "MRU": "Port Louis",
+  
+  // 🇰🇭 كمبوديا
+  "PNH": "Phnom Penh",
+  "REP": "Siem Reap",
+  
+  // 🇲🇲 ميانمار
+  "RGN": "Yangon",
+  "MDL": "Mandalay",
+  
+  // 🇱🇦 لاوس
+  "VTE": "Vientiane",
+  "LPQ": "Luang Prabang",
+  
+  // 🇮🇸 أيسلندا
+  "KEF": "Reykjavik",
+  
+  // 🇲🇹 مالطا
+  "MLA": "Valletta",
+  
+  // 🇨🇾 قبرص
+  "LCA": "Larnaca",
+  "PFO": "Paphos",
+  "NIC": "Nicosia",
+  
+  // 🇱🇾 ليبيا
+  "TIP": "Tripoli",
+  "BEN": "Benghazi",
+  "MRA": "Misrata",
+  
+  // 🇰🇪 كينيا
+  "NBO": "Nairobi",
+  "MBA": "Mombasa",
+  "KIL": "Kilimanjaro",
+  
+  // 🇹🇿 تنزانيا
+  "DAR": "Dar es Salaam",
+  "TZA": "Zanzibar",
+  "ARK": "Arusha",
+  
+  // 🇺🇿 أوزبكستان
+  "TAS": "Tashkent",
+  "SKD": "Samarkand",
+  "BUH": "Bukhara",
+  "KHO": "Khujand",
+  
+  // 🇰🇿 كازاخستان
+  "NQZ": "Astana",
+  "ALA": "Almaty",
+  "URA": "Uralsk",
+  "AKX": "Aktau",
+  
+  // 🇭🇰 هونج كونج
+  "HKG": "Hong Kong",
+  
+  // 🇹🇼 تايوان
+  "TPE": "Taipei",
+  "KHH": "Kaohsiung",
+  "TXG": "Taichung",
+  
+  // 🇧🇼 بوتسوانا
+  "GBE": "Gaborone",
+  "MUB": "Maun",
+
 };
 
 // ============================================
@@ -1677,6 +1768,344 @@ const arabicToIata: Record<string, string> = {
   "ليهو": "LIH", "lihue": "LIH",
   "مولوكاي": "MKK", "molokai": "MKK",
   "لاناي": "LNY", "lanai": "LNY",
+  // 🇮🇱 إسرائيل
+  "تل أبيب": "TLV",
+  "tel aviv": "TLV",
+  "القدس": "JRS",
+  "jerusalem": "JRS",
+  "القدس الشريفة": "JRS",
+  "حيفا": "HFA",
+  "haifa": "HFA",
+  "إيلات": "ELT",
+  "eilat": "ELT",
+  "بئر السبع": "BEE",
+  "beersheba": "BEE",
+
+  // 🇵🇰 باكستان
+  "كراتشي": "KHI",
+  "karachi": "KHI",
+  "لاهور": "LHE",
+  "lahore": "LHE",
+  "إسلام آباد": "ISB",
+  "اسلام آباد": "ISB",
+  "islamabad": "ISB",
+  "ملتان": "MUX",
+  "multan": "MUX",
+  "فيصل آباد": "LYP",
+  "فيصلآباد": "LYP",
+  "faisalabad": "LYP",
+  "سيالكوت": "SKT",
+  "sialkot": "SKT",
+  "بيشاور": "PEW",
+  "peshawar": "PEW",
+  "كويتة": "PEW",
+  "quetta": "PEW",
+
+  // 🇧🇩 بنغلاديش
+  "دكا": "DAC",
+  "dhaka": "DAC",
+  "داكا": "DAC",
+  "شيتاغونج": "CGP",
+  "chittagong": "CGP",
+  "سيلهت": "ZYL",
+  "sylhet": "ZYL",
+  "خولنا": "KUL",
+  "khulna": "KUL",
+  "بريশাল": "BAR",
+  "barisal": "BAR",
+  "ديناজفور": "DNA",
+  "dinajpur": "DNA",
+
+  // 🇲🇻 جزر المالديف
+  "ماليه": "MLE",
+  "male": "MLE",
+  "جزر المالديف": "MLE",
+  "maldives": "MLE",
+
+  // 🇳🇿 نيوزيلندا
+  "أوكلاند": "AKL",
+  "auckland": "AKL",
+  "كرايستتشيرش": "CHC",
+  "christchurch": "CHC",
+  "كرايست تشيرش": "CHC",
+  "ويلينجتون": "WLG",
+  "wellington": "WLG",
+  "كوينز تاون": "ZQN",
+  "queenstown": "ZQN",
+  "كوينزتاون": "ZQN",
+  "دنيدن": "DUD",
+  "dunedin": "DUD",
+  "هاميلتون": "HLZ",
+  "hamilton": "HLZ",
+
+  // 🇲🇺 موريشيوس
+  "بورت لويس": "MRU",
+  "port louis": "MRU",
+  "موريشيوس": "MRU",
+  "mauritius": "MRU",
+
+  // 🇰🇭 كمبوديا
+  "بنوم بنه": "PNH",
+  "phnom penh": "PNH",
+  "سيمريب": "REP",
+  "siem reap": "REP",
+  "أنكور": "REP",
+  "angkor": "REP",
+  "كومبونج تشام": "PNH",
+  "kampong cham": "PNH",
+  "باتامبانج": "PNH",
+  "battambang": "PNH",
+  "كوه كونغ": "REP",
+  "koh kong": "REP",
+
+  // 🇲🇲 ميانمار
+  "يانغون": "RGN",
+  "yangon": "RGN",
+  "رانغون": "RGN",
+  "rangoon": "RGN",
+  "مندالاي": "MDL",
+  "mandalay": "MDL",
+  "باغان": "NYU",
+  "bagan": "NYU",
+  "نيبيداو": "NYU",
+  "naypyidaw": "NYU",
+  "تشيانج ماي": "CNX",
+  "chiangmai": "CNX",
+
+  // 🇱🇦 لاوس
+  "فينتيان": "VTE",
+  "vientiane": "VTE",
+  "لوانج برابانج": "LPQ",
+  "luang prabang": "LPQ",
+  "لوانج": "LPQ",
+  "luang": "LPQ",
+  "بان": "VTE",
+  "pakse": "PKZ",
+  "سافاناخيت": "ZVK",
+  "savannakhet": "ZVK",
+
+  // 🇮🇸 أيسلندا
+  "ريكيافيك": "KEF",
+  "reykjavik": "KEF",
+  "ريكيافيك": "KEF",
+  "أكراني": "AKU",
+  "akranes": "AKU",
+  "بوركيركور": "KEF",
+  "borgarnes": "KEF",
+  "هيفافيك": "KEF",
+  "hafnafjordur": "KEF",
+  "كوبافوغور": "KEF",
+  "kopavogur": "KEF",
+
+  // 🇲🇹 مالطا
+  "فاليتا": "MLA",
+  "valletta": "MLA",
+  "فاليتا": "MLA",
+  "بيرتون": "MLA",
+  "birgu": "MLA",
+  "سنجليا": "MLA",
+  "senglea": "MLA",
+  "الثلاث مدن": "MLA",
+  "three cities": "MLA",
+  "ناكسار": "MLA",
+  "naxxar": "MLA",
+  "مدينة": "MLA",
+  "mdina": "MLA",
+
+  // 🇨🇾 قبرص
+  "لارنكا": "LCA",
+  "larnaca": "LCA",
+  "بافوس": "PFO",
+  "paphos": "PFO",
+  "بافو": "PFO",
+  "pafos": "PFO",
+  "نيقوسيا": "NIC",
+  "nicosia": "NIC",
+  "ليماسول": "LCA",
+  "limassol": "LCA",
+  "أمموخوستوس": "ECE",
+  "famagusta": "ECE",
+  "بيرتشينيا": "LCA",
+  "kyrenia": "LCA",
+
+  // 🇱🇾 ليبيا
+  "طرابلس": "TIP",
+  "tripoli": "TIP",
+  "بنغازي": "BEN",
+  "benghazi": "BEN",
+  "مصراتة": "MRA",
+  "misrata": "MRA",
+  "البيضاء": "LAQ",
+  "bayda": "LAQ",
+  "سبها": "SEB",
+  "sebha": "SEB",
+  "جالو": "GLA",
+  "galo": "GLA",
+  "تاجوراء": "TIP",
+  "tajoura": "TIP",
+  "الخمس": "MRA",
+  "al khums": "MRA",
+
+  // 🇰🇪 كينيا
+  "نيروبي": "NBO",
+  "nairobi": "NBO",
+  "مومباسا": "MBA",
+  "mombasa": "MBA",
+  "كيليمنجارو": "KIL",
+  "kilimanjaro": "KIL",
+  "ناكورو": "NBO",
+  "nakuru": "NBO",
+  "كيسومو": "MBA",
+  "kisumu": "MBA",
+  "كيتالي": "MBA",
+  "kitale": "MBA",
+  "مالندي": "MBA",
+  "malindi": "MBA",
+  "وتيكا": "MBA",
+  "watamu": "MBA",
+  "ديني": "MBA",
+  "diani": "MBA",
+
+  // 🇹🇿 تنزانيا
+  "دار السلام": "DAR",
+  "dar es salaam": "DAR",
+  "دارالسلام": "DAR",
+  "زنجبار": "TZA",
+  "zanzibar": "TZA",
+  "أروشا": "ARK",
+  "arusha": "ARK",
+  "موشي": "ARK",
+  "moshi": "ARK",
+  "مانيا": "ARK",
+  "manyara": "ARK",
+  "مويا": "DAR",
+  "moiya": "DAR",
+  "إيرينجا": "DAR",
+  "iringa": "DAR",
+  "موبيا": "DAR",
+  "mbeya": "DAR",
+  "تانجا": "DAR",
+  "tanga": "DAR",
+  "ليندي": "DAR",
+  "lindi": "DAR",
+  "مياومي": "DAR",
+  "mtwara": "DAR",
+  "بيمبا": "TZA",
+  "pemba": "TZA",
+
+  // 🇺🇿 أوزبكستان
+  "طشقند": "TAS",
+  "tashkent": "TAS",
+  "سمرقند": "SKD",
+  "samarkand": "SKD",
+  "بخارى": "BUH",
+  "bukhara": "BUH",
+  "خجند": "KHO",
+  "khujand": "KHO",
+  "خوارزم": "UUA",
+  "khorezm": "UUA",
+  "أنديجان": "AND",
+  "andijan": "AND",
+  "نمنجان": "NMA",
+  "namangan": "NMA",
+  "الفرغانة": "AND",
+  "fergana": "AND",
+  "كوكند": "AND",
+  "kokand": "AND",
+  "أشخاباد": "TAS",
+  "ashkhabad": "TAS",
+
+  // 🇰🇿 كازاخستان
+  "أستانا": "NQZ",
+  "astana": "NQZ",
+  "نور سلطان": "NQZ",
+  "nur sultan": "NQZ",
+  "أقمولا": "NQZ",
+  "akmola": "NQZ",
+  "ألماتي": "ALA",
+  "almaty": "ALA",
+  "كاراغاندا": "DZN",
+  "karaganda": "DZN",
+  "قراغندة": "DZN",
+  "الشرق القازاقي": "ALA",
+  "east kazakhstan": "ALA",
+  "أكتاو": "AKX",
+  "aktau": "AKX",
+  "أورال": "URA",
+  "uralsk": "URA",
+  "أتيراو": "GUW",
+  "atyrau": "GUW",
+  "ماناس": "NQZ",
+  "manas": "NQZ",
+  "تالديكورغان": "ALA",
+  "taldykorgan": "ALA",
+
+  // 🇭🇰 هونج كونج
+  "هونج كونج": "HKG",
+  "hong kong": "HKG",
+  "هونغ كونغ": "HKG",
+  "ساحل الجزيرة": "HKG",
+  "victoria": "HKG",
+  "يوملو": "HKG",
+  "yaumlo": "HKG",
+  "كولون": "HKG",
+  "kowloon": "HKG",
+  "تيموتسوي": "HKG",
+  "tsim sha tsui": "HKG",
+  "سينتريل": "HKG",
+  "central": "HKG",
+
+  // 🇹🇼 تايوان
+  "تايبيه": "TPE",
+  "taipei": "TPE",
+  "تايبه": "TPE",
+  "تايبيه": "TPE",
+  "طايبيه": "TPE",
+  "كاوهيونج": "KHH",
+  "kaohsiung": "KHH",
+  "كاوشيونج": "KHH",
+  "تايتشونج": "TXG",
+  "taichung": "TXG",
+  "تايجونج": "TXG",
+  "تاينان": "TNN",
+  "tainan": "TNN",
+  "جيلونج": "KHH",
+  "jilong": "KHH",
+  "كيلونج": "KHH",
+  "keelung": "KHH",
+  "هسينجو": "KHH",
+  "hshinchu": "KHH",
+  "ميالي": "KHH",
+  "miaoli": "KHH",
+  "يونلين": "KHH",
+  "yunlin": "KHH",
+  "تشيايي": "CYI",
+  "chiayi": "CYI",
+  "نانتو": "TXG",
+  "nantou": "TXG",
+  "هوالين": "HUN",
+  "hualien": "HUN",
+  "تايتونج": "TTG",
+  "taitung": "TTG",
+  "بيتو": "TTG",
+  "pinto": "TTG",
+
+  // 🇧🇼 بوتسوانا
+  "غابورون": "GBE",
+  "gaborone": "GBE",
+  "ماون": "MUB",
+  "maun": "MUB",
+  "فرانسيستاون": "FRW",
+  "francistown": "FRW",
+  "كاسان": "BBW",
+  "kasane": "BBW",
+  "سيليبي": "SLY",
+  "selibe": "SLY",
+  "جاكس": "GBE",
+  "jacks": "GBE",
+  "تيموتسوي": "GBE",
+  "tsimane": "GBE",
+};
 };
 
 // ============================================
@@ -1919,6 +2348,163 @@ export const searchAliases: Record<string, string> = {
   // كرواتيا
   "كرواتيا": "كرواتيا",
   "croatia": "كرواتيا",
+  // 🇮🇱 إسرائيل
+  "اسرائيل": "إسرائيل",
+  "israel": "إسرائيل",
+  "tel aviv": "تل أبيب",
+  "تل أبيب": "تل أبيب",
+  "jerusalem": "القدس",
+  "القدس": "القدس",
+  
+  // 🇵🇰 باكستان
+  "باكستان": "باكستان",
+  "pakistan": "باكستان",
+  "karachi": "كراتشي",
+  "كراتشي": "كراتشي",
+  "lahore": "لاهور",
+  "لاهور": "لاهور",
+  "islamabad": "إسلام آباد",
+  "اسلام آباد": "إسلام آباد",
+  
+  // 🇧🇩 بنغلاديش
+  "بنجلاديش": "بنغلاديش",
+  "بنجلادش": "بنغلاديش",
+  "bangladesh": "بنغلاديش",
+  "dhaka": "دكا",
+  "دكا": "دكا",
+  
+  // 🇲🇻 جزر المالديف
+  "مالديف": "جزر المالديف",
+  "maldives": "جزر المالديف",
+  "male": "ماليه",
+  "ماليه": "ماليه",
+  
+  // 🇳🇿 نيوزيلندا
+  "نيوزيلندا": "نيوزيلندا",
+  "نيو زيلندا": "نيوزيلندا",
+  "new zealand": "نيوزيلندا",
+  "auckland": "أوكلاند",
+  "اوكلاند": "أوكلاند",
+  
+  // 🇲🇺 موريشيوس
+  "موريشيوس": "موريشيوس",
+  "mauritius": "موريشيوس",
+  
+  // 🇰🇭 كمبوديا
+  "كمبوديا": "كمبوديا",
+  "cambodia": "كمبوديا",
+  "phnom penh": "بنوم بنه",
+  "بنوم بنه": "بنوم بنه",
+  "siem reap": "سيمريب",
+  "سيمريب": "سيمريب",
+  "angkor": "أنكور",
+  "أنكور": "أنكور",
+  
+  // 🇲🇲 ميانمار
+  "ميانمار": "ميانمار",
+  "myanmar": "ميانمار",
+  "yangon": "يانغون",
+  "يانغون": "يانغون",
+  "mandalay": "مندالاي",
+  "مندالاي": "مندالاي",
+  
+  // 🇱🇦 لاوس
+  "لاوس": "لاوس",
+  "laos": "لاوس",
+  "vientiane": "فينتيان",
+  "فينتيان": "فينتيان",
+  "luang prabang": "لوانج برابانج",
+  "لوانج برابانج": "لوانج برابانج",
+  
+  // 🇮🇸 أيسلندا
+  "أيسلندا": "أيسلندا",
+  "iceland": "أيسلندا",
+  "reykjavik": "ريكيافيك",
+  "ريكيافيك": "ريكيافيك",
+  
+  // 🇲🇹 مالطا
+  "مالطا": "مالطا",
+  "malta": "مالطا",
+  "valletta": "فاليتا",
+  "فاليتا": "فاليتا",
+  "mdina": "مدينة",
+  "مدينة": "مدينة",
+  
+  // 🇨🇾 قبرص
+  "قبرص": "قبرص",
+  "cyprus": "قبرص",
+  "larnaca": "لارنكا",
+  "لارنكا": "لارنكا",
+  "paphos": "بافوس",
+  "بافوس": "بافوس",
+  "nicosia": "نيقوسيا",
+  "نيقوسيا": "نيقوسيا",
+  
+  // 🇱🇾 ليبيا
+  "ليبيا": "ليبيا",
+  "libya": "ليبيا",
+  "tripoli": "طرابلس",
+  "طرابلس": "طرابلس",
+  "benghazi": "بنغازي",
+  "بنغازي": "بنغازي",
+  
+  // 🇰🇪 كينيا
+  "كينيا": "كينيا",
+  "kenya": "كينيا",
+  "nairobi": "نيروبي",
+  "نيروبي": "نيروبي",
+  "mombasa": "مومباسا",
+  "مومباسا": "مومباسا",
+  
+  // 🇹🇿 تنزانيا
+  "تنزانيا": "تنزانيا",
+  "tanzania": "تنزانيا",
+  "dar es salaam": "دار السلام",
+  "دار السلام": "دار السلام",
+  "zanzibar": "زنجبار",
+  "زنجبار": "زنجبار",
+  
+  // 🇺🇿 أوزبكستان
+  "أوزبكستان": "أوزبكستان",
+  "اوزبكستان": "أوزبكستان",
+  "uzbekistan": "أوزبكستان",
+  "tashkent": "طشقند",
+  "طشقند": "طشقند",
+  "samarkand": "سمرقند",
+  "سمرقند": "سمرقند",
+  "bukhara": "بخارى",
+  "بخارى": "بخارى",
+  
+  // 🇰🇿 كازاخستان
+  "كازاخستان": "كازاخستان",
+  "kazakhstan": "كازاخستان",
+  "astana": "أستانا",
+  "أستانا": "أستانا",
+  "almaty": "ألماتي",
+  "ألماتي": "ألماتي",
+  
+  // 🇭🇰 هونج كونج
+  "هونج كونج": "هونج كونج",
+  "هونغ كونغ": "هونج كونج",
+  "hong kong": "هونج كونج",
+  "hongkong": "هونج كونج",
+  
+  // 🇹🇼 تايوان
+  "تايوان": "تايوان",
+  "taiwan": "تايوان",
+  "taipei": "تايبيه",
+  "تايبيه": "تايبيه",
+  "kaohsiung": "كاوهيونج",
+  "كاوهيونج": "كاوهيونج",
+  
+  // 🇧🇼 بوتسوانا
+  "بوتسوانا": "بوتسوانا",
+  "botswana": "بوتسوانا",
+  "gaborone": "غابورون",
+  "غابورون": "غابورون",
+  "maun": "ماون",
+  "ماون": "ماون",
+
 };
 
 // ============================================
@@ -2291,6 +2877,177 @@ export const countries: Record<string, { name: string; cities: { name: string; i
     cities: [
       { name: "دبي", iata: "DXB" },
       { name: "أبوظبي", iata: "AUH" },
+    ]
+  },
+  "إسرائيل": {
+    name: "إسرائيل",
+    cities: [
+      { name: "تل أبيب", iata: "TLV" },
+      { name: "القدس", iata: "JRS" },
+      { name: "حيفا", iata: "HFA" },
+      { name: "إيلات", iata: "ELT" },
+    ]
+  },
+  "باكستان": {
+    name: "جمهورية باكستان الإسلامية",
+    cities: [
+      { name: "كراتشي", iata: "KHI" },
+      { name: "لاهور", iata: "LHE" },
+      { name: "إسلام آباد", iata: "ISB" },
+      { name: "ملتان", iata: "MUX" },
+      { name: "فيصل آباد", iata: "LYP" },
+    ]
+  },
+  "بنغلاديش": {
+    name: "جمهورية بنغلاديش الشعبية",
+    cities: [
+      { name: "دكا", iata: "DAC" },
+      { name: "شيتاغونج", iata: "CGP" },
+      { name: "سيلهت", iata: "ZYL" },
+      { name: "خولنا", iata: "KUL" },
+    ]
+  },
+  "جزر المالديف": {
+    name: "جزر المالديف",
+    cities: [
+      { name: "ماليه", iata: "MLE" },
+    ]
+  },
+  "نيوزيلندا": {
+    name: "نيوزيلندا",
+    cities: [
+      { name: "أوكلاند", iata: "AKL" },
+      { name: "كرايستتشيرش", iata: "CHC" },
+      { name: "ويلينجتون", iata: "WLG" },
+      { name: "كوينز تاون", iata: "ZQN" },
+    ]
+  },
+  "موريشيوس": {
+    name: "موريشيوس",
+    cities: [
+      { name: "بورت لويس", iata: "MRU" },
+    ]
+  },
+  "كمبوديا": {
+    name: "مملكة كمبوديا",
+    cities: [
+      { name: "بنوم بنه", iata: "PNH" },
+      { name: "سيمريب", iata: "REP" },
+      { name: "باتامبانج", iata: "PNH" },
+    ]
+  },
+  "ميانمار": {
+    name: "جمهورية اتحاد ميانمار",
+    cities: [
+      { name: "يانغون", iata: "RGN" },
+      { name: "مندالاي", iata: "MDL" },
+      { name: "باغان", iata: "NYU" },
+      { name: "نيبيداو", iata: "NYU" },
+    ]
+  },
+  "لاوس": {
+    name: "جمهورية لاوس الديمقراطية الشعبية",
+    cities: [
+      { name: "فينتيان", iata: "VTE" },
+      { name: "لوانج برابانج", iata: "LPQ" },
+      { name: "سافاناخيت", iata: "ZVK" },
+      { name: "باكسي", iata: "PKZ" },
+    ]
+  },
+  "أيسلندا": {
+    name: "جمهورية أيسلندا",
+    cities: [
+      { name: "ريكيافيك", iata: "KEF" },
+      { name: "أكراني", iata: "AKU" },
+      { name: "كوبافوغور", iata: "KEF" },
+    ]
+  },
+  "مالطا": {
+    name: "جمهورية مالطا",
+    cities: [
+      { name: "فاليتا", iata: "MLA" },
+      { name: "مدينة", iata: "MLA" },
+      { name: "الثلاث مدن", iata: "MLA" },
+    ]
+  },
+  "قبرص": {
+    name: "جمهورية قبرص",
+    cities: [
+      { name: "لارنكا", iata: "LCA" },
+      { name: "بافوس", iata: "PFO" },
+      { name: "نيقوسيا", iata: "NIC" },
+      { name: "ليماسول", iata: "LCA" },
+    ]
+  },
+  "ليبيا": {
+    name: "دولة ليبيا",
+    cities: [
+      { name: "طرابلس", iata: "TIP" },
+      { name: "بنغازي", iata: "BEN" },
+      { name: "مصراتة", iata: "MRA" },
+      { name: "البيضاء", iata: "LAQ" },
+    ]
+  },
+  "كينيا": {
+    name: "جمهورية كينيا",
+    cities: [
+      { name: "نيروبي", iata: "NBO" },
+      { name: "مومباسا", iata: "MBA" },
+      { name: "كيليمنجارو", iata: "KIL" },
+      { name: "ناكورو", iata: "NBO" },
+    ]
+  },
+  "تنزانيا": {
+    name: "جمهورية تنزانيا المتحدة",
+    cities: [
+      { name: "دار السلام", iata: "DAR" },
+      { name: "زنجبار", iata: "TZA" },
+      { name: "أروشا", iata: "ARK" },
+      { name: "موشي", iata: "ARK" },
+    ]
+  },
+  "أوزبكستان": {
+    name: "جمهورية أوزبكستان",
+    cities: [
+      { name: "طشقند", iata: "TAS" },
+      { name: "سمرقند", iata: "SKD" },
+      { name: "بخارى", iata: "BUH" },
+      { name: "خجند", iata: "KHO" },
+    ]
+  },
+  "كازاخستان": {
+    name: "جمهورية كازاخستان",
+    cities: [
+      { name: "أستانا", iata: "NQZ" },
+      { name: "ألماتي", iata: "ALA" },
+      { name: "كاراغاندا", iata: "DZN" },
+      { name: "أكتاو", iata: "AKX" },
+    ]
+  },
+  "هونج كونج": {
+    name: "منطقة هونج كونج الإدارية الخاصة",
+    cities: [
+      { name: "هونج كونج", iata: "HKG" },
+      { name: "كولون", iata: "HKG" },
+      { name: "جزيرة هونج كونج", iata: "HKG" },
+    ]
+  },
+  "تايوان": {
+    name: "جمهورية الصين",
+    cities: [
+      { name: "تايبيه", iata: "TPE" },
+      { name: "كاوهيونج", iata: "KHH" },
+      { name: "تايتشونج", iata: "TXG" },
+      { name: "تاينان", iata: "TNN" },
+    ]
+  },
+  "بوتسوانا": {
+    name: "جمهورية بوتسوانا",
+    cities: [
+      { name: "غابورون", iata: "GBE" },
+      { name: "ماون", iata: "MUB" },
+      { name: "فرانسيستاون", iata: "FRW" },
+      { name: "كاسان", iata: "BBW" },
     ]
   },
 };
