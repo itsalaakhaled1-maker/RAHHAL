@@ -2055,18 +2055,22 @@ export const countries: Record<string, { name: string; cities: { name: string; i
 // Helper to get all searchable items (cities + countries)
 export function getAllSearchableItems(): { name: string; type: "city" | "country"; iata?: string; country?: string }[] {
   const items: { name: string; type: "city" | "country"; iata?: string; country?: string }[] = [];
+  const added = new Set<string>();
   
-  // Add all cities from arabicToIata
+  // Add ALL cities from arabicToIata (both Arabic and English)
   Object.entries(arabicToIata).forEach(([name, iata]) => {
-    // Skip duplicates and non-Arabic names
-    if (/[\\u0600-\\u06FF]/.test(name)) {
+    if (!added.has(name)) {
       items.push({ name, type: "city", iata });
+      added.add(name);
     }
   });
   
   // Add countries
   Object.entries(countries).forEach(([name, data]) => {
-    items.push({ name, type: "country", country: data.name });
+    if (!added.has(name)) {
+      items.push({ name, type: "country", country: data.name });
+      added.add(name);
+    }
   });
   
   return items;
