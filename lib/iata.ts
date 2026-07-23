@@ -1678,7 +1678,408 @@ const arabicToIata: Record<string, string> = {
   "مولوكاي": "MKK", "molokai": "MKK",
   "لاناي": "LNY", "lanai": "LNY",
 };
+// ============================================
+// Countries → Main Cities (for search fallback)
+// ============================================
+export const countries: Record<string, { name: string; cities: { name: string; iata: string }[] }> = {
+  "الإمارات": {
+    name: "الإمارات العربية المتحدة",
+    cities: [
+      { name: "دبي", iata: "DXB" },
+      { name: "أبوظبي", iata: "AUH" },
+      { name: "الشارقة", iata: "SHJ" },
+      { name: "رأس الخيمة", iata: "RKT" },
+      { name: "العين", iata: "AAN" },
+    ]
+  },
+  "السعودية": {
+    name: "المملكة العربية السعودية",
+    cities: [
+      { name: "الرياض", iata: "RUH" },
+      { name: "جدة", iata: "JED" },
+      { name: "الدمام", iata: "DMM" },
+      { name: "المدينة المنورة", iata: "MED" },
+      { name: "أبها", iata: "AHB" },
+    ]
+  },
+  "مصر": {
+    name: "جمهورية مصر العربية",
+    cities: [
+      { name: "القاهرة", iata: "CAI" },
+      { name: "الإسكندرية", iata: "HBE" },
+      { name: "شرم الشيخ", iata: "SSH" },
+      { name: "الغردقة", iata: "HRG" },
+      { name: "الأقصر", iata: "LXR" },
+    ]
+  },
+  "تركيا": {
+    name: "تركيا",
+    cities: [
+      { name: "إسطنبول", iata: "IST" },
+      { name: "أنقرة", iata: "ESB" },
+      { name: "أنطاليا", iata: "AYT" },
+      { name: "إزمير", iata: "ADB" },
+      { name: "بودروم", iata: "BJV" },
+    ]
+  },
+  "فرنسا": {
+    name: "فرنسا",
+    cities: [
+      { name: "باريس", iata: "CDG" },
+      { name: "نيس", iata: "NCE" },
+      { name: "ليون", iata: "LYS" },
+      { name: "مرسيليا", iata: "MRS" },
+    ]
+  },
+  "بريطانيا": {
+    name: "المملكة المتحدة",
+    cities: [
+      { name: "لندن", iata: "LHR" },
+      { name: "مانشستر", iata: "MAN" },
+      { name: "برمنغهام", iata: "BHX" },
+      { name: "إدنبره", iata: "EDI" },
+    ]
+  },
+  "أمريكا": {
+    name: "الولايات المتحدة",
+    cities: [
+      { name: "نيويورك", iata: "JFK" },
+      { name: "لوس أنجلوس", iata: "LAX" },
+      { name: "ميامي", iata: "MIA" },
+      { name: "شيكاغو", iata: "ORD" },
+      { name: "سان فرانسيسكو", iata: "SFO" },
+    ]
+  },
+  "الأردن": {
+    name: "المملكة الأردنية الهاشمية",
+    cities: [
+      { name: "عمان", iata: "AMM" },
+      { name: "العقبة", iata: "AQJ" },
+    ]
+  },
+  "قطر": {
+    name: "دولة قطر",
+    cities: [
+      { name: "الدوحة", iata: "DOH" },
+    ]
+  },
+  "الكويت": {
+    name: "دولة الكويت",
+    cities: [
+      { name: "مدينة الكويت", iata: "KWI" },
+    ]
+  },
+  "البحرين": {
+    name: "مملكة البحرين",
+    cities: [
+      { name: "المنامة", iata: "BAH" },
+    ]
+  },
+  "عمان": {
+    name: "سلطنة عمان",
+    cities: [
+      { name: "مسقط", iata: "MCT" },
+      { name: "صلالة", iata: "SLL" },
+    ]
+  },
+  "لبنان": {
+    name: "لبنان",
+    cities: [
+      { name: "بيروت", iata: "BEY" },
+    ]
+  },
+  "المغرب": {
+    name: "المملكة المغربية",
+    cities: [
+      { name: "الدار البيضاء", iata: "CMN" },
+      { name: "مراكش", iata: "RAK" },
+      { name: "الرباط", iata: "RBA" },
+      { name: "فاس", iata: "FEZ" },
+      { name: "طنجة", iata: "TNG" },
+    ]
+  },
+  "تونس": {
+    name: "تونس",
+    cities: [
+      { name: "تونس العاصمة", iata: "TUN" },
+      { name: "جربة", iata: "DJE" },
+    ]
+  },
+  "الجزائر": {
+    name: "الجزائر",
+    cities: [
+      { name: "الجزائر العاصمة", iata: "ALG" },
+      { name: "وهران", iata: "ORN" },
+      { name: "قسنطينة", iata: "CZL" },
+    ]
+  },
+  "إيطاليا": {
+    name: "إيطاليا",
+    cities: [
+      { name: "روما", iata: "FCO" },
+      { name: "ميلان", iata: "MXP" },
+      { name: "البندقية", iata: "VCE" },
+      { name: "نابولي", iata: "NAP" },
+    ]
+  },
+  "ألمانيا": {
+    name: "ألمانيا",
+    cities: [
+      { name: "برلين", iata: "BER" },
+      { name: "ميونخ", iata: "MUC" },
+      { name: "فرانكفورت", iata: "FRA" },
+    ]
+  },
+  "إسبانيا": {
+    name: "إسبانيا",
+    cities: [
+      { name: "مدريد", iata: "MAD" },
+      { name: "برشلونة", iata: "BCN" },
+      { name: "إشبيلية", iata: "SVQ" },
+    ]
+  },
+  "اليونان": {
+    name: "اليونان",
+    cities: [
+      { name: "أثينا", iata: "ATH" },
+      { name: "سانتوريني", iata: "JTR" },
+      { name: "ميكونوس", iata: "JMK" },
+    ]
+  },
+  "تايلاند": {
+    name: "تايلاند",
+    cities: [
+      { name: "بانكوك", iata: "BKK" },
+      { name: "بوكيت", iata: "HKT" },
+      { name: "شيانغ ماي", iata: "CNX" },
+    ]
+  },
+  "ماليزيا": {
+    name: "ماليزيا",
+    cities: [
+      { name: "كوالالمبور", iata: "KUL" },
+      { name: "لنكاوي", iata: "LGK" },
+    ]
+  },
+  "سنغافورة": {
+    name: "سنغافورة",
+    cities: [
+      { name: "سنغافورة", iata: "SIN" },
+    ]
+  },
+  "الهند": {
+    name: "الهند",
+    cities: [
+      { name: "مومباي", iata: "BOM" },
+      { name: "دلهي", iata: "DEL" },
+      { name: "بنغالور", iata: "BLR" },
+    ]
+  },
+  "اليابان": {
+    name: "اليابان",
+    cities: [
+      { name: "طوكيو", iata: "NRT" },
+      { name: "أوساكا", iata: "KIX" },
+    ]
+  },
+  "أستراليا": {
+    name: "أستراليا",
+    cities: [
+      { name: "سيدني", iata: "SYD" },
+      { name: "ملبورن", iata: "MEL" },
+    ]
+  },
+  "كندا": {
+    name: "كندا",
+    cities: [
+      { name: "تورنتو", iata: "YYZ" },
+      { name: "مونتريال", iata: "YUL" },
+    ]
+  },
+  "البرازيل": {
+    name: "البرازيل",
+    cities: [
+      { name: "ريو دي جانيرو", iata: "GIG" },
+      { name: "ساو باولو", iata: "GRU" },
+    ]
+  },
+  "الأرجنتين": {
+    name: "الأرجنتين",
+    cities: [
+      { name: "بوينس آيرس", iata: "EZE" },
+    ]
+  },
+  "جنوب أفريقيا": {
+    name: "جنوب أفريقيا",
+    cities: [
+      { name: "كيب تاون", iata: "CPT" },
+      { name: "جوهانسبرغ", iata: "JNB" },
+    ]
+  },
+  "إندونيسيا": {
+    name: "إندونيسيا",
+    cities: [
+      { name: "جاكرتا", iata: "CGK" },
+      { name: "بالي", iata: "DPS" },
+    ]
+  },
+  "الفلبين": {
+    name: "الفلبين",
+    cities: [
+      { name: "مانيلا", iata: "MNL" },
+    ]
+  },
+  "فيتنام": {
+    name: "فيتنام",
+    cities: [
+      { name: "هانوي", iata: "HAN" },
+      { name: "هو تشي منه", iata: "SGN" },
+    ]
+  },
+  "كوريا الجنوبية": {
+    name: "كوريا الجنوبية",
+    cities: [
+      { name: "سيول", iata: "ICN" },
+    ]
+  },
+  "الصين": {
+    name: "الصين",
+    cities: [
+      { name: "بكين", iata: "PEK" },
+      { name: "شنغهاي", iata: "PVG" },
+    ]
+  },
+  "روسيا": {
+    name: "روسيا",
+    cities: [
+      { name: "موسكو", iata: "SVO" },
+      { name: "سانت بطرسبرغ", iata: "LED" },
+    ]
+  },
+  "النمسا": {
+    name: "النمسا",
+    cities: [
+      { name: "فيينا", iata: "VIE" },
+    ]
+  },
+  "سويسرا": {
+    name: "سويسرا",
+    cities: [
+      { name: "زيورخ", iata: "ZUR" },
+      { name: "جنيف", iata: "GVA" },
+    ]
+  },
+  "هولندا": {
+    name: "هولندا",
+    cities: [
+      { name: "أمستردام", iata: "AMS" },
+    ]
+  },
+  "بلجيكا": {
+    name: "بلجيكا",
+    cities: [
+      { name: "بروكسل", iata: "BRU" },
+    ]
+  },
+  "السويد": {
+    name: "السويد",
+    cities: [
+      { name: "ستوكهولم", iata: "ARN" },
+    ]
+  },
+  "النرويج": {
+    name: "النرويج",
+    cities: [
+      { name: "أوسلو", iata: "OSL" },
+    ]
+  },
+  "الدنمارك": {
+    name: "الدنمارك",
+    cities: [
+      { name: "كوبنهاغن", iata: "CPH" },
+    ]
+  },
+  "فنلندا": {
+    name: "فنلندا",
+    cities: [
+      { name: "هلسنكي", iata: "HEL" },
+    ]
+  },
+  "بولندا": {
+    name: "بولندا",
+    cities: [
+      { name: "وارسو", iata: "WAW" },
+      { name: "كراكوف", iata: "KRK" },
+    ]
+  },
+  "التشيك": {
+    name: "التشيك",
+    cities: [
+      { name: "براغ", iata: "PRG" },
+    ]
+  },
+  "المجر": {
+    name: "المجر",
+    cities: [
+      { name: "بودابست", iata: "BUD" },
+    ]
+  },
+  "البرتغال": {
+    name: "البرتغال",
+    cities: [
+      { name: "لشبونة", iata: "LIS" },
+    ]
+  },
+  "أيرلندا": {
+    name: "أيرلندا",
+    cities: [
+      { name: "دبلن", iata: "DUB" },
+    ]
+  },
+  "كرواتيا": {
+    name: "كرواتيا",
+    cities: [
+      { name: "زغرب", iata: "ZAG" },
+      { name: "دوبروفنيك", iata: "DBV" },
+    ]
+  },
+  "الإمارات العربية المتحدة": {
+    name: "الإمارات العربية المتحدة",
+    cities: [
+      { name: "دبي", iata: "DXB" },
+      { name: "أبوظبي", iata: "AUH" },
+    ]
+  },
+};
 
+// Helper to get all searchable items (cities + countries)
+export function getAllSearchableItems(): { name: string; type: "city" | "country"; iata?: string; country?: string }[] {
+  const items: { name: string; type: "city" | "country"; iata?: string; country?: string }[] = [];
+  
+  // Add all cities from arabicToIata
+  Object.entries(arabicToIata).forEach(([name, iata]) => {
+    // Skip duplicates and non-Arabic names
+    if (/[\\u0600-\\u06FF]/.test(name)) {
+      items.push({ name, type: "city", iata });
+    }
+  });
+  
+  // Add countries
+  Object.entries(countries).forEach(([name, data]) => {
+    items.push({ name, type: "country", country: data.name });
+  });
+  
+  return items;
+}
+
+// Helper to get IATA from country (returns first city)
+export function getCountryIata(countryName: string): string | null {
+  const country = countries[countryName];
+  if (country && country.cities.length > 0) {
+    return country.cities[0].iata;
+  }
+  return null;
+}
 export function getCityName(iataCode: string): string {
   return iataToCityName[iataCode.toUpperCase()] || iataCode;
 }

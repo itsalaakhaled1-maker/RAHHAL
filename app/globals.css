@@ -91,3 +91,22 @@
 .dark .border-gray-200 {
   border-color: #475569;
 }
+/* Custom Dropdown & Date Picker Styles */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #0288D1; border-radius: 3px; }
+
+/* Date picker animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Highlight animation for autocomplete */
+@keyframes highlight {
+  0% { background-color: rgba(2, 136, 209, 0.2); }
+  100% { background-color: transparent; }
+}
+
+/* Ensure dropdowns appear above everything */
+.z-dropdown { z-index: 9999; }
