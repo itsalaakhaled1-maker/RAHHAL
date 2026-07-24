@@ -2254,7 +2254,7 @@ export const searchAliases: Record<string, string> = {
   "الهند": "الهند",
   "india": "الهند",
   "mumbai": "مومباي",
-  "مومباي": "مومباي",
+  "مومباي": "بومباي",
   "delhi": "دلهي",
   "دلهي": "دلهي",
   
