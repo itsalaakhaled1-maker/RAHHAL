@@ -2251,11 +2251,11 @@ export const searchAliases: Record<string, string> = {
   "singapore": "سنغافورة",
   
   // الهند
-  "الهند": "الهند",
   "india": "الهند",
-  "bombay": "مومباي",     // Old English name
-  "بومباي": "مومباي",    // Arabic old name
-  "مومباي": "مومباي",    // Arabic current name
+  "الهند": "الهند",
+  "bombay": "مومباي",
+  "بومباي": "مومباي",
+  "مومباي": "مومباي",
   "delhi": "دلهي",
   "دلهي": "دلهي",
   
