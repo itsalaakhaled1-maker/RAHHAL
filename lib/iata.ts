@@ -2253,8 +2253,9 @@ export const searchAliases: Record<string, string> = {
   // الهند
   "الهند": "الهند",
   "india": "الهند",
-  "mumbai": "مومباي",
-  "مومباي": "بومباي",
+  "bombay": "مومباي",     // Old English name
+  "بومباي": "مومباي",    // Arabic old name
+  "مومباي": "مومباي",    // Arabic current name
   "delhi": "دلهي",
   "دلهي": "دلهي",
   
