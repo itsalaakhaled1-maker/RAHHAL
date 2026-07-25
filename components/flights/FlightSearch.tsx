@@ -520,7 +520,7 @@ export default function FlightSearch() {
             onChange={(val: string) => setTripData({ currency: val })}
           />
           <div>
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">الميزانية المتوقعة للسفرة </label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">الميزانية المتوقعة للسفرة كاملة </label>
             <div className="relative">
               <input
                 type="number"
