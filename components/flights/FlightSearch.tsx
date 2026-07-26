@@ -22,7 +22,9 @@ const travelClasses = [
   { value: "FIRST", label: "الأولى" },
 ];
 
+// ─────────────────────────────────────────
 // Custom Dropdown Component
+// ─────────────────────────────────────────
 function CustomDropdown({ label, value, options, onChange, icon: Icon, error }: any) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -39,19 +41,19 @@ function CustomDropdown({ label, value, options, onChange, icon: Icon, error }: 
 
   return (
     <div ref={ref} className="relative">
-      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">{label}</label>
+      <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">{label}</label>
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={`w-full flex items-center justify-between px-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 rounded-2xl text-gray-800 dark:text-white font-medium transition-all outline-none hover:border-gray-300 dark:hover:border-gray-500 ${
-          error ? "border-red-400 dark:border-red-500" : "border-gray-200 dark:border-gray-600"
+        className={`w-full flex items-center justify-between px-4 py-3.5 bg-[var(--bg-secondary)] border-2 rounded-2xl text-[var(--text-primary)] font-medium transition-all outline-none hover:border-[var(--border-medium)] ${
+          error ? "border-[var(--color-danger)]" : "border-[var(--border-medium)]"
         }`}
       >
         <span className="flex items-center gap-2">
-          {Icon && <Icon className="w-5 h-5 text-ocean" />}
+          {Icon && <Icon className="w-5 h-5 text-[var(--color-primary-500)]" />}
           {selected?.label || selected?.name || value}
         </span>
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-4 h-4 text-[var(--text-muted)] transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       <AnimatePresence>
         {open && (
@@ -59,15 +61,15 @@ function CustomDropdown({ label, value, options, onChange, icon: Icon, error }: 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl shadow-xl max-h-60 overflow-y-auto"
+            className="absolute z-50 w-full mt-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl shadow-card max-h-60 overflow-y-auto"
           >
             {options.map((option: any) => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => { onChange(option.value); setOpen(false); }}
-                className={`w-full text-right px-4 py-3 hover:bg-ocean/10 dark:hover:bg-ocean/20 transition-colors flex items-center gap-2 ${
-                  value === option.value ? "bg-ocean/10 text-ocean font-bold" : "text-gray-700 dark:text-gray-300"
+                className={`w-full text-right px-4 py-3 hover:bg-[var(--color-primary-500)]/10 transition-colors flex items-center gap-2 ${
+                  value === option.value ? "bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)] font-bold" : "text-[var(--text-secondary)]"
                 }`}
               >
                 {option.icon}
@@ -77,12 +79,14 @@ function CustomDropdown({ label, value, options, onChange, icon: Icon, error }: 
           </motion.div>
         )}
       </AnimatePresence>
-      {error && <p className="text-red-500 text-xs mt-1.5 font-medium">{error}</p>}
+      {error && <p className="text-[var(--color-danger)] text-xs mt-1.5 font-medium">{error}</p>}
     </div>
   );
 }
 
+// ─────────────────────────────────────────
 // Autocomplete Location Input
+// ─────────────────────────────────────────
 function LocationAutocomplete({ label, value, onChange, icon: Icon, error, placeholder }: any) {
   const [input, setInput] = useState(value);
   const [open, setOpen] = useState(false);
@@ -91,14 +95,11 @@ function LocationAutocomplete({ label, value, onChange, icon: Icon, error, place
   const inputRef = useRef<HTMLInputElement>(null);
 
   const allItems = getAllSearchableItems();
-   const normalizedInput = input.trim();
-   const filtered = normalizedInput
+  const normalizedInput = input.trim();
+  const filtered = normalizedInput
     ? allItems.filter((item) => {
-      // Match by main name
       if (item.name.includes(normalizedInput)) return true;
-      // Match by aliases
       if (item.aliases?.some(alias => alias.includes(normalizedInput))) return true;
-      // Match by IATA code (for cities)
       if (item.iata && item.iata.toLowerCase() === normalizedInput.toLowerCase()) return true;
       return false;
     })
@@ -141,9 +142,9 @@ function LocationAutocomplete({ label, value, onChange, icon: Icon, error, place
 
   return (
     <div ref={ref} className="relative">
-      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">{label}</label>
+      <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">{label}</label>
       <div className="relative">
-        <Icon className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ocean pointer-events-none" />
+        <Icon className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--color-primary-500)] pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -157,15 +158,15 @@ function LocationAutocomplete({ label, value, onChange, icon: Icon, error, place
           }}
           onFocus={() => input.trim() && setOpen(true)}
           onKeyDown={handleKeyDown}
-          className={`w-full pr-10 pl-10 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 rounded-2xl text-gray-800 dark:text-white font-medium placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-ocean focus:ring-4 focus:ring-ocean/10 transition-all outline-none hover:border-gray-300 dark:hover:border-gray-500 ${
-            error ? "border-red-400 dark:border-red-500" : "border-gray-200 dark:border-gray-600"
+          className={`w-full pr-10 pl-10 py-3.5 bg-[var(--bg-secondary)] border-2 rounded-2xl text-[var(--text-primary)] font-medium placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary-400)] focus:ring-4 focus:ring-[var(--color-primary-500)]/10 transition-all outline-none hover:border-[var(--border-medium)] ${
+            error ? "border-[var(--color-danger)]" : "border-[var(--border-medium)]"
           }`}
         />
         {input && (
           <button
             type="button"
             onClick={() => { setInput(""); onChange(""); inputRef.current?.focus(); }}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -177,29 +178,29 @@ function LocationAutocomplete({ label, value, onChange, icon: Icon, error, place
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl shadow-xl max-h-72 overflow-y-auto"
+            className="absolute z-50 w-full mt-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl shadow-card max-h-72 overflow-y-auto"
           >
             {filtered.slice(0, 10).map((item, index) => (
               <button
                 key={`${item.name}-${index}`}
                 type="button"
                 onClick={() => handleSelect(item)}
-                className={`w-full text-right px-4 py-3 hover:bg-ocean/10 dark:hover:bg-ocean/20 transition-colors flex items-center gap-3 ${
-                  index === highlighted ? "bg-ocean/10 text-ocean" : "text-gray-700 dark:text-gray-300"
+                className={`w-full text-right px-4 py-3 hover:bg-[var(--color-primary-500)]/10 transition-colors flex items-center gap-3 ${
+                  index === highlighted ? "bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)]" : "text-[var(--text-secondary)]"
                 }`}
               >
                 {item.type === "country" ? (
-                  <MapPin className="w-4 h-4 text-ocean shrink-0" />
+                  <MapPin className="w-4 h-4 text-[var(--color-primary-500)] shrink-0" />
                 ) : (
-                  <Plane className="w-4 h-4 text-sky shrink-0" />
+                  <Plane className="w-4 h-4 text-[var(--color-primary-300)] shrink-0" />
                 )}
                 <div className="flex-1">
                   <span className="font-bold">{item.name}</span>
                   {item.type === "country" && (
-                    <span className="text-xs text-gray-500 mr-2">بلد</span>
+                    <span className="text-xs text-[var(--text-muted)] mr-2">بلد</span>
                   )}
                   {item.type === "city" && item.iata && (
-                    <span className="text-xs text-gray-500 mr-2">{item.iata}</span>
+                    <span className="text-xs text-[var(--text-muted)] mr-2">{item.iata}</span>
                   )}
                 </div>
               </button>
@@ -207,12 +208,14 @@ function LocationAutocomplete({ label, value, onChange, icon: Icon, error, place
           </motion.div>
         )}
       </AnimatePresence>
-      {error && <p className="text-red-500 text-xs mt-1.5 font-medium">{error}</p>}
+      {error && <p className="text-[var(--color-danger)] text-xs mt-1.5 font-medium">{error}</p>}
     </div>
   );
 }
 
+// ─────────────────────────────────────────
 // Custom Date Picker
+// ─────────────────────────────────────────
 function CustomDatePicker({ label, value, onChange, icon: Icon, error, min }: any) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -276,19 +279,19 @@ function CustomDatePicker({ label, value, onChange, icon: Icon, error, min }: an
 
   return (
     <div ref={ref} className="relative">
-      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">{label}</label>
+      <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">{label}</label>
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={`w-full flex items-center justify-between px-4 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 rounded-2xl text-gray-800 dark:text-white font-medium transition-all outline-none hover:border-gray-300 dark:hover:border-gray-500 ${
-          error ? "border-red-400 dark:border-red-500" : "border-gray-200 dark:border-gray-600"
+        className={`w-full flex items-center justify-between px-4 py-3.5 bg-[var(--bg-secondary)] border-2 rounded-2xl text-[var(--text-primary)] font-medium transition-all outline-none hover:border-[var(--border-medium)] ${
+          error ? "border-[var(--color-danger)]" : "border-[var(--border-medium)]"
         }`}
       >
         <span className="flex items-center gap-2">
-          <Icon className="w-5 h-5 text-ocean" />
+          <Icon className="w-5 h-5 text-[var(--color-primary-500)]" />
           {value ? new Date(value).toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric" }) : "اختر التاريخ"}
         </span>
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-4 h-4 text-[var(--text-muted)] transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       <AnimatePresence>
         {open && (
@@ -296,7 +299,7 @@ function CustomDatePicker({ label, value, onChange, icon: Icon, error, min }: an
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl shadow-xl p-4"
+            className="absolute z-50 w-full mt-2 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl shadow-card-lg p-4"
           >
             <div className="flex items-center justify-between mb-4">
               <button
@@ -305,25 +308,25 @@ function CustomDatePicker({ label, value, onChange, icon: Icon, error, min }: an
                   if (viewMonth === 0) { setViewMonth(11); setViewYear(viewYear - 1); }
                   else setViewMonth(viewMonth - 1);
                 }}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                className="p-1 hover:bg-[var(--bg-secondary)] rounded-lg text-[var(--text-secondary)]"
               >
                 <ChevronDown className="w-5 h-5 rotate-90" />
               </button>
-              <span className="font-bold text-lg">{monthNames[viewMonth]} {viewYear}</span>
+              <span className="font-bold text-lg text-[var(--text-heading)]">{monthNames[viewMonth]} {viewYear}</span>
               <button
                 type="button"
                 onClick={() => {
                   if (viewMonth === 11) { setViewMonth(0); setViewYear(viewYear + 1); }
                   else setViewMonth(viewMonth + 1);
                 }}
-                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                className="p-1 hover:bg-[var(--bg-secondary)] rounded-lg text-[var(--text-secondary)]"
               >
                 <ChevronDown className="w-5 h-5 -rotate-90" />
               </button>
             </div>
             <div className="grid grid-cols-7 gap-1 mb-2">
               {dayNames.map((d) => (
-                <div key={d} className="text-center text-xs font-bold text-gray-500 py-1">{d}</div>
+                <div key={d} className="text-center text-xs font-bold text-[var(--text-muted)] py-1">{d}</div>
               ))}
             </div>
             <div className="grid grid-cols-7 gap-1">
@@ -338,10 +341,10 @@ function CustomDatePicker({ label, value, onChange, icon: Icon, error, min }: an
                     onClick={() => handleSelect(day)}
                     className={`aspect-square rounded-xl text-sm font-medium transition-all ${
                       isSelected(day)
-                        ? "bg-ocean text-white shadow-lg shadow-ocean/30"
+                        ? "bg-[var(--color-primary-500)] text-white shadow-lg shadow-[var(--color-primary-500)]/30"
                         : isDisabled(day)
-                        ? "text-gray-300 cursor-not-allowed"
-                        : "hover:bg-ocean/10 text-gray-700 dark:text-gray-300"
+                        ? "text-[var(--text-muted)] cursor-not-allowed"
+                        : "hover:bg-[var(--color-primary-500)]/10 text-[var(--text-secondary)]"
                     }`}
                   >
                     {day}
@@ -352,11 +355,14 @@ function CustomDatePicker({ label, value, onChange, icon: Icon, error, min }: an
           </motion.div>
         )}
       </AnimatePresence>
-      {error && <p className="text-red-500 text-xs mt-1.5 font-medium">{error}</p>}
+      {error && <p className="text-[var(--color-danger)] text-xs mt-1.5 font-medium">{error}</p>}
     </div>
   );
 }
 
+// ─────────────────────────────────────────
+// Main FlightSearch Component
+// ─────────────────────────────────────────
 export default function FlightSearch() {
   const router = useRouter();
   const { tripData, setTripData } = useTripStore();
@@ -381,7 +387,6 @@ export default function FlightSearch() {
     let fromIata = getIataCode(tripData.from);
     let toIata = getIataCode(tripData.to);
 
-    // If country selected, use first city
     if (!fromIata || fromIata === tripData.from) {
       const countryIata = getCountryIata(tripData.from);
       if (countryIata) fromIata = countryIata;
@@ -426,7 +431,7 @@ export default function FlightSearch() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 md:p-8 border border-white/50 dark:border-gray-700/50"
+        className="search-card p-6 md:p-8"
       >
         {/* Row 1: From - Swap - To */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -452,7 +457,7 @@ export default function FlightSearch() {
                 const temp = tripData.from;
                 setTripData({ from: tripData.to, to: temp });
               }}
-              className="w-10 h-10 rounded-xl bg-ocean/10 dark:bg-ocean/20 flex items-center justify-center text-ocean hover:bg-ocean hover:text-white transition-all shadow-sm"
+              className="w-10 h-10 rounded-xl bg-[var(--color-primary-500)]/10 flex items-center justify-center text-[var(--color-primary-500)] hover:bg-[var(--color-primary-500)] hover:text-white transition-all shadow-sm"
             >
               <ArrowRightLeft className="w-4 h-4" />
             </motion.button>
@@ -520,7 +525,7 @@ export default function FlightSearch() {
             onChange={(val: string) => setTripData({ currency: val })}
           />
           <div>
-            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">الميزانية المتوقعة للسفرة كاملة </label>
+            <label className="block text-sm font-bold text-[var(--text-secondary)] mb-2">الميزانية المتوقعة للسفرة كاملة</label>
             <div className="relative">
               <input
                 type="number"
@@ -530,15 +535,15 @@ export default function FlightSearch() {
                   setTripData({ budget: parseInt(e.target.value) || 0 });
                   setErrors((prev) => ({ ...prev, budget: "" }));
                 }}
-                className={`w-full pr-4 pl-16 py-3.5 bg-gray-50 dark:bg-gray-700/50 border-2 rounded-2xl text-gray-800 dark:text-white font-medium placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-ocean focus:ring-4 focus:ring-ocean/10 transition-all outline-none hover:border-gray-300 dark:hover:border-gray-500 ${
-                  errors.budget ? "border-red-400 dark:border-red-500" : "border-gray-200 dark:border-gray-600"
+                className={`w-full pr-4 pl-16 py-3.5 bg-[var(--bg-secondary)] border-2 rounded-2xl text-[var(--text-primary)] font-medium placeholder:text-[var(--text-muted)] focus:border-[var(--color-primary-400)] focus:ring-4 focus:ring-[var(--color-primary-500)]/10 transition-all outline-none hover:border-[var(--border-medium)] ${
+                  errors.budget ? "border-[var(--color-danger)]" : "border-[var(--border-medium)]"
                 }`}
               />
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm font-bold">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-sm font-bold">
                 {tripData.currency}
               </span>
             </div>
-            {errors.budget && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors.budget}</p>}
+            {errors.budget && <p className="text-[var(--color-danger)] text-xs mt-1.5 font-medium">{errors.budget}</p>}
           </div>
         </div>
 
@@ -547,7 +552,7 @@ export default function FlightSearch() {
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleSearch}
-          className="w-full mt-8 py-4 bg-ocean text-white rounded-2xl font-bold text-lg shadow-lg shadow-ocean/30 hover:shadow-xl hover:shadow-ocean/40 transition-all flex items-center justify-center gap-3 relative overflow-hidden group"
+          className="w-full mt-8 py-4 bg-[var(--color-primary-500)] text-white rounded-2xl font-bold text-lg shadow-lg shadow-[var(--color-primary-500)]/30 hover:shadow-xl hover:shadow-[var(--color-primary-500)]/40 transition-all flex items-center justify-center gap-3 relative overflow-hidden group"
         >
           <span className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           <Search className="w-5 h-5 relative z-10" />
