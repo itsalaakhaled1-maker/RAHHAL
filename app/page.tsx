@@ -1,12 +1,32 @@
 "use client";
 
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { Plane, MapPin, Shield, Sparkles } from "lucide-react";
 import FlightSearch from "@/components/flights/FlightSearch";
 
+const TravelCardIntro = dynamic(() => import("@/components/intro/TravelCardIntro"), {
+  ssr: false,
+});
+
 export default function Home() {
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !localStorage.getItem("rahhal-intro-seen");
+    }
+    return false;
+  });
+
+  const handleIntroClose = () => {
+    localStorage.setItem("rahhal-intro-seen", "true");
+    setShowIntro(false);
+  };
+
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
+      {showIntro && <TravelCardIntro onClose={handleIntroClose} />}
+
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 hero-section">
         <div className="max-w-7xl mx-auto">
