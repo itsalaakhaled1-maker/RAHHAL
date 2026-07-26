@@ -49,36 +49,35 @@ export default function DailyPlan() {
         throw new Error(data.error || `HTTP ${res.status}`);
       }
 
-      // تحقق من missingDays من الـ API
-      if (data.missingDays && data.missingDays.length > 0) {
-        console.warn("[DailyPlan] API reported missing days:", data.missingDays);
+      // ✅ تحقق من truncated
+      if (data.truncated) {
+        console.warn("[DailyPlan] API response was truncated! Some days may be missing.");
       }
 
       let parsedPlans: DayPlan[];
 
-      if (data.days && Array.isArray(data.days) && data.days.length > 0) {
-        // لو الـ API رجع JSON structured مباشرة
-        parsedPlans = data.days;
-      } else if (data.plan && typeof data.plan === "string") {
-        // parse النص
+      if (data.plan && typeof data.plan === "string") {
         parsedPlans = parseTextPlan(data.plan, days, tripData.to, tripData.currency);
       } else {
         throw new Error("No plan data received");
       }
 
-      // تأكد إن عدد الأيام صحيح
+      // ✅ تحقق من عدد الأيام
       if (parsedPlans.length !== days) {
         console.warn(`[DailyPlan] Expected ${days} days, got ${parsedPlans.length}`);
       }
+
+      // ✅ تحقق من التنوع
+      const allActivityNames = parsedPlans.flatMap(p => p.activities.map(a => a.name));
+      const uniqueActivities = new Set(allActivityNames);
+      console.log(`[DailyPlan] Total activities: ${allActivityNames.length}, Unique: ${uniqueActivities.size}`);
 
       setPlans(parsedPlans);
       setDailyPlans(parsedPlans);
 
     } catch (err: any) {
       setError(err.message || "Failed to generate plan");
-      const fallback = generateFallbackPlan(days, tripData.to, tripData.currency);
-      setPlans(fallback);
-      setDailyPlans(fallback);
+      // ❌ لا تستخدم fallback تلقائياً — اعرض الخطأ للمستخدم
     } finally {
       setLoading(false);
     }
@@ -87,36 +86,27 @@ export default function DailyPlan() {
   const parseTextPlan = (text: string, totalDays: number, city: string, currency: string): DayPlan[] => {
     const plans: DayPlan[] = [];
     
-    // regex أقوى يتعامل مع تنسيقات مختلفة
+    // regex أقوى
     const dayRegex = /(?:^|\n\s*\n)\s*اليوم\s+(\d+)\s*[:：]\s*([^\n]+)/gim;
     const dayMatches = [...text.matchAll(dayRegex)];
     
     console.log(`[DailyPlan] Found ${dayMatches.length} days in response`);
 
-    // لو مافي أي يوم، استخدم fallback
     if (dayMatches.length === 0) {
-      console.warn("[DailyPlan] No day matches found, using generic fallback");
+      console.warn("[DailyPlan] No day matches found");
       return createGenericPlan(totalDays, city, currency);
     }
 
-    // تأكد إن كل يوم موجود مرة واحدة
     const seenDays = new Set<number>();
+    const seenActivities = new Set<string>(); // ✅ تتبع الأنشطة المكررة
     
     for (const match of dayMatches) {
       const dayNum = parseInt(match[1]);
       
-      // تخطى الأيام المكررة
-      if (seenDays.has(dayNum)) {
-        console.warn(`[DailyPlan] Skipping duplicate day ${dayNum}`);
-        continue;
-      }
+      if (seenDays.has(dayNum)) continue;
       seenDays.add(dayNum);
 
-      // تخطى الأيام خارج النطاق
-      if (dayNum < 1 || dayNum > totalDays) {
-        console.warn(`[DailyPlan] Skipping out-of-range day ${dayNum}`);
-        continue;
-      }
+      if (dayNum < 1 || dayNum > totalDays) continue;
 
       const startIdx = match.index || 0;
       const endIdx = dayMatches.find(m => parseInt(m[1]) === dayNum + 1)?.index || text.length;
@@ -131,18 +121,26 @@ export default function DailyPlan() {
       for (const line of lines.slice(1)) {
         const activitiesFromLine = parseActivityLine(line, currency, activityId, dayNum - 1, city);
         if (activitiesFromLine) {
-          activities.push(...activitiesFromLine);
+          for (const act of activitiesFromLine) {
+            // ✅ رفض الأنشطة المكررة بين الأيام (ما عدا الوجبات)
+            const activityKey = `${act.name}|${act.place}`;
+            const isMeal = act.name.includes("عشاء") || act.name.includes("غداء") || act.name.includes("فطور") || act.name.includes("إفطار");
+            if (seenActivities.has(activityKey) && !isMeal) {
+              console.warn(`[DailyPlan] Skipping duplicate activity: ${act.name} at ${act.place}`);
+              continue;
+            }
+            if (!isMeal) seenActivities.add(activityKey);
+            activities.push(act);
+          }
           activityId += activitiesFromLine.length;
         }
       }
 
-      // لو يوم فاضي، أضف fallback activities
-      if (activities.length === 0) {
-        activities.push(
-          { id: `act-${dayNum}-0`, time: "10:00", name: `استكشاف ${city}`, place: `وسط ${city}`, type: "معالم", duration: "2 س", cost: 0, currency, icon: "fa-mosque" },
-          { id: `act-${dayNum}-1`, time: "14:00", name: "غداء في مطعم محلي", place: city, type: "طعام", duration: "1.5 س", cost: 0, currency, icon: "fa-utensils" },
-          { id: `act-${dayNum}-2`, time: "19:00", name: "عشاء", place: city, type: "طعام", duration: "1.5 س", cost: 0, currency, icon: "fa-utensils" }
-        );
+      // ✅ لو يوم فاضي أو فيه أنشطة قليلة، أضف fallback متنوع
+      if (activities.length < 2) {
+        console.warn(`[DailyPlan] Day ${dayNum} has too few activities, adding varied fallback`);
+        const fallbackActs = generateVariedFallback(dayNum, city, currency, seenActivities);
+        activities.push(...fallbackActs);
       }
 
       const date = new Date(tripData.departDate);
@@ -157,10 +155,10 @@ export default function DailyPlan() {
       });
     }
 
-    // أضف أيام ناقصة
+    // أضف أيام ناقصة مع fallback متنوع
     for (let i = 1; i <= totalDays; i++) {
       if (!seenDays.has(i)) {
-        console.warn(`[DailyPlan] Adding missing day ${i}`);
+        console.warn(`[DailyPlan] Adding missing day ${i} with varied fallback`);
         const date = new Date(tripData.departDate);
         date.setDate(date.getDate() + (i - 1));
         
@@ -169,20 +167,66 @@ export default function DailyPlan() {
           date: date.toISOString().split("T")[0],
           title: `يوم ${i} في ${city}`,
           weather: "☀️ 28°C مشمس",
-          activities: [
-            { id: `act-${i}-0`, time: "10:00", name: `استكشاف ${city}`, place: `وسط ${city}`, type: "معالم", duration: "2 س", cost: 0, currency, icon: "fa-mosque" },
-            { id: `act-${i}-1`, time: "14:00", name: "غداء في مطعم محلي", place: city, type: "طعام", duration: "1.5 س", cost: 0, currency, icon: "fa-utensils" },
-            { id: `act-${i}-2`, time: "19:00", name: "عشاء", place: city, type: "طعام", duration: "1.5 س", cost: 0, currency, icon: "fa-utensils" },
-          ],
+          activities: generateVariedFallback(i, city, currency, seenActivities),
         });
       }
     }
 
-    // رتب حسب رقم اليوم
     plans.sort((a, b) => a.day - b.day);
-
     return plans;
   };
+
+  // ✅ أنشطة fallback متنوعة حسب رقم اليوم
+  function generateVariedFallback(dayNum: number, city: string, currency: string, seenActivities: Set<string>): Activity[] {
+    const variedActivities: Activity[] = [];
+    
+    const morningActivities = [
+      { name: `جولة في حديقة ${city} الوطنية`, place: `حديقة ${city} الوطنية` },
+      { name: `زيارة المتحف الوطني`, place: `المتحف الوطني في ${city}` },
+      { name: `جولة في سوق ${city} التقليدي`, place: `سوق ${city} القديم` },
+      { name: `زيارة برج ${city} الشهير`, place: `برج ${city}` },
+      { name: `جولة في حديقة الحيوان`, place: `حديقة حيوان ${city}` },
+      { name: `زيارة المسجد الكبير`, place: `المسجد الكبير في ${city}` },
+      { name: `جولة في شارع التسوق الرئيسي`, place: `شارع التسوق الرئيسي` },
+      { name: `زيارة قصر الثقافة`, place: `قصر الثقافة في ${city}` },
+      { name: `جولة في الحديقة المائية`, place: `الحديقة المائية` },
+      { name: `زيارة المعرض العلمي`, place: `المعرض العلمي في ${city}` },
+    ];
+    
+    const afternoonActivities = [
+      { name: `زيارة معرض الفنون`, place: `معرض الفنون في ${city}` },
+      { name: `جولة في الحديقة النباتية`, place: `الحديقة النباتية` },
+      { name: `زيارة قلعة ${city} التاريخية`, place: `قلعة ${city}` },
+      { name: `جولة في مركز التسوق`, place: `مركز التسوق الرئيسي` },
+      { name: `زيارة حوض الأسماك`, place: `حوض أسماك ${city}` },
+      { name: `جولة في حديقة الملاهي`, place: `حديقة الملاهي` },
+      { name: `زيارة المكتبة الوطنية`, place: `المكتبة الوطنية` },
+      { name: `جولة في المنتزه البحري`, place: `المنتزه البحري` },
+      { name: `زيارة مركز الفنون`, place: `مركز الفنون في ${city}` },
+      { name: `جولة في الغابة المحمية`, place: `الغابة المحمية` },
+    ];
+    
+    const eveningActivities = [
+      { name: `عشاء في مطعم ${city} الشهير`, place: `مطعم ${city} الشهير` },
+      { name: `عشاء في سوق الليل`, place: `سوق الليل في ${city}` },
+      { name: `عشاء في المطعم العائم`, place: `المطعم العائم` },
+      { name: `عشاء في المطعم الدوار`, place: `المطعم الدوار` },
+      { name: `عشاء في مطعم الشاطئ`, place: `مطعم الشاطئ` },
+      { name: `عشاء في المطعم التقليدي`, place: `المطعم التقليدي` },
+    ];
+    
+    const morning = morningActivities[dayNum % morningActivities.length];
+    const afternoon = afternoonActivities[dayNum % afternoonActivities.length];
+    const evening = eveningActivities[dayNum % eveningActivities.length];
+    
+    variedActivities.push(
+      { id: `act-${dayNum}-0`, time: "10:00", name: morning.name, place: morning.place, type: "معالم", duration: "2 س", cost: 0, currency, icon: "fa-mosque" },
+      { id: `act-${dayNum}-1`, time: "14:00", name: afternoon.name, place: afternoon.place, type: "معالم", duration: "2 س", cost: 0, currency, icon: "fa-mosque" },
+      { id: `act-${dayNum}-2`, time: "19:00", name: evening.name, place: evening.place, type: "طعام", duration: "1.5 س", cost: 0, currency, icon: "fa-utensils" },
+    );
+    
+    return variedActivities;
+  }
 
   const parseActivityLine = (
     line: string,
@@ -316,11 +360,7 @@ export default function DailyPlan() {
         date: date.toISOString().split("T")[0],
         title: `يوم ${i + 1} في ${city}`,
         weather: "☀️ 28°C مشمس",
-        activities: [
-          { id: `act-${i}-0`, time: "10:00", name: `استكشاف ${city}`, place: `وسط ${city}`, type: "معالم", duration: "2 س", cost: 0, currency, icon: "fa-mosque" },
-          { id: `act-${i}-1`, time: "14:00", name: "غداء في مطعم محلي", place: city, type: "طعام", duration: "1.5 س", cost: 0, currency, icon: "fa-utensils" },
-          { id: `act-${i}-2`, time: "19:00", name: "عشاء", place: city, type: "طعام", duration: "1.5 س", cost: 0, currency, icon: "fa-utensils" },
-        ],
+        activities: generateVariedFallback(i + 1, city, currency, new Set()),
       };
     });
   };
@@ -401,7 +441,7 @@ export default function DailyPlan() {
       {error && (
         <div className="mb-6 p-4 bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/20 rounded-2xl flex items-center gap-3 text-[var(--color-danger)]">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
-          <span className="text-sm">{error} — تم استخدام خطة افتراضية</span>
+          <span className="text-sm">{error}</span>
         </div>
       )}
 
@@ -570,18 +610,4 @@ function calculateDays(start: string, end: string): number {
   const s = new Date(start);
   const e = new Date(end);
   return Math.max(1, Math.ceil((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24)));
-}
-
-function generateFallbackPlan(days: number, city: string, currency: string): DayPlan[] {
-  return Array.from({ length: days }, (_, i) => ({
-    day: i + 1,
-    date: new Date(Date.now() + i * 86400000).toISOString().split("T")[0],
-    title: `يوم ${i + 1} في ${city}`,
-    weather: "☀️ 28°C مشمس",
-    activities: [
-      { id: `act-${i}-0`, time: "10:00", name: `استكشاف ${city}`, place: `وسط ${city}`, type: "معالم", duration: "2 س", cost: 0, currency, icon: "fa-mosque" },
-      { id: `act-${i}-1`, time: "14:00", name: "غداء في مطعم محلي", place: city, type: "طعام", duration: "1.5 س", cost: 0, currency, icon: "fa-utensils" },
-      { id: `act-${i}-2`, time: "19:00", name: "عشاء", place: city, type: "طعام", duration: "1.5 س", cost: 0, currency, icon: "fa-utensils" },
-    ],
-  }));
 }

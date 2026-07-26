@@ -1,64 +1,67 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-
-// ✅ النموذج المؤكد شغال
 const MODEL_NAME = "gemini-2.5-flash";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log("[AI Plan API] Request body:", body);
-
     const { city, days, budget, currency, travelers } = body;
 
     if (!city || !days || !budget) {
       return NextResponse.json(
-        { error: "Missing required fields: city, days, budget" },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
     if (!GEMINI_API_KEY) {
-      console.error("[AI Plan API] GEMINI_API_KEY is missing!");
       return NextResponse.json(
         { error: "GEMINI_API_KEY not configured" },
         { status: 500 }
       );
     }
 
+    // ✅ prompt أقوى يمنع التكرار ويحث على التنوع
     const prompt = `أنت مخطط رحلات سياحية محترف ومختص. أنشئ خطة يومية مفصلة ومتوازنة لرحلة إلى ${city} لمدة ${days} أيام.
 
 الميزانية المتاحة: ${budget} ${currency || "USD"}.
 عدد المسافرين: ${travelers || 1} ${travelers && travelers > 1 ? "أشخاص" : "شخص"}.
 
-⚠️ قواعد صارمة:
+⚠️ قواعد صارمة جداً:
 1. يجب أن تُنتج خطة لـ ${days} يوماً بالضبط — لا أكثر ولا أقل.
-2. كل يوم يجب أن يبدأ بسطر: "اليوم [رقم]: [عنوان اليوم]"
+2. كل يوم يجب أن يبدأ بسطر: "اليوم [رقم]: [عنوان اليوم الفريد]"
 3. يجب فصل كل يوم عن اليوم التالي بسطر فارغ.
-4. لا تكرر أنشطة بين الأيام — كل يوم يجب أن يكون فريداً.
-5. اقترح أماكن حقيقية ومشهورة في ${city}.
+4. ⚠️⚠️⚠️ لا تكرر أي نشاط بين الأيام — كل يوم يجب أن يكون مختلف تماماً عن اليوم السابق.
+5. اقترح أماكن حقيقية ومشهورة في ${city} مع أسماء محددة.
 6. حدد أوقات محددة لكل نشاط (HH:MM).
+7. ⚠️⚠️⚠️ اليوم 1 يختلف عن اليوم 2 يختلف عن اليوم 3... وهكذا حتى اليوم ${days}.
+8. لا تستخدم "استكشاف ${city}" كاسم نشاط — اذكر اسم المكان الحقيقي.
+9. لا تستخدم "مطعم محلي" كاسم مطعم — اذكر اسم المطعم الحقيقي.
 
 تنسيق كل نشاط:
-- HH:MM | اسم النشاط | المكان الدقيق في ${city}
+- HH:MM | اسم النشاط المحدد | المكان الدقيق في ${city}
 
-تنسيق كل يوم:
-اليوم 1: [عنوان اليوم]
-- 08:00 | [نشاط] | [المكان]
-- 10:00 | [نشاط] | [المكان]
-- 12:00 | الغداء: [اسم المطعم] | [المكان]
-- 14:00 | [نشاط] | [المكان]
-- 19:00 | العشاء: [اسم المطعم] | [المكان]
+مثال على تنوع الأيام:
+اليوم 1: وصول واستكشاف أولي
+- 08:00 | الوصول إلى مطار ${city} | المطار الدولي
+- 10:00 | زيارة برج التوائم | وسط المدينة
+- 14:00 | غداء في مطعم Madam Kwan's | شارع بوكيت بينتانج
+- 19:00 | عشاء في Jalan Alor | سوق الشارع الليلي
 
-اليوم 2: [عنوان اليوم]
-... وهكذا حتى اليوم ${days}
+اليوم 2: المعالم التاريخية
+- 09:00 | زيارة مسجد السلطان صلاح الدين | جالان بيردان
+- 11:00 | جولة في كهوف باتو | باتو كيفز
+- 14:00 | غداء في Restoran Rebung Chef Ismail | وسط المدينة
+- 19:00 | عشاء في Atmosphere 360 | برج كوالالمبور
+
+... وهكذا حتى اليوم ${days} — كل يوم مختلف تماماً.
 
 أجب باللغة العربية الفصحى فقط.`;
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
 
-    console.log("[AI Plan API] Using model:", MODEL_NAME);
+    console.log("[AI Plan API] Using model:", MODEL_NAME, "for", days, "days");
 
     const response = await fetch(url, {
       method: "POST",
@@ -66,8 +69,9 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          maxOutputTokens: Math.min(64000, days * 400), // ✅ 65K tokens max
-          temperature: 0.5,
+          // ✅ tokens أكثر بكثير — 64000 كحد أقصى للـ flash
+          maxOutputTokens: 64000,
+          temperature: 0.7, // ✅ زيادة التنوع
           topP: 0.95,
         },
       }),
@@ -93,6 +97,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ✅ تحقق من finishReason
+    const finishReason = data.candidates?.[0]?.finishReason;
+    if (finishReason === "MAX_TOKENS") {
+      console.warn("[AI Plan API] Response truncated due to MAX_TOKENS!");
+    }
+
     const planText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!planText) {
@@ -103,24 +113,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate days
-    const dayMatches = [...planText.matchAll(/اليوم\s+(\d+)/g)];
+    // ✅ تحقق من عدد الأيام في الـ response
+    const dayMatches = [...planText.matchAll(/اليوم\s+(\d+)\s*[:：]/g)];
     const foundDays = new Set(dayMatches.map(m => parseInt(m[1])));
     const expectedDays = new Set(Array.from({ length: days }, (_, i) => i + 1));
 
     const missingDays = [...expectedDays].filter(d => !foundDays.has(d));
     const duplicateDays = [...foundDays].filter((d, i, arr) => arr.indexOf(d) !== i);
 
-    if (missingDays.length > 0) {
-      console.warn("[AI Plan API] Missing days:", missingDays);
-    }
+    console.log("[AI Plan API] Found days:", [...foundDays].sort((a, b) => a - b));
+    console.log("[AI Plan API] Missing days:", missingDays);
+    console.log("[AI Plan API] Duplicate days:", duplicateDays);
+    console.log("[AI Plan API] Finish reason:", finishReason);
 
     return NextResponse.json({
       plan: planText,
       source: MODEL_NAME,
       days: days,
+      foundDaysCount: foundDays.size,
       missingDays: missingDays.length > 0 ? missingDays : undefined,
       duplicateDays: duplicateDays.length > 0 ? duplicateDays : undefined,
+      truncated: finishReason === "MAX_TOKENS",
     });
 
   } catch (error: any) {
