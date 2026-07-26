@@ -66,6 +66,7 @@ export default function DailyPlan() {
   }, [tripData, days, setDailyPlans]);
 
   const parseTextPlan = (text: string, totalDays: number, city: string, currency: string): DayPlan[] => {
+    // ... (نفس الكود بدون تغيير)
     const plans: DayPlan[] = [];
     const dayRegex = /(?:اليوم|Day)\s*[#]?(\d+)[:\s-]+/gi;
     const dayMatches = [...text.matchAll(dayRegex)];
@@ -116,7 +117,6 @@ export default function DailyPlan() {
     dayIndex: number,
     city: string
   ): Activity[] | null => {
-    // Skip headers, intros, and cost summaries
     const skipPatterns = [
       /^[#*]+/,
       /أهلاً بك/i,
@@ -130,19 +130,15 @@ export default function DailyPlan() {
     let trimmed = line.trim();
     if (!trimmed || trimmed.length < 3) return null;
 
-    // Strip ALL markdown asterisks
     trimmed = trimmed.replace(/\*+/g, "").trim();
     if (!trimmed) return null;
 
-    // Must start with a time OR bullet OR be a valid activity line
     const hasTime = /^\d{1,2}[:]\d{2}/.test(trimmed);
     const hasBullet = /^[-•]\s*/.test(trimmed);
     if (!hasTime && !hasBullet) return null;
 
-    // Remove bullet prefix if present
     trimmed = trimmed.replace(/^[-•]\s*/, "").trim();
 
-    // FIX #2: Split combined activities (e.g. "Tour. Lunch suggestion: ...")
     const splitPatterns = [
       /الغداء المقترح\s*[:：]\s*/i,
       /العشاء المقترح\s*[:：]\s*/i,
@@ -186,7 +182,6 @@ export default function DailyPlan() {
     const timeMatch = trimmed.match(/^(\d{1,2}[:]\d{2})\s*/);
     const time = timeMatch ? timeMatch[1] : getDefaultTime(id);
 
-    // Remove time from text
     trimmed = trimmed.replace(/^(\d{1,2}[:]\d{2})\s*/, "").trim();
 
     let type = "معالم";
@@ -210,7 +205,6 @@ export default function DailyPlan() {
       place = inMatch[2].trim();
     }
 
-    // Clean up common prefixes
     name = name
       .replace(/^جولة\s*[:：]\s*/i, "جولة: ")
       .replace(/^زيارة\s*[:：]\s*/i, "زيارة ")
@@ -291,9 +285,9 @@ export default function DailyPlan() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-ocean animate-spin mb-4" />
-        <p className="text-gray-500 font-medium">جاري إنشاء خطتك اليومية بالذكاء الاصطناعي...</p>
-        <div className="flex items-center gap-2 mt-4 text-sm text-gray-400">
+        <Loader2 className="w-12 h-12 text-[var(--color-primary-500)] animate-spin mb-4" />
+        <p className="text-[var(--text-muted)] font-medium">جاري إنشاء خطتك اليومية بالذكاء الاصطناعي...</p>
+        <div className="flex items-center gap-2 mt-4 text-sm text-[var(--text-muted)]">
           <Sparkles className="w-4 h-4" />
           <span>Gemini يخطط لرحلتك</span>
         </div>
@@ -305,20 +299,20 @@ export default function DailyPlan() {
     <div className="max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">الخطة اليومية</h2>
-          <p className="text-gray-500 mt-1">{tripData.to} | {days} أيام</p>
+          <h2 className="text-2xl font-bold text-[var(--text-heading)]">الخطة اليومية</h2>
+          <p className="text-[var(--text-muted)] mt-1">{tripData.to} | {days} أيام</p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={generatePlan}
-            className="flex items-center gap-2 px-4 py-2 bg-ocean/10 text-ocean rounded-xl font-bold hover:bg-ocean hover:text-white transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)] rounded-xl font-bold hover:bg-[var(--color-primary-500)] hover:text-white transition-all"
           >
             <Sparkles className="w-4 h-4" />
             إعادة التخطيط
           </button>
           <button
             onClick={() => setCurrentStep(3)}
-            className="flex items-center gap-2 text-ocean font-bold hover:underline"
+            className="flex items-center gap-2 text-[var(--color-primary-500)] font-bold hover:underline"
           >
             <ChevronLeft className="w-4 h-4" />
             العودة
@@ -327,7 +321,7 @@ export default function DailyPlan() {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-600">
+        <div className="mb-6 p-4 bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/20 rounded-2xl flex items-center gap-3 text-[var(--color-danger)]">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span className="text-sm">{error} — تم استخدام خطة افتراضية</span>
         </div>
@@ -340,8 +334,8 @@ export default function DailyPlan() {
             onClick={() => setActiveDay(index)}
             className={`flex-shrink-0 px-5 py-3 rounded-2xl font-bold text-sm transition-all ${
               activeDay === index
-                ? "bg-ocean text-white shadow-lg shadow-ocean/25"
-                : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100"
+                ? "bg-[var(--color-primary-500)] text-white shadow-lg shadow-[var(--color-primary-500)]/25"
+                : "bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] border border-[var(--border-subtle)]"
             }`}
           >
             <div className="flex flex-col items-center">
@@ -360,15 +354,15 @@ export default function DailyPlan() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <div className="bg-white rounded-2xl p-6 shadow-card border border-gray-100 mb-6">
+            <div className="search-card p-6 mb-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-800">{plans[activeDay].title}</h3>
-                  <p className="text-gray-500 mt-1">{formatDate(plans[activeDay].date)}</p>
+                  <h3 className="text-xl font-bold text-[var(--text-heading)]">{plans[activeDay].title}</h3>
+                  <p className="text-[var(--text-muted)] mt-1">{formatDate(plans[activeDay].date)}</p>
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-ocean/5 rounded-xl">
-                  <Sun className="w-5 h-5 text-warning" />
-                  <span className="font-bold text-gray-700">{plans[activeDay].weather}</span>
+                <div className="flex items-center gap-2 px-4 py-2 bg-[var(--color-primary-500)]/5 rounded-xl">
+                  <Sun className="w-5 h-5 text-[var(--color-secondary-500)]" />
+                  <span className="font-bold text-[var(--text-secondary)]">{plans[activeDay].weather}</span>
                 </div>
               </div>
             </div>
@@ -380,14 +374,14 @@ export default function DailyPlan() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="bg-white rounded-2xl p-5 shadow-card border border-gray-100 group hover:shadow-card-lg transition-all"
+                  className="search-card p-5 group hover:shadow-card-lg transition-all"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex flex-col items-center min-w-[80px]">
-                      <div className="w-12 h-12 rounded-xl bg-ocean/10 flex items-center justify-center text-ocean font-bold text-sm">
+                      <div className="w-12 h-12 rounded-xl bg-[var(--color-primary-500)]/10 flex items-center justify-center text-[var(--color-primary-500)] font-bold text-sm">
                         {activity.time}
                       </div>
-                      <div className="w-0.5 h-full bg-gray-100 mt-2" />
+                      <div className="w-0.5 h-full bg-[var(--border-subtle)] mt-2" />
                     </div>
 
                     <div className="flex-1">
@@ -399,35 +393,35 @@ export default function DailyPlan() {
                                 type="text"
                                 value={activity.name}
                                 onChange={(e) => updateActivity(activeDay, activity.id, "name", e.target.value)}
-                                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 outline-none focus:border-ocean"
+                                className="w-full px-4 py-2 bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-xl font-bold text-[var(--text-primary)] outline-none focus:border-[var(--color-primary-500)]"
                               />
                               <div className="flex gap-2">
                                 <input
                                   type="text"
                                   value={activity.place}
                                   onChange={(e) => updateActivity(activeDay, activity.id, "place", e.target.value)}
-                                  className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-ocean"
+                                  className="flex-1 px-4 py-2 bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-xl text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-primary-500)]"
                                   placeholder="المكان"
                                 />
                                 <input
                                   type="number"
                                   value={activity.cost}
                                   onChange={(e) => updateActivity(activeDay, activity.id, "cost", parseInt(e.target.value) || 0)}
-                                  className="w-24 px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-ocean"
+                                  className="w-24 px-4 py-2 bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-xl text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-primary-500)]"
                                   placeholder="التكلفة"
                                 />
                               </div>
                               <button
                                 onClick={() => setEditingActivity(null)}
-                                className="px-4 py-2 bg-ocean text-white rounded-xl text-sm font-bold"
+                                className="px-4 py-2 bg-[var(--color-primary-500)] text-white rounded-xl text-sm font-bold"
                               >
                                 حفظ
                               </button>
                             </div>
                           ) : (
                             <>
-                              <h4 className="font-bold text-gray-800 text-lg">{activity.name}</h4>
-                              <div className="flex items-center gap-3 mt-2 text-sm text-gray-500">
+                              <h4 className="font-bold text-[var(--text-primary)] text-lg">{activity.name}</h4>
+                              <div className="flex items-center gap-3 mt-2 text-sm text-[var(--text-muted)]">
                                 <span className="flex items-center gap-1">
                                   <MapPin className="w-4 h-4" />
                                   {activity.place}
@@ -437,7 +431,7 @@ export default function DailyPlan() {
                                   {activity.duration}
                                 </span>
                                 {activity.cost > 0 && (
-                                  <span className="text-ocean font-bold">
+                                  <span className="text-[var(--color-primary-500)] font-bold">
                                     {formatCurrency(activity.cost, activity.currency)}
                                   </span>
                                 )}
@@ -449,13 +443,13 @@ export default function DailyPlan() {
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => setEditingActivity(activity.id)}
-                            className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-ocean hover:text-white transition-all"
+                            className="w-8 h-8 rounded-lg bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--color-primary-500)] hover:text-white transition-all"
                           >
                             <GripVertical className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => removeActivity(activeDay, activity.id)}
-                            className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all"
+                            className="w-8 h-8 rounded-lg bg-[var(--color-danger)]/10 flex items-center justify-center text-[var(--color-danger)] hover:bg-[var(--color-danger)] hover:text-white transition-all"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -470,7 +464,7 @@ export default function DailyPlan() {
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 onClick={() => addActivity(activeDay)}
-                className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 font-bold hover:border-ocean hover:text-ocean transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 border-2 border-dashed border-[var(--border-medium)] rounded-2xl text-[var(--text-muted)] font-bold hover:border-[var(--color-primary-500)] hover:text-[var(--color-primary-500)] transition-all flex items-center justify-center gap-2"
               >
                 <Plus className="w-5 h-5" />
                 إضافة نشاط
@@ -484,7 +478,7 @@ export default function DailyPlan() {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setCurrentStep(5)}
-        className="w-full mt-8 py-4 gradient-ocean text-white rounded-2xl font-bold text-lg shadow-lg shadow-ocean/25 hover:shadow-xl transition-all flex items-center justify-center gap-3"
+        className="w-full mt-8 py-4 bg-[var(--color-primary-500)] text-white rounded-2xl font-bold text-lg shadow-lg shadow-[var(--color-primary-500)]/25 hover:shadow-xl transition-all flex items-center justify-center gap-3"
       >
         مراجعة الرحلة
         <ChevronRight className="w-5 h-5" />

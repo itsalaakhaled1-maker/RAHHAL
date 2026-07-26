@@ -62,8 +62,8 @@ export default function HotelResults() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 className="w-12 h-12 text-ocean animate-spin mb-4" />
-        <p className="text-gray-500 font-medium">جاري البحث عن أفضل الفنادق...</p>
+        <Loader2 className="w-12 h-12 text-[var(--color-primary-500)] animate-spin mb-4" />
+        <p className="text-[var(--text-muted)] font-medium">جاري البحث عن أفضل الفنادق...</p>
       </div>
     );
   }
@@ -71,13 +71,13 @@ export default function HotelResults() {
   if (error) {
     return (
       <div className="text-center py-20">
-        <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Hotel className="w-10 h-10 text-red-400" />
+        <div className="w-20 h-20 bg-[var(--color-danger)]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Hotel className="w-10 h-10 text-[var(--color-danger)]" />
         </div>
-        <h3 className="text-xl font-bold text-gray-800 mb-2">{error}</h3>
+        <h3 className="text-xl font-bold text-[var(--text-heading)] mb-2">{error}</h3>
         <button
           onClick={fetchHotels}
-          className="mt-4 px-6 py-3 bg-ocean text-white rounded-xl font-bold hover:bg-ocean/90 transition-all"
+          className="mt-4 px-6 py-3 btn-primary font-bold"
         >
           إعادة المحاولة
         </button>
@@ -89,10 +89,10 @@ export default function HotelResults() {
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-2xl font-bold text-[var(--text-heading)]">
             فنادق في {tripData.to}
           </h2>
-          <p className="text-gray-500 mt-1">
+          <p className="text-[var(--text-muted)] mt-1">
             {nights} ليلة | {tripData.adults} {tripData.adults === 1 ? "بالغ" : "بالغين"}
           </p>
         </div>
@@ -101,7 +101,7 @@ export default function HotelResults() {
           <button
             onClick={() => setFilterStars(null)}
             className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-              filterStars === null ? "bg-ocean text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              filterStars === null ? "btn-primary" : "bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-surface-elevated)]"
             }`}
           >
             الكل
@@ -111,7 +111,7 @@ export default function HotelResults() {
               key={stars}
               onClick={() => setFilterStars(stars)}
               className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1 ${
-                filterStars === stars ? "bg-ocean text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                filterStars === stars ? "btn-primary" : "bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-surface-elevated)]"
               }`}
             >
               {stars} <Star className="w-3 h-3" />
@@ -121,7 +121,7 @@ export default function HotelResults() {
 
         <button
           onClick={() => setCurrentStep(1)}
-          className="flex items-center gap-2 text-ocean font-bold hover:underline"
+          className="flex items-center gap-2 text-[var(--color-primary-500)] font-bold hover:underline"
         >
           <ChevronLeft className="w-4 h-4" />
           العودة للرحلات
@@ -137,16 +137,16 @@ export default function HotelResults() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ delay: index * 0.08 }}
             onClick={() => handleSelect(hotel)}
-            className={`relative bg-white rounded-2xl overflow-hidden cursor-pointer border-2 transition-all hover:shadow-card-lg ${
+            className={`relative bg-[var(--bg-surface)] rounded-2xl overflow-hidden cursor-pointer border-2 transition-all hover:shadow-card-lg ${
               selectedId === hotel.id
-                ? "border-ocean shadow-card-lg"
-                : "border-transparent shadow-card hover:border-ocean/30"
+                ? "border-[var(--color-primary-500)] shadow-card-lg"
+                : "border-transparent shadow-card hover:border-[var(--color-primary-500)]/30"
             }`}
           >
             {hotel.badge && (
               <div
                 className={`absolute top-4 right-4 z-10 px-3 py-1 rounded-full text-xs font-bold text-white ${
-                  hotel.badge === "best" ? "bg-ocean" : "bg-warning"
+                  hotel.badge === "best" ? "bg-[var(--color-primary-500)]" : "bg-[var(--color-warning)]"
                 }`}
               >
                 {hotel.badgeText}
@@ -155,7 +155,7 @@ export default function HotelResults() {
 
             <div className="flex flex-col md:flex-row">
               {/* Image */}
-              <div className="md:w-64 h-48 md:h-auto bg-gray-100 relative overflow-hidden">
+              <div className="md:w-64 h-48 md:h-auto bg-[var(--bg-secondary)] relative overflow-hidden">
                 {hotel.imageUrl ? (
                   <img
                     src={hotel.imageUrl}
@@ -166,8 +166,8 @@ export default function HotelResults() {
                     }}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-ocean/5">
-                    <Hotel className="w-12 h-12 text-ocean/30" />
+                  <div className="w-full h-full flex items-center justify-center bg-[var(--color-primary-500)]/5">
+                    <Hotel className="w-12 h-12 text-[var(--color-primary-500)]/30" />
                   </div>
                 )}
               </div>
@@ -176,35 +176,35 @@ export default function HotelResults() {
               <div className="flex-1 p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-800">{hotel.name}</h3>
+                    <h3 className="text-lg font-bold text-[var(--text-heading)]">{hotel.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="flex">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
                             key={i}
                             className={`w-4 h-4 ${
-                              i < hotel.stars ? "text-warning fill-warning" : "text-gray-200"
+                              i < hotel.stars ? "text-[var(--color-warning)] fill-[var(--color-warning)]" : "text-[var(--border-subtle)]"
                             }`}
                           />
                         ))}
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-[var(--text-muted)]">
                         {hotel.reviewScore} ({hotel.reviewCount} تقييم)
                       </span>
                     </div>
-                    <div className="flex items-center gap-1 mt-2 text-sm text-gray-500">
+                    <div className="flex items-center gap-1 mt-2 text-sm text-[var(--text-muted)]">
                       <MapPin className="w-4 h-4" />
                       <span>{hotel.area}</span>
-                      <span className="text-gray-300">|</span>
+                      <span className="text-[var(--border-medium)]">|</span>
                       <span>{hotel.distanceFromCenter} من المركز</span>
                     </div>
                   </div>
 
                   <div className="text-left">
-                    <p className="text-2xl font-black text-ocean">
+                    <p className="text-2xl font-black text-[var(--color-primary-500)]">
                       {formatCurrency(hotel.totalPrice, hotel.currency)}
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-[var(--text-muted)]">
                       {formatCurrency(hotel.pricePerNight, hotel.currency)} / ليلة
                     </p>
                   </div>
@@ -216,7 +216,7 @@ export default function HotelResults() {
                     {hotel.amenities.slice(0, 4).map((amenity) => (
                       <span
                         key={amenity}
-                        className="px-3 py-1 bg-gray-50 rounded-lg text-xs text-gray-600 font-medium"
+                        className="px-3 py-1 bg-[var(--bg-secondary)] rounded-lg text-xs text-[var(--text-secondary)] font-medium"
                       >
                         {amenity}
                       </span>
@@ -225,12 +225,12 @@ export default function HotelResults() {
                 )}
 
                 {/* Select indicator */}
-                <div className="flex items-center justify-end mt-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-end mt-4 pt-4 border-t border-[var(--border-subtle)]">
                   <div
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                       selectedId === hotel.id
-                        ? "bg-ocean text-white"
-                        : "bg-ocean/10 text-ocean hover:bg-ocean hover:text-white"
+                        ? "btn-primary"
+                        : "bg-[var(--color-primary-500)]/10 text-[var(--color-primary-500)] hover:bg-[var(--color-primary-500)] hover:text-white"
                     }`}
                   >
                     {selectedId === hotel.id ? (

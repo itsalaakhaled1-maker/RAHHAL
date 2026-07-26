@@ -26,7 +26,6 @@ export default function TripReview() {
     return <Booklet onClose={() => setShowBooklet(false)} />;
   }
 
-  /* ========== 1️⃣ SHARE ========== */
   const handleShare = async () => {
     const shareData = {
       title: `رحلتي إلى ${tripData.to}`,
@@ -38,7 +37,7 @@ export default function TripReview() {
       try {
         await navigator.share(shareData);
       } catch {
-        // User cancelled — silent
+        // User cancelled
       }
     } else {
       try {
@@ -52,19 +51,16 @@ export default function TripReview() {
     }
   };
 
-  /* ========== 2️⃣ PDF DOWNLOAD ========== */
   const handleDownloadPDF = async () => {
     if (!contentRef.current) return;
     setPdfLoading(true);
 
     try {
-      // ✅ استخدم modern-screenshot بدل html2canvas
       const dataUrl = await domToPng(contentRef.current, {
         scale: 2,
-        backgroundColor: "#ffffff",
+        backgroundColor: "#FDF7E9",
       });
 
-      // Get dimensions
       const img = new Image();
       img.src = dataUrl;
       await new Promise((resolve, reject) => {
@@ -93,7 +89,7 @@ export default function TripReview() {
         pdf.addImage(dataUrl, "PNG", 0, position, imgWidth * ratio, imgHeight * ratio);
         heightLeft -= pdfHeight;
         pageCount++;
-        if (pageCount > 50) break; // Safety limit
+        if (pageCount > 50) break;
       }
 
       pdf.save(`رحلة-${tripData.to}-${tripData.departDate}.pdf`);
@@ -109,36 +105,36 @@ export default function TripReview() {
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">مراجعة الرحلة</h2>
-          <p className="text-gray-500 mt-1">تأكد من كل التفاصيل قبل الحجز</p>
+          <h2 className="text-2xl font-bold text-[var(--text-heading)]">مراجعة الرحلة</h2>
+          <p className="text-[var(--text-muted)] mt-1">تأكد من كل التفاصيل قبل الحجز</p>
         </div>
         <button
           onClick={() => setCurrentStep(4)}
-          className="flex items-center gap-2 text-ocean font-bold hover:underline"
+          className="flex items-center gap-2 text-[var(--color-primary-500)] font-bold hover:underline"
         >
           <ChevronLeft className="w-4 h-4" />
           العودة للخطة
         </button>
       </div>
 
-      {/* ===== PRINTABLE CONTENT ===== */}
+      {/* PRINTABLE CONTENT */}
       <div ref={contentRef}>
         {/* Trip Summary Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl p-8 shadow-card-lg border border-gray-100 mb-6"
+          className="bg-[var(--bg-surface)] rounded-3xl p-8 shadow-card-lg border border-[var(--border-subtle)] mb-6"
         >
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl gradient-ocean flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
                 <Plane className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-black text-gray-800">
+                <h3 className="text-2xl font-black text-[var(--text-heading)]">
                   {tripData.from} → {tripData.to}
                 </h3>
-                <p className="text-gray-500">
+                <p className="text-[var(--text-muted)]">
                   {formatDate(tripData.departDate)} - {formatDate(tripData.returnDate)}
                 </p>
               </div>
@@ -147,34 +143,34 @@ export default function TripReview() {
               <button
                 onClick={() => setLiked(!liked)}
                 className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                  liked ? "bg-red-50 text-red-500" : "bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                  liked ? "bg-[var(--color-danger)]/10 text-[var(--color-danger)]" : "bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--color-danger)]/10 hover:text-[var(--color-danger)]"
                 }`}
               >
-                <Heart className={`w-5 h-5 ${liked ? "fill-red-500" : ""}`} />
+                <Heart className={`w-5 h-5 ${liked ? "fill-[var(--color-danger)]" : ""}`} />
               </button>
             </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gray-50 rounded-2xl p-4 text-center">
-              <Users className="w-6 h-6 text-ocean mx-auto mb-2" />
-              <p className="text-2xl font-black text-gray-800">{tripData.adults + tripData.children}</p>
-              <p className="text-sm text-gray-500">مسافر</p>
+            <div className="bg-[var(--bg-secondary)] rounded-2xl p-4 text-center">
+              <Users className="w-6 h-6 text-[var(--color-primary-500)] mx-auto mb-2" />
+              <p className="text-2xl font-black text-[var(--text-heading)]">{tripData.adults + tripData.children}</p>
+              <p className="text-sm text-[var(--text-muted)]">مسافر</p>
             </div>
-            <div className="bg-gray-50 rounded-2xl p-4 text-center">
-              <CalendarDays className="w-6 h-6 text-ocean mx-auto mb-2" />
-              <p className="text-2xl font-black text-gray-800">{nights}</p>
-              <p className="text-sm text-gray-500">ليلة</p>
+            <div className="bg-[var(--bg-secondary)] rounded-2xl p-4 text-center">
+              <CalendarDays className="w-6 h-6 text-[var(--color-primary-500)] mx-auto mb-2" />
+              <p className="text-2xl font-black text-[var(--text-heading)]">{nights}</p>
+              <p className="text-sm text-[var(--text-muted)]">ليلة</p>
             </div>
-            <div className="bg-gray-50 rounded-2xl p-4 text-center">
-              <MapPin className="w-6 h-6 text-ocean mx-auto mb-2" />
-              <p className="text-2xl font-black text-gray-800">{dailyPlans.length}</p>
-              <p className="text-sm text-gray-500">يوم</p>
+            <div className="bg-[var(--bg-secondary)] rounded-2xl p-4 text-center">
+              <MapPin className="w-6 h-6 text-[var(--color-primary-500)] mx-auto mb-2" />
+              <p className="text-2xl font-black text-[var(--text-heading)]">{dailyPlans.length}</p>
+              <p className="text-sm text-[var(--text-muted)]">يوم</p>
             </div>
-            <div className="bg-gray-50 rounded-2xl p-4 text-center">
-              <DollarSign className="w-6 h-6 text-ocean mx-auto mb-2" />
-              <p className="text-2xl font-black text-ocean">{formatCurrency(totalCost, tripData.currency)}</p>
-              <p className="text-sm text-gray-500">التكلفة الإجمالية</p>
+            <div className="bg-[var(--bg-secondary)] rounded-2xl p-4 text-center">
+              <DollarSign className="w-6 h-6 text-[var(--color-primary-500)] mx-auto mb-2" />
+              <p className="text-2xl font-black text-[var(--color-primary-500)]">{formatCurrency(totalCost, tripData.currency)}</p>
+              <p className="text-sm text-[var(--text-muted)]">التكلفة الإجمالية</p>
             </div>
           </div>
         </motion.div>
@@ -185,20 +181,20 @@ export default function TripReview() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl p-6 shadow-card border border-gray-100 mb-4"
+            className="bg-[var(--bg-surface)] rounded-2xl p-6 shadow-card border border-[var(--border-subtle)] mb-4"
           >
             <div className="flex items-center gap-3 mb-4">
-              <Plane className="w-5 h-5 text-ocean" />
-              <h3 className="font-bold text-gray-800">تفاصيل الرحلة</h3>
+              <Plane className="w-5 h-5 text-[var(--color-primary-500)]" />
+              <h3 className="font-bold text-[var(--text-heading)]">تفاصيل الرحلة</h3>
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-bold text-lg text-gray-800">{selectedFlight.airline}</p>
-                <p className="text-sm text-gray-500">
+                <p className="font-bold text-lg text-[var(--text-heading)]">{selectedFlight.airline}</p>
+                <p className="text-sm text-[var(--text-muted)]">
                   {selectedFlight.fromCode} → {selectedFlight.toCode} | {selectedFlight.duration}
                 </p>
               </div>
-              <p className="text-xl font-black text-ocean">
+              <p className="text-xl font-black text-[var(--color-primary-500)]">
                 {formatCurrency(selectedFlight.price * tripData.adults, selectedFlight.currency)}
               </p>
             </div>
@@ -211,20 +207,20 @@ export default function TripReview() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl p-6 shadow-card border border-gray-100 mb-4"
+            className="bg-[var(--bg-surface)] rounded-2xl p-6 shadow-card border border-[var(--border-subtle)] mb-4"
           >
             <div className="flex items-center gap-3 mb-4">
-              <Hotel className="w-5 h-5 text-ocean" />
-              <h3 className="font-bold text-gray-800">تفاصيل الإقامة</h3>
+              <Hotel className="w-5 h-5 text-[var(--color-primary-500)]" />
+              <h3 className="font-bold text-[var(--text-heading)]">تفاصيل الإقامة</h3>
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-bold text-lg text-gray-800">{selectedHotel.name}</p>
-                <p className="text-sm text-gray-500">
+                <p className="font-bold text-lg text-[var(--text-heading)]">{selectedHotel.name}</p>
+                <p className="text-sm text-[var(--text-muted)]">
                   {nights} ليلة | {selectedHotel.stars} نجوم
                 </p>
               </div>
-              <p className="text-xl font-black text-ocean">
+              <p className="text-xl font-black text-[var(--color-primary-500)]">
                 {formatCurrency(selectedHotel.totalPrice, selectedHotel.currency)}
               </p>
             </div>
@@ -237,11 +233,11 @@ export default function TripReview() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl p-6 shadow-card border border-gray-100 mb-6"
+            className="bg-[var(--bg-surface)] rounded-2xl p-6 shadow-card border border-[var(--border-subtle)] mb-6"
           >
             <div className="flex items-center gap-3 mb-4">
-              <DollarSign className="w-5 h-5 text-ocean" />
-              <h3 className="font-bold text-gray-800">تفاصيل الميزانية</h3>
+              <DollarSign className="w-5 h-5 text-[var(--color-primary-500)]" />
+              <h3 className="font-bold text-[var(--text-heading)]">تفاصيل الميزانية</h3>
             </div>
             <div className="space-y-3">
               {budgetItems.map((item) => (
@@ -251,16 +247,16 @@ export default function TripReview() {
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: item.color }}
                     />
-                    <span className="text-gray-700">{item.label}</span>
+                    <span className="text-[var(--text-secondary)]">{item.label}</span>
                   </div>
-                  <span className="font-bold text-gray-800">
+                  <span className="font-bold text-[var(--text-heading)]">
                     {formatCurrency(item.value, item.currency)}
                   </span>
                 </div>
               ))}
-              <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
-                <span className="font-bold text-gray-800">الإجمالي</span>
-                <span className="text-xl font-black text-ocean">
+              <div className="border-t border-[var(--border-subtle)] pt-3 flex items-center justify-between">
+                <span className="font-bold text-[var(--text-heading)]">الإجمالي</span>
+                <span className="text-xl font-black text-[var(--color-primary-500)]">
                   {formatCurrency(totalCost, tripData.currency)}
                 </span>
               </div>
@@ -275,7 +271,7 @@ export default function TripReview() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setShowBooklet(true)}
-          className="col-span-2 md:col-span-1 py-4 bg-ocean text-white rounded-2xl font-bold shadow-lg shadow-ocean/25 hover:shadow-xl transition-all flex items-center justify-center gap-2"
+          className="col-span-2 md:col-span-1 py-4 btn-primary text-white rounded-2xl font-bold shadow-gold hover:shadow-card-lg transition-all flex items-center justify-center gap-2"
         >
           <Printer className="w-5 h-5" />
           طباعة الكتيب
@@ -288,7 +284,7 @@ export default function TripReview() {
             saveTrip();
             alert("تم حفظ الرحلة بنجاح!");
           }}
-          className="py-4 bg-success text-white rounded-2xl font-bold shadow-lg shadow-success/25 hover:shadow-xl transition-all flex items-center justify-center gap-2"
+          className="py-4 bg-[var(--color-success)] text-white rounded-2xl font-bold shadow-lg shadow-[var(--color-success)]/25 hover:shadow-xl transition-all flex items-center justify-center gap-2"
         >
           <Check className="w-5 h-5" />
           حفظ الرحلة
@@ -298,7 +294,7 @@ export default function TripReview() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleShare}
-          className="py-4 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+          className="py-4 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-2xl font-bold hover:bg-[var(--bg-surface-elevated)] transition-all flex items-center justify-center gap-2"
         >
           <Share2 className="w-5 h-5" />
           مشاركة
@@ -309,10 +305,10 @@ export default function TripReview() {
           whileTap={{ scale: 0.98 }}
           onClick={handleDownloadPDF}
           disabled={pdfLoading}
-          className="py-4 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="py-4 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-2xl font-bold hover:bg-[var(--bg-surface-elevated)] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {pdfLoading ? (
-            <span className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+            <span className="w-5 h-5 border-2 border-[var(--text-muted)] border-t-transparent rounded-full animate-spin" />
           ) : (
             <Download className="w-5 h-5" />
           )}

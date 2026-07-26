@@ -8,12 +8,12 @@ import { formatCurrency, calculateNights } from "@/lib/utils";
 import type { BudgetItem } from "@/types";
 
 const defaultCategories = [
-  { id: "flights", label: "الطيران", icon: "Plane", color: "#0288D1", percentage: 40 },
-  { id: "hotels", label: "الإقامة", icon: "Hotel", color: "#00BCD4", percentage: 30 },
-  { id: "food", label: "المطاعم", icon: "Utensils", color: "#FFD54F", percentage: 15 },
-  { id: "transport", label: "التنقل", icon: "Bus", color: "#FF8A65", percentage: 8 },
-  { id: "activities", label: "الأنشطة", icon: "Ticket", color: "#66BB6A", percentage: 5 },
-  { id: "shopping", label: "التسوق", icon: "ShoppingBag", color: "#AB47BC", percentage: 2 },
+  { id: "flights", label: "الطيران", icon: "Plane", color: "#0C4938", percentage: 40 },
+  { id: "hotels", label: "الإقامة", icon: "Hotel", color: "#C9944D", percentage: 30 },
+  { id: "food", label: "المطاعم", icon: "Utensils", color: "#4A7C6F", percentage: 15 },
+  { id: "transport", label: "التنقل", icon: "Bus", color: "#D79B44", percentage: 8 },
+  { id: "activities", label: "الأنشطة", icon: "Ticket", color: "#2E7D52", percentage: 5 },
+  { id: "shopping", label: "التسوق", icon: "ShoppingBag", color: "#876031", percentage: 2 },
 ];
 
 const iconMap: Record<string, React.ElementType> = {
@@ -73,12 +73,12 @@ export default function BudgetPlanner() {
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">مخطط الميزانية</h2>
-          <p className="text-gray-500 mt-1">خصص ميزانيتك حسب احتياجاتك</p>
+          <h2 className="text-2xl font-bold text-[var(--text-heading)]">مخطط الميزانية</h2>
+          <p className="text-[var(--text-muted)] mt-1">خصص ميزانيتك حسب احتياجاتك</p>
         </div>
         <button
           onClick={() => setCurrentStep(2)}
-          className="flex items-center gap-2 text-ocean font-bold hover:underline"
+          className="flex items-center gap-2 text-[var(--color-primary-500)] font-bold hover:underline"
         >
           <ChevronLeft className="w-4 h-4" />
           العودة للفنادق
@@ -87,19 +87,19 @@ export default function BudgetPlanner() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-2xl p-5 shadow-card border border-gray-100">
-          <p className="text-sm text-gray-500 mb-1">الميزانية الكلية</p>
-          <p className="text-2xl font-black text-gray-800">
+        <div className="bg-[var(--bg-surface)] rounded-2xl p-5 shadow-card border border-[var(--border-subtle)]">
+          <p className="text-sm text-[var(--text-muted)] mb-1">الميزانية الكلية</p>
+          <p className="text-2xl font-black text-[var(--text-heading)]">
             {formatCurrency(tripData.budget, currency)}
           </p>
         </div>
-        <div className="bg-white rounded-2xl p-5 shadow-card border border-gray-100">
-          <p className="text-sm text-gray-500 mb-1">المصروفات</p>
-          <p className="text-2xl font-black text-ocean">{formatCurrency(total, currency)}</p>
+        <div className="bg-[var(--bg-surface)] rounded-2xl p-5 shadow-card border border-[var(--border-subtle)]">
+          <p className="text-sm text-[var(--text-muted)] mb-1">المصروفات</p>
+          <p className="text-2xl font-black text-[var(--color-primary-500)]">{formatCurrency(total, currency)}</p>
         </div>
-        <div className={`rounded-2xl p-5 shadow-card border ${remaining >= 0 ? "bg-success/5 border-success/20" : "bg-red-50 border-red-200"}`}>
-          <p className="text-sm text-gray-500 mb-1">المتبقي</p>
-          <p className={`text-2xl font-black ${remaining >= 0 ? "text-success" : "text-red-500"}`}>
+        <div className={`rounded-2xl p-5 shadow-card border ${remaining >= 0 ? "bg-[var(--color-success)]/5 border-[var(--color-success)]/20" : "bg-[var(--color-danger)]/10 border-[var(--color-danger)]/20"}`}>
+          <p className="text-sm text-[var(--text-muted)] mb-1">المتبقي</p>
+          <p className={`text-2xl font-black ${remaining >= 0 ? "text-[var(--color-success)]" : "text-[var(--color-danger)]"}`}>
             {formatCurrency(Math.abs(remaining), currency)}
           </p>
         </div>
@@ -115,7 +115,7 @@ export default function BudgetPlanner() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-2xl p-5 shadow-card border border-gray-100"
+              className="bg-[var(--bg-surface)] rounded-2xl p-5 shadow-card border border-[var(--border-subtle)]"
             >
               <div className="flex items-center gap-4">
                 <div
@@ -127,8 +127,8 @@ export default function BudgetPlanner() {
 
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-gray-800">{item.label}</span>
-                    <span className="font-black text-ocean">
+                    <span className="font-bold text-[var(--text-heading)]">{item.label}</span>
+                    <span className="font-black text-[var(--color-primary-500)]">
                       {formatCurrency(item.value, currency)}
                     </span>
                   </div>
@@ -140,16 +140,16 @@ export default function BudgetPlanner() {
                       max={tripData.budget}
                       value={item.value}
                       onChange={(e) => updateValue(item.id, parseInt(e.target.value))}
-                      className="flex-1 h-2 bg-gray-100 rounded-full appearance-none cursor-pointer"
+                      className="flex-1 h-2 bg-[var(--bg-secondary)] rounded-full appearance-none cursor-pointer"
                       style={{
-                        background: `linear-gradient(to right, ${item.color} 0%, ${item.color} ${(item.value / tripData.budget) * 100}%, #f3f4f6 ${(item.value / tripData.budget) * 100}%, #f3f4f6 100%)`,
+                        background: `linear-gradient(to right, ${item.color} 0%, ${item.color} ${(item.value / tripData.budget) * 100}%, var(--bg-secondary) ${(item.value / tripData.budget) * 100}%, var(--bg-secondary) 100%)`,
                       }}
                     />
                     <input
                       type="number"
                       value={item.value}
                       onChange={(e) => updateValue(item.id, parseInt(e.target.value) || 0)}
-                      className="w-24 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-center outline-none focus:border-ocean"
+                      className="w-24 px-3 py-2 bg-[var(--bg-secondary)] border border-[var(--border-medium)] rounded-xl text-sm font-bold text-center outline-none focus:border-[var(--color-primary-500)] text-[var(--text-primary)]"
                     />
                   </div>
                 </div>
@@ -164,7 +164,7 @@ export default function BudgetPlanner() {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={handleContinue}
-        className="w-full mt-8 py-4 gradient-ocean text-white rounded-2xl font-bold text-lg shadow-lg shadow-ocean/25 hover:shadow-xl transition-all flex items-center justify-center gap-3"
+        className="w-full mt-8 py-4 btn-primary text-white rounded-2xl font-bold text-lg shadow-gold hover:shadow-card-lg transition-all flex items-center justify-center gap-3"
       >
         متابعة للخطة اليومية
         <ChevronRight className="w-5 h-5" />

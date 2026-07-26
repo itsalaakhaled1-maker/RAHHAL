@@ -18,7 +18,7 @@ interface Props {
 
 export default function ProgressSteps({ currentStep }: Props) {
   return (
-    <div className="w-full py-6 bg-white border-b border-gray-100">
+    <div className="w-full py-6 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)]">
       <div className="max-w-4xl mx-auto px-4">
         <div className="flex items-center justify-between">
           {steps.map((step, index) => {
@@ -32,29 +32,37 @@ export default function ProgressSteps({ currentStep }: Props) {
                   <motion.div
                     animate={{
                       scale: isActive ? 1.1 : 1,
-                      backgroundColor: isActive ? "#0288D1" : isCompleted ? "#66BB6A" : "#E5E7EB",
+                      backgroundColor: isActive
+                        ? "var(--color-primary-500)"
+                        : isCompleted
+                        ? "var(--color-success)"
+                        : "var(--bg-secondary)",
                     }}
-                    className="w-12 h-12 rounded-full flex items-center justify-center shadow-md"
+                    className="w-12 h-12 rounded-full flex items-center justify-center shadow-card"
                   >
                     <Icon
-                      className={`w-5 h-5 ${isActive || isCompleted ? "text-white" : "text-gray-400"}`}
+                      className={`w-5 h-5 ${isActive || isCompleted ? "text-white" : "text-[var(--text-muted)]"}`}
                     />
                   </motion.div>
                   <span
                     className={`text-xs font-medium ${
-                      isActive ? "text-ocean" : isCompleted ? "text-success" : "text-gray-400"
+                      isActive
+                        ? "text-[var(--color-primary-500)]"
+                        : isCompleted
+                        ? "text-[var(--color-success)]"
+                        : "text-[var(--text-muted)]"
                     }`}
                   >
                     {step.label}
                   </span>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="flex-1 h-1 mx-2 rounded-full bg-gray-200 overflow-hidden">
+                  <div className="flex-1 h-1 mx-2 rounded-full bg-[var(--bg-secondary)] overflow-hidden">
                     <motion.div
                       initial={{ width: "0%" }}
                       animate={{ width: isCompleted ? "100%" : "0%" }}
                       transition={{ duration: 0.5 }}
-                      className="h-full bg-success rounded-full"
+                      className="h-full bg-[var(--color-success)] rounded-full"
                     />
                   </div>
                 )}
