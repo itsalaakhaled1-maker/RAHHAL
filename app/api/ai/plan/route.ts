@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 
+// ✅ النموذج المؤكد شغال
+const MODEL_NAME = "gemini-2.5-flash";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -16,7 +19,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ نموذج أحدث + tokens أكثر
+    if (!GEMINI_API_KEY) {
+      console.error("[AI Plan API] GEMINI_API_KEY is missing!");
+      return NextResponse.json(
+        { error: "GEMINI_API_KEY not configured" },
+        { status: 500 }
+      );
+    }
+
     const prompt = `أنت مخطط رحلات سياحية محترف ومختص. أنشئ خطة يومية مفصلة ومتوازنة لرحلة إلى ${city} لمدة ${days} أيام.
 
 الميزانية المتاحة: ${budget} ${currency || "USD"}.
@@ -46,23 +56,22 @@ export async function POST(request: NextRequest) {
 
 أجب باللغة العربية الفصحى فقط.`;
 
-    console.log("[AI Plan API] Calling Gemini...");
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            maxOutputTokens: Math.min(8000, days * 300), // ✅ 300 token/يوم كحد أدنى
-            temperature: 0.5, // ✅ أقل randomness
-            topP: 0.95,
-          },
-        }),
-      }
-    );
+    console.log("[AI Plan API] Using model:", MODEL_NAME);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          maxOutputTokens: Math.min(64000, days * 400), // ✅ 65K tokens max
+          temperature: 0.5,
+          topP: 0.95,
+        },
+      }),
+    });
 
     console.log("[AI Plan API] Gemini status:", response.status);
 
@@ -76,9 +85,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log("[AI Plan API] Gemini response keys:", Object.keys(data));
 
-    // Check for safety blocks
     if (data.candidates?.[0]?.finishReason === "SAFETY") {
       return NextResponse.json(
         { error: "Content blocked by safety filters" },
@@ -96,7 +103,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ Validate: check if all days are present
+    // Validate days
     const dayMatches = [...planText.matchAll(/اليوم\s+(\d+)/g)];
     const foundDays = new Set(dayMatches.map(m => parseInt(m[1])));
     const expectedDays = new Set(Array.from({ length: days }, (_, i) => i + 1));
@@ -107,13 +114,10 @@ export async function POST(request: NextRequest) {
     if (missingDays.length > 0) {
       console.warn("[AI Plan API] Missing days:", missingDays);
     }
-    if (duplicateDays.length > 0) {
-      console.warn("[AI Plan API] Duplicate days:", duplicateDays);
-    }
 
     return NextResponse.json({
       plan: planText,
-      source: "gemini",
+      source: MODEL_NAME,
       days: days,
       missingDays: missingDays.length > 0 ? missingDays : undefined,
       duplicateDays: duplicateDays.length > 0 ? duplicateDays : undefined,
@@ -122,7 +126,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("[AI Plan API] Server error:", error);
     return NextResponse.json(
-      { error: error.message || "Internal server error", stack: error.stack },
+      { error: error.message || "Internal server error" },
       { status: 500 }
     );
   }
