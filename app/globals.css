@@ -6,24 +6,22 @@
   --font-manrope: "Manrope", sans-serif;
 
   /* ═══════════════════════════════════════
-     HAKIM Brand Colors — Quiet Intelligence
+     HAKIM — Quiet Intelligence
      ═══════════════════════════════════════ */
-  
+
   /* Primary — Deep Green */
-  --color-primary: #0C4938;
-  --color-primary-50: #E6F0ED;
-  --color-primary-100: #B3D9CC;
-  --color-primary-200: #80C2AB;
-  --color-primary-300: #4DAB8A;
-  --color-primary-400: #26946E;
+  --color-primary-50: #E8F5F0;
+  --color-primary-100: #C2E6D8;
+  --color-primary-200: #9BD6C0;
+  --color-primary-300: #6BC4A3;
+  --color-primary-400: #3DAA82;
   --color-primary-500: #0C4938;
   --color-primary-600: #0A3D2F;
   --color-primary-700: #083126;
   --color-primary-800: #06251C;
-  --color-primary-900: #041913;
+  --color-primary-900: #03120E;
 
-  /* Secondary — Gold */
-  --color-secondary: #C9944D;
+  /* Secondary — Warm Gold */
   --color-secondary-50: #FBF3E8;
   --color-secondary-100: #F2DDBF;
   --color-secondary-200: #E9C796;
@@ -35,34 +33,19 @@
   --color-secondary-800: #664623;
   --color-secondary-900: #452C15;
 
-  /* Background — Cream */
-  --color-cream: #FDF7E9;
-  --color-cream-50: #FFFDF9;
+  /* Cream */
+  --color-cream-50: #FFFEFB;
   --color-cream-100: #FDF7E9;
   --color-cream-200: #FAEED3;
   --color-cream-300: #F7E5BD;
 
-  /* Semantic Colors */
-  --color-success: #4CAF50;
-  --color-warning: #FF9800;
-  --color-danger: #E53935;
-  --color-info: #0288D1;
+  /* Semantic */
+  --color-success: #2E7D52;
+  --color-warning: #C9944D;
+  --color-danger: #B85450;
+  --color-info: #4A7C6F;
 
-  /* Neutral Scale */
-  --color-white: #FFFFFF;
-  --color-black: #0A0A0A;
-  --color-gray-50: #F9F9F9;
-  --color-gray-100: #F0F0F0;
-  --color-gray-200: #E0E0E0;
-  --color-gray-300: #C0C0C0;
-  --color-gray-400: #A0A0A0;
-  --color-gray-500: #808080;
-  --color-gray-600: #606060;
-  --color-gray-700: #404040;
-  --color-gray-800: #202020;
-  --color-gray-900: #101010;
-
-  /* Legacy aliases for backward compatibility */
+  /* Legacy aliases */
   --color-sky: var(--color-secondary-300);
   --color-ocean: var(--color-primary-500);
   --color-turquoise: var(--color-primary-300);
@@ -71,89 +54,253 @@
   --color-sand: var(--color-cream-100);
 }
 
+/* ═══════════════════════════════════════
+   THEME VARIABLES
+   ═══════════════════════════════════════ */
 @layer base {
+  :root {
+    /* Light Mode (Default) */
+    --bg-primary: var(--color-cream-100);
+    --bg-secondary: var(--color-cream-200);
+    --bg-surface: #FFFFFF;
+    --bg-surface-elevated: #FFFFFF;
+    --bg-navbar: rgba(253, 247, 233, 0.85);
+    --bg-input: #FFFFFF;
+
+    --text-primary: var(--color-primary-500);
+    --text-secondary: #4A6358;
+    --text-muted: #7A8F84;
+    --text-inverse: var(--color-cream-100);
+    --text-heading: var(--color-primary-800);
+
+    --border-subtle: rgba(12, 73, 56, 0.08);
+    --border-medium: rgba(12, 73, 56, 0.15);
+
+    --shadow-color: rgba(12, 73, 56, 0.08);
+    --shadow-color-lg: rgba(12, 73, 56, 0.12);
+  }
+
+  [data-theme="dark"] {
+    /* Dark Mode */
+    --bg-primary: #0A0F0D;
+    --bg-secondary: #111A16;
+    --bg-surface: #1A2520;
+    --bg-surface-elevated: #22332C;
+    --bg-navbar: rgba(10, 15, 13, 0.9);
+    --bg-input: #1A2520;
+
+    --text-primary: #E8F5F0;
+    --text-secondary: #B8D4C8;
+    --text-muted: #7A8F84;
+    --text-inverse: var(--color-primary-500);
+    --text-heading: #E8F5F0;
+
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-medium: rgba(255, 255, 255, 0.12);
+
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-color-lg: rgba(0, 0, 0, 0.5);
+  }
+
+  * {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
   body {
     font-family: "IBM Plex Sans Arabic", "Tajawal", sans-serif;
-    background-color: var(--color-cream);
-    color: var(--color-gray-800);
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
     line-height: 1.7;
+    min-height: 100vh;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     font-family: "Manrope", "IBM Plex Sans Arabic", sans-serif;
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--text-heading);
+  }
+
+  p, span, li {
+    color: var(--text-secondary);
+  }
+
+  a {
+    color: var(--color-primary-500);
+  }
+
+  [data-theme="dark"] a {
+    color: var(--color-primary-300);
   }
 }
 
+/* ═══════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════ */
 @layer utilities {
-  /* Primary Gradients */
+  .gradient-hero {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--color-cream-200) 40%, var(--color-primary-50) 70%, var(--color-secondary-50) 100%);
+  }
+
+  [data-theme="dark"] .gradient-hero {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--color-primary-900) 100%);
+  }
+
   .gradient-primary {
     background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-700) 100%);
   }
-  
-  .gradient-primary-soft {
-    background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-cream) 100%);
-  }
 
-  /* Secondary Gradients */
   .gradient-secondary {
     background: linear-gradient(135deg, var(--color-secondary-400) 0%, var(--color-secondary-600) 100%);
   }
 
-  /* Mixed Gradients */
-  .gradient-hero {
-    background: linear-gradient(135deg, var(--color-cream) 0%, var(--color-primary-50) 40%, var(--color-secondary-50) 100%);
-  }
-  
   .gradient-warm {
     background: linear-gradient(135deg, var(--color-secondary-200) 0%, var(--color-secondary-400) 100%);
   }
 
-  /* Shadows */
+  .glass {
+    background: rgba(253, 247, 233, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-subtle);
+  }
+
+  [data-theme="dark"] .glass {
+    background: rgba(26, 37, 32, 0.75);
+    border: 1px solid var(--border-medium);
+  }
+
   .shadow-card {
-    box-shadow: 0 4px 20px rgba(12, 73, 56, 0.08);
+    box-shadow: 0 4px 20px var(--shadow-color);
   }
   .shadow-card-lg {
-    box-shadow: 0 10px 40px rgba(12, 73, 56, 0.12);
+    box-shadow: 0 10px 40px var(--shadow-color-lg);
   }
   .shadow-gold {
     box-shadow: 0 4px 20px rgba(201, 148, 77, 0.15);
   }
-  
-  /* Text Shadow */
-  .text-shadow {
-    text-shadow: 0 2px 10px rgba(12, 73, 56, 0.08);
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  /* Glass Effect */
-  .glass {
-    background: rgba(253, 247, 233, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(201, 148, 77, 0.1);
+  .text-shadow {
+    text-shadow: 0 2px 10px var(--shadow-color);
   }
 }
+
+/* ═══════════════════════════════════════
+   COMPONENTS
+   ═══════════════════════════════════════ */
+
+/* Navbar */
+.navbar {
+  background: var(--bg-navbar);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Hero Section */
+.hero-section {
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(12, 73, 56, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(201, 148, 77, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+[data-theme="dark"] .hero-section::before {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(12, 73, 56, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(201, 148, 77, 0.1) 0%, transparent 50%);
+}
+
+/* Search Card */
+.search-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px var(--shadow-color);
+}
+
+/* Inputs */
+.input-hakim {
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-medium);
+  border-radius: 16px;
+  color: var(--text-primary);
+}
+
+.input-hakim:focus {
+  border-color: var(--color-primary-400);
+  box-shadow: 0 0 0 3px rgba(12, 73, 56, 0.1);
+  outline: none;
+}
+
+[data-theme="dark"] .input-hakim:focus {
+  box-shadow: 0 0 0 3px rgba(12, 73, 56, 0.3);
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--color-primary-500);
+  color: var(--color-cream-100);
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(12, 73, 56, 0.25);
+}
+
+.btn-secondary {
+  background: var(--color-secondary-500);
+  color: var(--color-cream-100);
+  border-radius: 16px;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-medium);
+  border-radius: 16px;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-secondary);
+  border-color: var(--color-primary-300);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--color-primary-400); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-primary-600); }
+
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-primary-400); border-radius: 3px; }
 
 /* RTL */
-[dir="rtl"] .rtl-flip {
-  transform: scaleX(-1);
-}
+[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
 
 /* Print */
 @media print {
   .no-print { display: none !important; }
   .print-only { display: block !important; }
 }
-
-/* Custom Scrollbar — HAKIM Green */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--color-cream-200); }
-::-webkit-scrollbar-thumb { background: var(--color-primary-400); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-primary-600); }
-
-/* Custom Dropdown Scrollbar */
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-primary-400); border-radius: 3px; }
 
 /* Animations */
 @keyframes fadeIn {
@@ -162,42 +309,15 @@
 }
 
 @keyframes highlight {
-  0% { background-color: rgba(12, 73, 56, 0.15); }
+  0% { background-color: rgba(12, 73, 56, 0.12); }
   100% { background-color: transparent; }
 }
 
-/* Dropdown z-index */
+/* Z-index */
 .z-dropdown { z-index: 9999; }
 
-/* Dark Mode — HAKIM Dark */
+/* Old .dark class compatibility */
 .dark body {
-  background-color: var(--color-primary-900);
-  color: var(--color-cream-100);
-}
-.dark .bg-white {
-  background-color: var(--color-primary-800);
-}
-.dark .bg-gray-50 {
-  background-color: var(--color-primary-700);
-}
-.dark .bg-gray-100 {
-  background-color: var(--color-primary-600);
-}
-.dark .text-gray-800 {
-  color: var(--color-cream-100);
-}
-.dark .text-gray-700 {
-  color: var(--color-cream-200);
-}
-.dark .text-gray-600 {
-  color: var(--color-cream-300);
-}
-.dark .text-gray-500 {
-  color: var(--color-gray-400);
-}
-.dark .border-gray-100 {
-  border-color: var(--color-primary-700);
-}
-.dark .border-gray-200 {
-  border-color: var(--color-primary-600);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
 }

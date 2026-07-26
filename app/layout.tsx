@@ -12,10 +12,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     setMounted(true);
+    // Initialize theme from localStorage or system preference
+    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const theme = saved || (prefersDark ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
   }, []);
 
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icon.png" type="image/png" />
         <link rel="shortcut icon" href="/icon.png" type="image/png" />
@@ -38,9 +43,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-tajawal antialiased bg-white text-gray-900 flex flex-col min-h-screen">
+      <body className="font-tajawal antialiased flex flex-col min-h-screen">
         <Header />
         <main className="flex-1">
           {mounted ? (
@@ -49,11 +54,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Toaster position="top-center" richColors />
             </>
           ) : (
-            <div className="min-h-screen bg-white" />
+            <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }} />
           )}
         </main>
         <Footer />
-            <Analytics />  {/* ✅ أضف هذا السطر */}
+        <Analytics />
       </body>
     </html>
   );

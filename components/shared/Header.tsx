@@ -17,24 +17,19 @@ export default function Header() {
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem("dark-mode");
-    if (saved === "true") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    const saved = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = saved === "dark" || (!saved && prefersDark);
+    setDarkMode(isDark);
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
   }, []);
 
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
-    localStorage.setItem("dark-mode", String(newMode));
-    if (newMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    const theme = newMode ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
   };
 
   if (!mounted) return null;
@@ -51,11 +46,7 @@ export default function Header() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b transition-colors ${
-        darkMode
-          ? "bg-gray-900/90 border-gray-800"
-          : "bg-white/90 border-gray-100"
-      }`}
+      className="navbar fixed top-0 left-0 right-0 z-50"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -73,8 +64,8 @@ export default function Header() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-ocean">الرحّال</span>
-                <span className={`text-[10px] -mt-1 ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
+                <span className="text-xl font-bold text-[var(--color-primary-500)]">الرحّال</span>
+                <span className="text-[10px] -mt-1 text-[var(--text-muted)]">
                   Al-Rahhal
                 </span>
               </div>
@@ -87,11 +78,7 @@ export default function Header() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`px-4 py-2 text-base font-medium rounded-lg hover:bg-ocean/5 transition-all ${
-                  darkMode
-                    ? "text-gray-400 hover:text-ocean"
-                    : "text-gray-600 hover:text-ocean"
-                }`}
+                className="px-4 py-2 text-base font-medium rounded-lg transition-all text-[var(--text-secondary)] hover:bg-[var(--color-primary-500)]/5 hover:text-[var(--color-primary-500)]"
               >
                 {item.label}
               </Link>
@@ -103,13 +90,15 @@ export default function Header() {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                darkMode
-                  ? "text-gray-400 hover:bg-gray-800"
-                  : "text-gray-500 hover:bg-gray-100"
-              }`}
+              className="w-10 h-10 rounded-xl flex items-center justify-center transition-all text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] border border-[var(--border-subtle)]"
+              aria-label={darkMode ? "الوضع الفاتح" : "الوضع الداكن"}
+              title={darkMode ? "الوضع الفاتح" : "الوضع الداكن"}
             >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {darkMode ? (
+                <Sun className="w-5 h-5 text-[var(--color-secondary-400)]" />
+              ) : (
+                <Moon className="w-5 h-5 text-[var(--color-primary-500)]" />
+              )}
             </button>
 
             {/* Auth Button */}
@@ -121,12 +110,10 @@ export default function Header() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setIsProfileOpen(true)}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
-                        darkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-100 hover:bg-gray-200"
-                      } transition-all`}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all bg-[var(--bg-secondary)] hover:bg-[var(--bg-surface-elevated)] border border-[var(--border-subtle)]"
                     >
-                      <User className="w-4 h-4 text-ocean" />
-                      <span className={`text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+                      <User className="w-4 h-4 text-[var(--color-primary-500)]" />
+                      <span className="text-sm font-medium text-[var(--text-primary)]">
                         {user.user_metadata?.full_name || user.email?.split("@")[0] || "مستخدم"}
                       </span>
                     </motion.button>
@@ -142,7 +129,7 @@ export default function Header() {
                 ) : (
                   <button
                     onClick={signInWithGoogle}
-                    className="flex items-center gap-2 px-4 py-2 bg-ocean text-white rounded-xl hover:bg-ocean-dark transition-all text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-sm font-medium btn-primary"
                   >
                     <LogIn className="w-4 h-4" />
                     <span>تسجيل الدخول</span>
@@ -154,11 +141,7 @@ export default function Header() {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className={`md:hidden w-10 h-10 rounded-xl flex items-center justify-center ${
-                darkMode
-                  ? "text-gray-400 hover:bg-gray-800"
-                  : "text-gray-500 hover:bg-gray-100"
-              }`}
+              className="md:hidden w-10 h-10 rounded-xl flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] border border-[var(--border-subtle)]"
             >
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -171,11 +154,7 @@ export default function Header() {
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
-          className={`md:hidden border-t ${
-            darkMode
-              ? "bg-gray-900 border-gray-800"
-              : "bg-white border-gray-100"
-          }`}
+          className="md:hidden border-t border-[var(--border-subtle)] bg-[var(--bg-navbar)] backdrop-blur-xl"
         >
           <div className="px-4 py-3 space-y-1">
             {navItems.map((item) => (
@@ -183,11 +162,7 @@ export default function Header() {
                 key={item.label}
                 href={item.href}
                 onClick={() => setMenuOpen(false)}
-                className={`block px-4 py-3 rounded-xl font-medium ${
-                  darkMode
-                    ? "text-gray-300 hover:bg-ocean/5"
-                    : "text-gray-700 hover:bg-ocean/5"
-                }`}
+                className="block px-4 py-3 rounded-xl font-medium text-[var(--text-secondary)] hover:bg-[var(--color-primary-500)]/5 hover:text-[var(--color-primary-500)]"
               >
                 {item.label}
               </Link>
