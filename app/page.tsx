@@ -11,21 +11,12 @@ const TravelCardIntro = dynamic(() => import("@/components/intro/TravelCardIntro
 });
 
 export default function Home() {
-  const [showIntro, setShowIntro] = useState(() => {
-    if (typeof window !== "undefined") {
-      return !localStorage.getItem("rahhal-intro-seen");
-    }
-    return false;
-  });
-
-  const handleIntroClose = () => {
-    localStorage.setItem("rahhal-intro-seen", "true");
-    setShowIntro(false);
-  };
+  // ✅ تظهر في كل refresh — بدون localStorage
+  const [showIntro, setShowIntro] = useState(true);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)]">
-      {showIntro && <TravelCardIntro onClose={handleIntroClose} />}
+      {showIntro && <TravelCardIntro onClose={() => setShowIntro(false)} />}
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 hero-section">
