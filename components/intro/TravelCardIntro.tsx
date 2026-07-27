@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plane, X, MapPin, Calendar, Clock, Armchair, QrCode, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+
 interface TravelCardIntroProps {
   onClose: () => void;
 }
