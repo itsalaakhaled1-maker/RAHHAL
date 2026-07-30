@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plane, X, User, Calendar, Clock, Armchair, MapPin, Sparkles } from "lucide-react";
+import { Plane, X, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface TravelCardIntroProps {
@@ -51,7 +51,7 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
           onClick={handleClose}
         >
           {/* التذكرة — تدخل من اليسار وتخرج من اليمين */}
@@ -65,16 +65,18 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
               damping: 18,
               mass: 1.2
             }}
-            className="relative"
+            className="relative w-full max-w-[720px]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* التذكرة الأفقية */}
-            <div className="flex w-[720px] h-[260px] rounded-2xl overflow-hidden shadow-2xl bg-[#F5F5F0]">
+            {/* ═══════════════════════════════════════
+                التذكرة — متجاوبة: عمودية على الهاتف، أفقية على الديسكتوب
+                ═══════════════════════════════════════ */}
+            <div className="flex flex-col md:flex-row w-full rounded-2xl overflow-hidden shadow-2xl bg-[#F5F5F0]">
               
               {/* ═══════════════════════════════════════
                   الجزء الأيسر — الجسم الرئيسي (أبيض/كريمي)
                   ═══════════════════════════════════════ */}
-              <div className="flex-1 relative p-7 flex flex-col justify-between overflow-hidden">
+              <div className="flex-1 relative p-5 md:p-7 flex flex-col justify-between overflow-hidden min-h-[280px] md:min-h-0">
                 
                 {/* خلفية خريطة العالم النقطية */}
                 <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
@@ -154,18 +156,18 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
                 </div>
 
                 {/* المدن الكبيرة — المنتصف */}
-                <div className="flex items-center justify-center gap-5 relative z-10 my-1">
+                <div className="flex items-center justify-center gap-3 md:gap-5 relative z-10 my-3 md:my-1">
                   <motion.div
                     initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.6, duration: 0.5 }}
                   >
-                    <p className="text-4xl font-black text-[#1a1a1a] tracking-tight leading-none">دبي</p>
+                    <p className="text-3xl md:text-4xl font-black text-[#1a1a1a] tracking-tight leading-none">دبي</p>
                     <p className="text-[#0C4938]/50 text-xs font-bold text-center mt-1">DXB</p>
                   </motion.div>
                   
                   <div className="flex flex-col items-center px-2">
-                    <div className="w-20 h-px bg-[#C9944D] relative">
+                    <div className="w-16 md:w-20 h-px bg-[#C9944D] relative">
                       <Plane className="w-5 h-5 text-[#0C4938] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-45deg]" />
                     </div>
                     <p className="text-[#C9944D] text-[9px] mt-1 font-bold tracking-[0.15em]">مباشر</p>
@@ -176,13 +178,13 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.8, duration: 0.5 }}
                   >
-                    <p className="text-4xl font-black text-[#1a1a1a] tracking-tight leading-none">{destination.city}</p>
+                    <p className="text-3xl md:text-4xl font-black text-[#1a1a1a] tracking-tight leading-none">{destination.city}</p>
                     <p className="text-[#0C4938]/50 text-xs font-bold text-center mt-1">{destination.code}</p>
                   </motion.div>
                 </div>
 
-                {/* التفاصيل السفلية — 4 أعمدة */}
-                <div className="grid grid-cols-4 gap-4 relative z-10">
+                {/* التفاصيل السفلية — 4 أعمدة على الديسكتوب، 2 على الهاتف */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 relative z-10">
                   <div>
                     <p className="text-[#999] text-[8px] uppercase tracking-[0.15em] mb-1 font-medium">المسافر</p>
                     <p className="text-[#1a1a1a] font-bold text-[13px]">ضيف الرحّال</p>
@@ -201,8 +203,8 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
                   </div>
                 </div>
 
-                {/* باركود رأسي على اليسار */}
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-[1px] h-32">
+                {/* باركود رأسي على اليسار — مخفي على الهاتف */}
+                <div className="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 flex-col items-center gap-[1px] h-32">
                   {Array.from({ length: 45 }).map((_, i) => (
                     <div
                       key={i}
@@ -217,9 +219,9 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
               </div>
 
               {/* ═══════════════════════════════════════
-                  الخط المنقط — فاصل التذكرة (المنتصف)
+                  الخط المنقط — فاصل التذكرة
                   ═══════════════════════════════════════ */}
-              <div className="w-6 relative flex flex-col items-center justify-between py-1 bg-[#F5F5F0]">
+              <div className="hidden md:flex w-6 relative flex-col items-center justify-between py-1 bg-[#F5F5F0]">
                 <div className="w-5 h-5 rounded-full bg-black/40 -mt-2.5" />
                 <div className="flex-1 w-px border-l border-dashed border-[#ccc] my-1" />
                 <div className="w-5 h-5 rounded-full bg-black/40 -mb-2.5" />
@@ -228,7 +230,7 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
               {/* ═══════════════════════════════════════
                   الجزء الأيمن — الجزء المقصوص (أخضر HAKIM)
                   ═══════════════════════════════════════ */}
-              <div className="w-36 bg-[#0C4938] p-5 flex flex-col items-center justify-between relative overflow-hidden">
+              <div className="w-full md:w-36 bg-[#0C4938] p-4 md:p-5 flex flex-row md:flex-col items-center justify-between md:justify-between relative overflow-hidden">
                 
                 {/* زخرفة خلفية */}
                 <div className="absolute inset-0 opacity-[0.08]">
@@ -238,12 +240,12 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
                 </div>
 
                 {/* هيدر */}
-                <div className="text-center relative z-10">
+                <div className="hidden md:block text-center relative z-10">
                   <p className="text-[#FDF7E9]/40 text-[7px] tracking-[0.2em]">BOARDING PASS</p>
                 </div>
 
-                {/* التفاصيل الرأسية */}
-                <div className="space-y-4 w-full relative z-10">
+                {/* التفاصيل — أفقية على الهاتف، رأسية على الديسكتوب */}
+                <div className="flex md:flex-col items-center justify-around md:justify-center gap-4 md:gap-4 w-full relative z-10">
                   <div className="text-center">
                     <p className="text-[#FDF7E9]/40 text-[8px] mb-0.5 tracking-wider">البوابة</p>
                     <p className="text-[#C9944D] font-black text-xl">{destination.gate}</p>
@@ -260,8 +262,8 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
                   </div>
                 </div>
 
-                {/* باركود صغير */}
-                <div className="w-full relative z-10">
+                {/* باركود صغير — مخفي على الهاتف */}
+                <div className="hidden md:block w-full relative z-10">
                   <div className="flex items-end justify-center gap-[2px] h-6">
                     {Array.from({ length: 18 }).map((_, i) => (
                       <div
@@ -284,10 +286,11 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleExplore}
-                  className="w-full py-2 mt-3 bg-[#C9944D] text-[#FDF7E9] rounded-xl font-bold text-[11px] shadow-lg shadow-black/20 flex items-center justify-center gap-1.5 relative z-10"
+                  className="w-auto md:w-full py-2 px-4 md:px-0 mt-0 md:mt-3 bg-[#C9944D] text-[#FDF7E9] rounded-xl font-bold text-[11px] shadow-lg shadow-black/20 flex items-center justify-center gap-1.5 relative z-10"
                 >
                   <Sparkles className="w-3 h-3" />
-                  اكتشف
+                  <span className="hidden md:inline">اكتشف</span>
+                  <span className="md:hidden">اكتشف {destination.city}</span>
                 </motion.button>
               </div>
             </div>
@@ -307,7 +310,7 @@ export default function TravelCardIntro({ onClose }: TravelCardIntroProps) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.2 }}
             onClick={handleClose}
-            className="absolute top-8 left-8 w-9 h-9 rounded-full bg-[#F5F5F0]/90 backdrop-blur flex items-center justify-center text-[#999] hover:text-[#1a1a1a] transition-colors shadow-lg border border-[#eee]"
+            className="absolute top-4 right-4 md:top-8 md:left-8 md:right-auto w-9 h-9 rounded-full bg-[#F5F5F0]/90 backdrop-blur flex items-center justify-center text-[#999] hover:text-[#1a1a1a] transition-colors shadow-lg border border-[#eee]"
           >
             <X className="w-4 h-4" />
           </motion.button>
