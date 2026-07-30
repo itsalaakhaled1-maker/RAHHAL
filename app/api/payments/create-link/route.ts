@@ -1,5 +1,8 @@
 ﻿// app/api/payments/create-link/route.ts
 
+import { NextRequest, NextResponse } from 'next/server';
+import { createPaymentLink } from '@/lib/mamopay';
+
 export async function POST(request: NextRequest) {
   try {
     const { amount, description, tripId } = await request.json();
