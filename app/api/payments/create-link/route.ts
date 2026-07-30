@@ -1,36 +1,20 @@
-﻿// app/api/payments/create-link/route.ts
-
-import { NextRequest, NextResponse } from 'next/server';
-import { createPaymentLink } from '@/lib/mamopay'; // ✅ استخدم lib/mamopay.ts
-import { createAdminClient } from '@/lib/supabase-admin';
+﻿// app/api/payments/create-link/route.ts (مؤقت — للاختبار فقط)
 
 export async function POST(request: NextRequest) {
   try {
     const { amount, description, tripId } = await request.json();
     
-    const supabase = createAdminClient();
-    const authHeader = request.headers.get('authorization');
-    
-    if (!authHeader) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // ✅ مؤقت — تجاوز Auth للاختبار
+    const userId = 'test-user-id';
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tryrahhal.com';
     
-    // ✅ استخدم createPaymentLink من lib/mamopay.ts
     const paymentLink = await createPaymentLink({
       amount,
       currency: 'AED',
       description,
       tripId,
-      userId: user.id,
+      userId,
       returnUrl: `${baseUrl}/?payment=success&tripId=${tripId}`,
       failureReturnUrl: `${baseUrl}/?payment=failed&tripId=${tripId}`,
     });
