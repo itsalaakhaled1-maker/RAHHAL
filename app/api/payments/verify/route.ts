@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyPayment } from '@/lib/mamopay';
-import { createAdminClient } from '@/lib/supabase-admin'; // ✅ admin client
+import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const transaction = await verifyPayment(transactionId);
     
     if (transaction.status === 'captured' || transaction.status === 'success') {
-      const supabase = createAdminClient(); // ✅ admin client
+      const supabase = createAdminClient();
       
       await supabase
         .from('user_payments')

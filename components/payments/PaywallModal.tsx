@@ -16,6 +16,10 @@ interface PaywallModalProps {
   };
 }
 
+// ✅ Mamo Inline configuration
+const MAMO_PUBLIC_KEY = 'pk_4c131874-d69d-489e-b786-a75427302094'; // Public key من Mamo Dashboard
+const MAMO_CHECKOUT_URL = 'https://checkout.mamopay.com';
+
 export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripData }: PaywallModalProps) {
   const [loading, setLoading] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
@@ -33,35 +37,35 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
       setError(null);
       
       const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      // ✅ جيب الـ session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError || !session) {
+      if (!session) {
         setError('يجب تسجيل الدخول أولاً');
         return;
       }
 
       const tripId = `trip_${Date.now()}`;
+      const days = calculateDays();
       
-      const response = await fetch('/api/payments/create-link', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({
-          amount: 9.00,
-          description: `خطة سفر إلى ${tripData.to} - ${calculateDays()} أيام`,
-          tripId,
-        }),
+      // ✅ Mamo Inline URL
+      const baseUrl = typeof window !== 'undefined' 
+        ? window.location.origin 
+        : 'https://tryrahhal.com';
+      
+      const params = new URLSearchParams({
+        amount: '9.00',
+        currency: 'AED',
+        description: `خطة سفر إلى ${tripData.to} - ${days} أيام`,
+        public_key: MAMO_PUBLIC_KEY,
+        return_url: `${baseUrl}/?payment=success&tripId=${tripId}`,
+        failure_return_url: `${baseUrl}/?payment=failed&tripId=${tripId}`,
+        metadata_trip_id: tripId,
+        metadata_user_id: session.user.id,
       });
 
-      const data = await response.json();
+      const url = `${MAMO_CHECKOUT_URL}/?${params.toString()}`;
+      setPaymentUrl(url);
       
-      if (!response.ok) throw new Error(data.error);
-      
-      setPaymentUrl(data.paymentLinkUrl);
     } catch (err) {
       setError('حدث خطأ في إنشاء رابط الدفع. حاول مرة أخرى.');
       console.error(err);
@@ -77,31 +81,18 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
     return Math.ceil((ret.getTime() - dep.getTime()) / (1000 * 60 * 60 * 24));
   };
 
+  // ✅ Polling: التحقق من الدفع بعد الرجوع
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const transactionId = urlParams.get('transactionId');
     
-    if (paymentStatus === 'success' && transactionId) {
-      verifyPaymentOnServer(transactionId).then((success) => {
-        if (success) {
-          onPaymentSuccess();
-          window.history.replaceState({}, '', '/');
-        }
-      });
+    if (paymentStatus === 'success') {
+      // بعد الدفع الناجح
+      onPaymentSuccess();
+      window.history.replaceState({}, '', '/');
     }
   }, []);
-
-  const verifyPaymentOnServer = async (transactionId: string): Promise<boolean> => {
-    try {
-      const response = await fetch(`/api/payments/verify?transactionId=${transactionId}`);
-      const data = await response.json();
-      return data.success === true;
-    } catch (err) {
-      console.error('Payment verification failed:', err);
-      return false;
-    }
-  };
 
   if (!isOpen) return null;
 
