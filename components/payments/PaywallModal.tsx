@@ -71,7 +71,16 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
 
   const handlePayment = () => {
     if (paymentUrl) {
-      window.open(paymentUrl, '_blank', 'width=600,height=700');
+      const width = 520;
+      const height = 720;
+      const left = (window.innerWidth - width) / 2;
+      const top = (window.innerHeight - height) / 2;
+      
+      window.open(
+        paymentUrl,
+        'mamoPayment',
+        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,status=yes,toolbar=no,menubar=no,location=no`
+      );
     }
   };
 
@@ -146,9 +155,9 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
         ) : paymentUrl ? (
           <button
             onClick={handlePayment}
-            className="w-full py-4 bg-[#0C4938] text-white rounded-2xl font-bold text-lg hover:bg-[#0C4938]/90 transition-all duration-300 flex items-center justify-center gap-3"
+            className="w-full py-4 bg-[#0C4938] text-white rounded-2xl font-bold text-lg hover:bg-[#0C4938]/90 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
           >
-            ادفع ٩ دراهم
+            <span>ادفع ٩ دراهم</span>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
