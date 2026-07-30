@@ -1,50 +1,44 @@
 ﻿// app/api/payments/create-link/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
+import { createPaymentLink } from '@/lib/mamopay'; // ✅ استخدم lib/mamopay.ts
 import { createAdminClient } from '@/lib/supabase-admin';
-
-const MAMO_BASE_URL = 'https://business.mamopay.com/manage_api/v1';
-const MAMO_API_KEY = process.env.MAMO_API_KEY;
 
 export async function POST(request: NextRequest) {
   try {
-    const { amount, description, tripId, userId } = await request.json();
+    const { amount, description, tripId } = await request.json();
     
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tryrahhal.com';
+    const supabase = createAdminClient();
+    const authHeader = request.headers.get('authorization');
     
-    // ✅ Mamo API — Create Payment Link
-    const response = await fetch(`${MAMO_BASE_URL}/links/links`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${MAMO_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount,
-        currency: 'AED',
-        description,
-        link_type: 'inline',
-        return_url: `${baseUrl}/?payment=success&tripId=${tripId}`,
-        failure_return_url: `${baseUrl}/?payment=failed&tripId=${tripId}`,
-        metadata: {
-          trip_id: tripId,
-          user_id: userId,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Mamo API error:', errorText);
-      throw new Error(`Mamo API error: ${errorText}`);
+    if (!authHeader) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const data = await response.json();
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tryrahhal.com';
+    
+    // ✅ استخدم createPaymentLink من lib/mamopay.ts
+    const paymentLink = await createPaymentLink({
+      amount,
+      currency: 'AED',
+      description,
+      tripId,
+      userId: user.id,
+      returnUrl: `${baseUrl}/?payment=success&tripId=${tripId}`,
+      failureReturnUrl: `${baseUrl}/?payment=failed&tripId=${tripId}`,
+    });
+
     return NextResponse.json({
       success: true,
-      paymentLinkUrl: data.url || data.payment_url || data.link_url,
-      paymentLinkId: data.id,
+      paymentLinkUrl: paymentLink.url || paymentLink.payment_url || paymentLink.link_url,
+      paymentLinkId: paymentLink.id,
     });
   } catch (error) {
     console.error('Payment link creation failed:', error);
