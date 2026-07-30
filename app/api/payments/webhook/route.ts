@@ -7,7 +7,7 @@ const WEBHOOK_AUTH_HEADER = process.env.MAMO_WEBHOOK_SECRET || 'authentication h
 
 export async function POST(request: NextRequest) {
   try {
-    // التحقق من auth header (Mamo يرسل header اسمه "authentication header")
+    // التحقق من auth header
     const authHeader = request.headers.get('authentication header');
     
     if (authHeader !== WEBHOOK_AUTH_HEADER) {

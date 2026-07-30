@@ -20,7 +20,7 @@ export async function createPaymentLink({
   returnUrl: string;
   failureReturnUrl: string;
 }) {
-  const response = await fetch(`${MAMO_BASE_URL}/payment-links`, {
+  const response = await fetch(`${MAMO_BASE_URL}/links/links`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${MAMO_API_KEY}`,
