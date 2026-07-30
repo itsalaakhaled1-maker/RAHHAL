@@ -2,13 +2,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createPaymentLink } from '@/lib/mamopay';
-import { createClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase-server'; // ✅ تأكد من هذا
 
 export async function POST(request: NextRequest) {
   try {
     const { amount, description, tripId } = await request.json();
     
-    const supabase = createClient();
+    const supabase = createClient(); // ✅ بدون parameters
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       description,
       tripId,
       userId: user.id,
-      returnUrl: `${baseUrl}/?payment=success&transactionId={TRANSACTION_ID}`, // Mamo بيستبدل {TRANSACTION_ID}
+      returnUrl: `${baseUrl}/?payment=success&transactionId={TRANSACTION_ID}`,
       failureReturnUrl: `${baseUrl}/?payment=failed&trip_id=${tripId}`,
     });
 

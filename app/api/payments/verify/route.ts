@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyPayment } from '@/lib/mamopay';
-import { createClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase-server'; // ✅ server client
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const transaction = await verifyPayment(transactionId);
     
     if (transaction.status === 'captured' || transaction.status === 'success') {
-      const supabase = createClient();
+      const supabase = createClient(); // ✅ server client
       
       await supabase
         .from('user_payments')
