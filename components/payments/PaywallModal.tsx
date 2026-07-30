@@ -72,29 +72,22 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
     return Math.ceil((ret.getTime() - dep.getTime()) / (1000 * 60 * 60 * 24));
   };
 
-  // ✅ التحقق من الدفع بعد الرجوع من Mamo (Polling)
+  // ✅ Polling: التحقق من الدفع بعد الرجوع
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
-    const transactionId = urlParams.get('transactionId'); // Mamo يرجع transactionId
-    const tripId = urlParams.get('trip_id');
+    const transactionId = urlParams.get('transactionId');
     
     if (paymentStatus === 'success' && transactionId) {
-      // Webhook ممكن يكون أول — بس نتحقق كـ backup
       verifyPaymentOnServer(transactionId).then((success) => {
         if (success) {
           onPaymentSuccess();
           window.history.replaceState({}, '', '/');
         }
       });
-    } else if (paymentStatus === 'success' && tripId) {
-      // لو مافي transactionId (نسخة قديمة)
-      onPaymentSuccess();
-      window.history.replaceState({}, '', '/');
     }
   }, []);
 
-  // ✅ دالة التحقق من الدفع في السيرفر
   const verifyPaymentOnServer = async (transactionId: string): Promise<boolean> => {
     try {
       const response = await fetch(`/api/payments/verify?transactionId=${transactionId}`);

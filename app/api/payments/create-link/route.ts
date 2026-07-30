@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       description,
       tripId,
       userId: user.id,
-      returnUrl: `${baseUrl}/?payment=success&trip_id=${tripId}`,
+      returnUrl: `${baseUrl}/?payment=success&transactionId={TRANSACTION_ID}`, // Mamo بيستبدل {TRANSACTION_ID}
       failureReturnUrl: `${baseUrl}/?payment=failed&trip_id=${tripId}`,
     });
 
