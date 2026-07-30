@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 
 export function useAuth() {
@@ -9,6 +10,7 @@ export function useAuth() {
   const [hasPaid, setHasPaid] = useState(false);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -39,5 +41,51 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  return { user, hasPaid, loading };
+  // ─────────────────────────────────────────
+  // تسجيل الدخول بـ Google
+  // ─────────────────────────────────────────
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`,
+      },
+    });
+    if (error) {
+      console.error('Sign in error:', error);
+    }
+  };
+
+  // ─────────────────────────────────────────
+  // تسجيل الخروج
+  // ─────────────────────────────────────────
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Sign out error:', error);
+      return;
+    }
+    setUser(null);
+    setHasPaid(false);
+    router.refresh();
+  };
+
+  // ─────────────────────────────────────────
+  // تحديث الاسم
+  // ─────────────────────────────────────────
+  const updateName = async (name: string) => {
+    const { error } = await supabase.auth.updateUser({
+      data: { full_name: name },
+    });
+    if (error) {
+      console.error('Update name error:', error);
+      return;
+    }
+    setUser((prev: any) => ({
+      ...prev,
+      user_metadata: { ...prev?.user_metadata, full_name: name },
+    }));
+  };
+
+  return { user, hasPaid, loading, signInWithGoogle, signOut, updateName };
 }
