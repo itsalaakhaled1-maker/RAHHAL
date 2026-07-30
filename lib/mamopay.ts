@@ -1,18 +1,21 @@
 ﻿// lib/mamopay.ts
 
-const MAMO_BASE_URL = process.env.MAMO_BASE_URL || 'https://business.mamopay.com/manage_api/v1';
-const MAMO_API_KEY = process.env.MAMO_API_KEY;
-
-export async function verifyPayment(transactionId: string) {
-  const response = await fetch(`${MAMO_BASE_URL}/transactions/${transactionId}`, {
-    headers: {
-      'Authorization': `Bearer ${MAMO_API_KEY}`,
+const response = await fetch(`${MAMO_BASE_URL}/links/links`, {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${MAMO_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    amount,
+    currency,
+    description,
+    link_type: 'standalone', // ✅ غيّر من inline لـ standalone
+    return_url: returnUrl,
+    failure_return_url: failureReturnUrl,
+    metadata: {
+      trip_id: tripId,
+      user_id: userId,
     },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to verify payment');
-  }
-
-  return response.json();
-}
+  }),
+});
