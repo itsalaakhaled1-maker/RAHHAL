@@ -1,6 +1,6 @@
 ﻿// lib/mamopay.ts
 
-const MAMO_BASE_URL = process.env.MAMO_BASE_URL || 'https://business.mamopay.com/manage_api/v1';
+const MAMO_BASE_URL = 'https://hakim.mamopay.com/manage_api/v1';
 const MAMO_API_KEY = process.env.MAMO_API_KEY;
 
 export async function createPaymentLink({
@@ -58,7 +58,6 @@ export async function createPaymentLink({
   return response.json();
 }
 
-// ✅ أرجع verifyPayment
 export async function verifyPayment(transactionId: string) {
   const response = await fetch(`${MAMO_BASE_URL}/transactions/${transactionId}`, {
     headers: {
