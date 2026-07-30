@@ -1,13 +1,14 @@
-﻿// app/api/payments/create-link/route.ts (مؤقت — للاختبار فقط)
+﻿// app/api/payments/create-link/route.ts
 
 export async function POST(request: NextRequest) {
   try {
     const { amount, description, tripId } = await request.json();
     
-    // ✅ مؤقت — تجاوز Auth للاختبار
     const userId = 'test-user-id';
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tryrahhal.com';
+    
+    console.log('Creating payment link with:', { amount, description, tripId, userId });
     
     const paymentLink = await createPaymentLink({
       amount,
@@ -19,15 +20,17 @@ export async function POST(request: NextRequest) {
       failureReturnUrl: `${baseUrl}/?payment=failed&tripId=${tripId}`,
     });
 
+    console.log('Mamo response:', paymentLink);
+
     return NextResponse.json({
       success: true,
       paymentLinkUrl: paymentLink.url || paymentLink.payment_url || paymentLink.link_url,
       paymentLinkId: paymentLink.id,
     });
-  } catch (error) {
-    console.error('Payment link creation failed:', error);
+  } catch (error: any) {
+    console.error('Payment link creation failed:', error.message, error.stack);
     return NextResponse.json(
-      { error: 'Failed to create payment link' },
+      { error: error.message || 'Failed to create payment link' },
       { status: 500 }
     );
   }
