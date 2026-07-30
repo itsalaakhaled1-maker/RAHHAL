@@ -15,19 +15,19 @@ export async function GET(request: NextRequest) {
 
     const transaction = await verifyPayment(transactionId);
     
-    if (transaction.status === 'captured' || transaction.status === 'success') {
+    if (transaction.status === 'captured') {
       const supabase = createAdminClient();
       
       await supabase
         .from('user_payments')
         .upsert({
-          user_id: transaction.metadata.user_id,
+          user_id: transaction.custom_data?.user_id, // ✅ custom_data
           transaction_id: transactionId,
           status: 'paid',
           amount: transaction.amount,
           currency: transaction.currency,
           paid_at: new Date().toISOString(),
-          trip_id: transaction.metadata.trip_id,
+          trip_id: transaction.custom_data?.trip_id, // ✅ custom_data
         });
 
       return NextResponse.json({ success: true, status: 'paid' });
