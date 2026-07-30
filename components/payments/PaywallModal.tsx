@@ -16,22 +16,21 @@ interface PaywallModalProps {
   };
 }
 
-// ✅ Mamo Inline configuration
-const MAMO_PUBLIC_KEY = 'pk_4c131874-d69d-489e-b786-a75427302094'; // Public key من Mamo Dashboard
-const MAMO_CHECKOUT_URL = 'https://checkout.mamopay.com';
-
 export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripData }: PaywallModalProps) {
   const [loading, setLoading] = useState(false);
-  const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen && !paymentUrl) {
-      createPaymentLink();
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    
+    if (paymentStatus === 'success') {
+      onPaymentSuccess();
+      window.history.replaceState({}, '', '/');
     }
-  }, [isOpen]);
+  }, []);
 
-  const createPaymentLink = async () => {
+  const handlePayment = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -47,24 +46,22 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
       const tripId = `trip_${Date.now()}`;
       const days = calculateDays();
       
-      // ✅ Mamo Inline URL
-      const baseUrl = typeof window !== 'undefined' 
-        ? window.location.origin 
-        : 'https://tryrahhal.com';
+      // ✅ Mamo Checkout URL (جرب هذا)
+      const baseUrl = window.location.origin;
       
-      const params = new URLSearchParams({
-        amount: '9.00',
-        currency: 'AED',
-        description: `خطة سفر إلى ${tripData.to} - ${days} أيام`,
-        public_key: MAMO_PUBLIC_KEY,
-        return_url: `${baseUrl}/?payment=success&tripId=${tripId}`,
-        failure_return_url: `${baseUrl}/?payment=failed&tripId=${tripId}`,
-        metadata_trip_id: tripId,
-        metadata_user_id: session.user.id,
-      });
+      // طريقة 1: Mamo Checkout
+      const checkoutUrl = `https://checkout.mamopay.com/pay` +
+        `?amount=9.00` +
+        `&currency=AED` +
+        `&description=${encodeURIComponent(`خطة سفر إلى ${tripData.to} - ${days} أيام`)}` +
+        `&public_key=pk_4c131874-d69d-489e-b786-a75427302094` +
+        `&return_url=${encodeURIComponent(`${baseUrl}/?payment=success&tripId=${tripId}`)}` +
+        `&failure_return_url=${encodeURIComponent(`${baseUrl}/?payment=failed&tripId=${tripId}`)}` +
+        `&metadata[trip_id]=${tripId}` +
+        `&metadata[user_id]=${session.user.id}`;
 
-      const url = `${MAMO_CHECKOUT_URL}/?${params.toString()}`;
-      setPaymentUrl(url);
+      // افتح في نافذة جديدة
+      window.open(checkoutUrl, '_blank', 'width=600,height=700');
       
     } catch (err) {
       setError('حدث خطأ في إنشاء رابط الدفع. حاول مرة أخرى.');
@@ -80,19 +77,6 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
     const ret = new Date(tripData.returnDate);
     return Math.ceil((ret.getTime() - dep.getTime()) / (1000 * 60 * 60 * 24));
   };
-
-  // ✅ Polling: التحقق من الدفع بعد الرجوع
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get('payment');
-    const transactionId = urlParams.get('transactionId');
-    
-    if (paymentStatus === 'success') {
-      // بعد الدفع الناجح
-      onPaymentSuccess();
-      window.history.replaceState({}, '', '/');
-    }
-  }, []);
 
   if (!isOpen) return null;
 
@@ -147,22 +131,26 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
           </div>
         )}
 
-        {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0C4938]"></div>
-            <span className="mr-3 text-[#0C4938]" style={{ fontFamily: 'Manrope' }}>جاري تحضير الدفع...</span>
-          </div>
-        ) : paymentUrl ? (
-          <div className="w-full h-[400px] rounded-xl overflow-hidden border-2 border-[#0C4938]/10">
-            <iframe
-              src={paymentUrl}
-              className="w-full h-full"
-              frameBorder="0"
-              allow="payment"
-              title="Mamo Payment"
-            />
-          </div>
-        ) : null}
+        {/* ✅ زر الدفع بدل iframe */}
+        <button
+          onClick={handlePayment}
+          disabled={loading}
+          className="w-full py-4 bg-[#0C4938] text-white rounded-2xl font-bold text-lg hover:bg-[#0C4938]/90 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50"
+        >
+          {loading ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              جاري التحضير...
+            </>
+          ) : (
+            <>
+              ادفع ٩ دراهم
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </>
+          )}
+        </button>
 
         <p className="text-center mt-4 text-xs text-[#0C4938]/40" style={{ fontFamily: 'Manrope' }}>
           الدفع آمن ومشفّر عبر Mamo Pay. لا يتم حفظ بيانات بطاقتك.
