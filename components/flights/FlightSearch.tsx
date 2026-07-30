@@ -6,6 +6,9 @@ import { Plane, Users, Calendar, ArrowRightLeft, ChevronDown, Search, MapPin, X 
 import { useTripStore } from "@/hooks/useTripStore";
 import { useRouter } from "next/navigation";
 import { getIataCode, getAllSearchableItems, getCountryIata } from "@/lib/iata";
+import AuthModal from "@/components/auth/AuthModal";
+import PaywallModal from "@/components/payments/PaywallModal";
+import { useAuth } from "@/hooks/useAuth";
 
 const currencies = [
   { code: "AED", label: "درهم إماراتي", symbol: "AED" },
@@ -367,6 +370,11 @@ export default function FlightSearch() {
   const router = useRouter();
   const { tripData, setTripData } = useTripStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // ✅ إضافة: Auth + Paywall state
+  const { user, hasPaid, loading: authLoading } = useAuth();
+  const [showAuth, setShowAuth] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -379,9 +387,27 @@ export default function FlightSearch() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ✅ تعديل: handleSearch مع Auth + Paywall
   const handleSearch = () => {
     if (!validate()) return;
 
+    // 1. لو مش مسجل دخول → نافذة تسجيل الدخول
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
+
+    // 2. لو مسجل بس ما دفع → نافذة الدفع
+    if (!hasPaid) {
+      setShowPaywall(true);
+      return;
+    }
+
+    // 3. مسجل ودافع → ابدأ البحث
+    startSearch();
+  };
+
+  const startSearch = () => {
     setTripData({ tripType: "roundtrip" });
 
     let fromIata = getIataCode(tripData.from);
@@ -409,6 +435,18 @@ export default function FlightSearch() {
     });
 
     router.push(`/trip?${params.toString()}`);
+  };
+
+  const handleAuthSuccess = () => {
+    setShowAuth(false);
+    // بعد التسجيل، افتح نافذة الدفع
+    setShowPaywall(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    setShowPaywall(false);
+    // بعد الدفع، ارجع للصفحة الرئيسية
+    window.location.href = '/?payment=success';
   };
 
   const currencyOptions = currencies.map((c) => ({
@@ -559,6 +597,25 @@ export default function FlightSearch() {
           <span className="relative z-10">ابحث عن الرحلة</span>
         </motion.button>
       </motion.div>
+
+      {/* ✅ إضافة: النوافذ المنبثقة */}
+      <AuthModal
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+        onSuccess={handleAuthSuccess}
+      />
+      
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPaymentSuccess={handlePaymentSuccess}
+        tripData={{
+          from: tripData.from,
+          to: tripData.to,
+          departureDate: tripData.departDate,
+          returnDate: tripData.returnDate,
+        }}
+      />
     </div>
   );
 }
