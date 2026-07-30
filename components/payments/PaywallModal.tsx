@@ -33,9 +33,11 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
       setError(null);
       
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
       
-      if (!user) {
+      // ✅ جيب الـ session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
         setError('يجب تسجيل الدخول أولاً');
         return;
       }
@@ -44,7 +46,10 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
       
       const response = await fetch('/api/payments/create-link', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
         body: JSON.stringify({
           amount: 9.00,
           description: `خطة سفر إلى ${tripData.to} - ${calculateDays()} أيام`,
@@ -72,7 +77,6 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
     return Math.ceil((ret.getTime() - dep.getTime()) / (1000 * 60 * 60 * 24));
   };
 
-  // ✅ Polling: التحقق من الدفع بعد الرجوع
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');

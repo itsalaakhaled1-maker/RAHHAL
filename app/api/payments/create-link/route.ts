@@ -2,20 +2,26 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createPaymentLink } from '@/lib/mamopay';
-import { createClient } from '@/lib/supabase-server'; // ✅ تأكد من هذا
+import { createAdminClient } from '@/lib/supabase-admin'; // ✅ استخدم admin client
 
 export async function POST(request: NextRequest) {
   try {
     const { amount, description, tripId } = await request.json();
     
-    const supabase = createClient(); // ✅ بدون parameters
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    // ✅ استخدم admin client بدل server client
+    const supabase = createAdminClient();
+    
+    // ✅ جيب الـ user من الـ request (JWT token)
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tryrahhal.com';
