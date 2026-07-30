@@ -3,8 +3,59 @@
 const MAMO_BASE_URL = 'https://business.mamopay.com/manage_api/v1';
 const MAMO_API_KEY = process.env.MAMO_API_KEY;
 
-export async function createPaymentLink({...}) {
-  // ... نفس الكود ...
+export async function createPaymentLink({
+  amount,
+  currency = 'AED',
+  description,
+  tripId,
+  userId,
+  returnUrl,
+  failureReturnUrl,
+}: {
+  amount: number;
+  currency?: string;
+  description: string;
+  tripId: string;
+  userId: string;
+  returnUrl: string;
+  failureReturnUrl: string;
+}) {
+  const response = await fetch(`${MAMO_BASE_URL}/links`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${MAMO_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: description,
+      description,
+      active: true,
+      return_url: returnUrl,
+      failure_return_url: failureReturnUrl,
+      amount,
+      amount_currency: currency,
+      link_type: 'standalone',
+      enable_tabby: false,
+      enable_message: false,
+      enable_tips: false,
+      save_card: 'off',
+      enable_customer_details: false,
+      enable_quantity: false,
+      enable_qr_code: false,
+      send_customer_receipt: false,
+      custom_data: {
+        trip_id: tripId,
+        user_id: userId,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Mamo API error: ${error}`);
+  }
+
+  return response.json();
 }
 
 export async function verifyPayment(transactionId: string) {
