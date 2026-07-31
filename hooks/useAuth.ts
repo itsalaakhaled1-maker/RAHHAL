@@ -87,5 +87,31 @@ export function useAuth() {
     }));
   };
 
-  return { user, hasPaid, loading, signInWithGoogle, signOut, updateName };
+  // ─────────────────────────────────────────
+  // ✅ إنشاء رابط الدفع الجديد
+  // ─────────────────────────────────────────
+  const createPayment = async (amount: number, description: string, tripId: string) => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const response = await fetch('/api/payments/create-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount, // ← بالدرهم (سيتم تحويله إلى فلس في الـ API)
+        description,
+        tripId,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create payment');
+    }
+
+    return response.json();
+  };
+
+  return { user, hasPaid, loading, signInWithGoogle, signOut, updateName, createPayment };
 }
