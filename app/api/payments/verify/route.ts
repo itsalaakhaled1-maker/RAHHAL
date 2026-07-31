@@ -28,14 +28,9 @@ export async function GET(request: NextRequest) {
           currency: transaction.currency,
           paid_at: new Date().toISOString(),
           trip_id: transaction.custom_data?.trip_id,
-          invoice_number: transaction.custom_data?.invoice_number,
         });
 
-      return NextResponse.json({ 
-        success: true, 
-        status: 'paid',
-        invoiceNumber: transaction.custom_data?.invoice_number,
-      });
+      return NextResponse.json({ success: true, status: 'paid' });
     }
 
     return NextResponse.json({ success: false, status: transaction.status });

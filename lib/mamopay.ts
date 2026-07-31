@@ -9,24 +9,17 @@ export async function createPaymentLink({
   description,
   tripId,
   userId,
-  userEmail,
-  userName,
   returnUrl,
   failureReturnUrl,
 }: {
-  amount: number; // ← بالفلس! (مثلاً 900 = 9 دراهم)
+  amount: number;
   currency?: string;
   description: string;
   tripId: string;
   userId: string;
-  userEmail?: string;
-  userName?: string;
   returnUrl: string;
   failureReturnUrl: string;
 }) {
-  // ✅ توليد رقم فاتورة فريد
-  const invoiceNumber = `RH-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
-  
   const response = await fetch(`${MAMO_BASE_URL}/links`, {
     method: 'POST',
     headers: {
@@ -39,33 +32,26 @@ export async function createPaymentLink({
       active: true,
       return_url: returnUrl,
       failure_return_url: failureReturnUrl,
-      amount, // ← يجب أن يكون بالفلس (×100)
+      amount,
       amount_currency: currency,
       link_type: 'standalone',
       enable_tabby: false,
       enable_message: false,
       enable_tips: false,
       save_card: 'off',
-      enable_customer_details: true, // ← مفعل الآن
+      enable_customer_details: false,
       enable_quantity: false,
       enable_qr_code: false,
-      send_customer_receipt: true, // ← أرسل إيصال للعميل
-      // ✅ أضفنا invoice_number
-      invoice_number: invoiceNumber,
-      // ✅ أضفنا بيانات العميل
-      customer_email: userEmail,
-      customer_name: userName,
+      send_customer_receipt: false,
       custom_data: {
         trip_id: tripId,
         user_id: userId,
-        invoice_number: invoiceNumber,
       },
     }),
   });
 
   if (!response.ok) {
     const error = await response.text();
-    console.error('Mamo API error:', error);
     throw new Error(`Mamo API error: ${error}`);
   }
 
