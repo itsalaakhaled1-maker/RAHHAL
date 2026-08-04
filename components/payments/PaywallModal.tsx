@@ -49,7 +49,7 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
           'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({
-          amount: 9.00,
+          amount: 3.00,
           description: `خطة سفر إلى ${tripData.to}`,
           tripId,
           userId: session.user.id,
