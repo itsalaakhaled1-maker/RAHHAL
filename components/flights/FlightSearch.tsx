@@ -9,6 +9,7 @@ import { getIataCode, getAllSearchableItems, getCountryIata } from "@/lib/iata";
 import AuthModal from "@/components/auth/AuthModal";
 import PaywallModal from "@/components/payments/PaywallModal";
 import { useAuth } from "@/hooks/useAuth";
+import { createClient } from '@/lib/supabase';
 
 const currencies = [
   { code: "AED", label: "درهم إماراتي", symbol: "AED" },
@@ -371,7 +372,8 @@ export default function FlightSearch() {
   const { tripData, setTripData } = useTripStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const { user, hasPaid, loading: authLoading } = useAuth();
+  // ✅ استخدم checkPaymentStatus من useAuth
+  const { user, hasPaid, loading: authLoading, checkPaymentStatus } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -437,10 +439,9 @@ export default function FlightSearch() {
     setShowPaywall(true);
   };
 
-  // ✅ تعديل: بعد نجاح الدفع من صفحة الـ callback
   const handlePaymentSuccess = () => {
     setShowPaywall(false);
-    // ✅ استعادة بيانات الرحلة من sessionStorage إذا وُجدت
+    // استعادة بيانات الرحلة من sessionStorage
     const pendingTrip = sessionStorage.getItem('rahhal_pending_trip');
     if (pendingTrip) {
       try {
@@ -456,32 +457,52 @@ export default function FlightSearch() {
         console.error('Failed to restore trip data:', e);
       }
     }
-    // ✅ ابدأ البحث مباشرة
     startSearch();
   };
 
-  // ✅ إضافة: استمع لـ payment=success عند العودة من صفحة الـ callback
+  // ✅ تعديل: استمع لـ payment=success وأعد التحقق من الدفع
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     
     if (paymentStatus === 'success') {
-      // نظف الـ URL
       window.history.replaceState({}, '', window.location.pathname);
-      // ✅ استدعِ نجاح الدفع
-      handlePaymentSuccess();
+      
+      // ✅ أعد التحقق من الدفع ثم ابدأ البحث
+      const verifyAndSearch = async () => {
+        if (user) {
+          const paid = await checkPaymentStatus(user.id);
+          if (paid) {
+            // استعادة البيانات وابدأ البحث
+            const pendingTrip = sessionStorage.getItem('rahhal_pending_trip');
+            if (pendingTrip) {
+              try {
+                const parsed = JSON.parse(pendingTrip);
+                setTripData({
+                  from: parsed.from,
+                  to: parsed.to,
+                  departDate: parsed.departureDate,
+                  returnDate: parsed.returnDate,
+                });
+                sessionStorage.removeItem('rahhal_pending_trip');
+              } catch (e) {
+                console.error('Failed to restore trip data:', e);
+              }
+            }
+            startSearch();
+          }
+        } else {
+          // المستخدم غير مسجل، انتظر حتى يُحمل
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
+      };
+      verifyAndSearch();
     } else if (paymentStatus === 'failed') {
       window.history.replaceState({}, '', window.location.pathname);
-      // أبقِ النافذة مفتوحة (أو أظهر خطأ)
     }
-    
-    // ✅ أيضاً: تحقق من sessionStorage (بديل)
-    const paymentSuccess = sessionStorage.getItem('rahhal_payment_success');
-    if (paymentSuccess === 'true') {
-      sessionStorage.removeItem('rahhal_payment_success');
-      handlePaymentSuccess();
-    }
-  }, []);
+  }, [user, checkPaymentStatus, setTripData]);
 
   const currencyOptions = currencies.map((c) => ({
     value: c.code,

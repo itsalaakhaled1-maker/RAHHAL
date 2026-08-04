@@ -1,7 +1,7 @@
 ﻿// hooks/useAuth.ts
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 
@@ -12,20 +12,26 @@ export function useAuth() {
   const supabase = createClient();
   const router = useRouter();
 
+  // ✅ إضافة: دالة لإعادة التحقق من الدفع
+  const checkPaymentStatus = useCallback(async (userId: string) => {
+    const { data: payment } = await supabase
+      .from('user_payments')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'paid')
+      .single();
+    
+    setHasPaid(!!payment);
+    return !!payment;
+  }, [supabase]);
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
       
       if (user) {
-        const { data: payment } = await supabase
-          .from('user_payments')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('status', 'paid')
-          .single();
-        
-        setHasPaid(!!payment);
+        await checkPaymentStatus(user.id);
       }
       
       setLoading(false);
@@ -39,11 +45,8 @@ export function useAuth() {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [checkPaymentStatus]);
 
-  // ─────────────────────────────────────────
-  // تسجيل الدخول بـ Google
-  // ─────────────────────────────────────────
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -51,14 +54,9 @@ export function useAuth() {
         redirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`,
       },
     });
-    if (error) {
-      console.error('Sign in error:', error);
-    }
+    if (error) console.error('Sign in error:', error);
   };
 
-  // ─────────────────────────────────────────
-  // تسجيل الخروج
-  // ─────────────────────────────────────────
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -70,9 +68,6 @@ export function useAuth() {
     router.refresh();
   };
 
-  // ─────────────────────────────────────────
-  // تحديث الاسم
-  // ─────────────────────────────────────────
   const updateName = async (name: string) => {
     const { error } = await supabase.auth.updateUser({
       data: { full_name: name },
@@ -87,31 +82,5 @@ export function useAuth() {
     }));
   };
 
-  // ─────────────────────────────────────────
-  // ✅ إنشاء رابط الدفع الجديد
-  // ─────────────────────────────────────────
-  const createPayment = async (amount: number, description: string, tripId: string) => {
-    if (!user) {
-      throw new Error('User not authenticated');
-    }
-
-    const response = await fetch('/api/payments/create-link', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount, // ← بالدرهم (سيتم تحويله إلى فلس في الـ API)
-        description,
-        tripId,
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create payment');
-    }
-
-    return response.json();
-  };
-
-  return { user, hasPaid, loading, signInWithGoogle, signOut, updateName, createPayment };
+  return { user, hasPaid, loading, signInWithGoogle, signOut, updateName, checkPaymentStatus };
 }
