@@ -11,7 +11,6 @@ const TravelCardIntro = dynamic(() => import("@/components/intro/TravelCardIntro
 });
 
 export default function Home() {
-  // ✅ تظهر في كل refresh — بدون localStorage
   const [showIntro, setShowIntro] = useState(true);
 
   return (

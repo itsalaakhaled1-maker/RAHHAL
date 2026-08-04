@@ -5,13 +5,14 @@ import { createPaymentLink } from '@/lib/mamopay';
 
 export async function POST(request: NextRequest) {
   try {
-    const { amount, description, tripId } = await request.json();
+    const { amount, description, tripId, origin } = await request.json();
     
     const userId = 'test-user-id';
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tryrahhal.com';
+    // ✅ استخدم origin من الـ frontend
+    const baseUrl = origin || process.env.NEXT_PUBLIC_SITE_URL || 'https://tryrahhal.com';
     
-    console.log('Creating payment link with:', { amount, description, tripId, userId });
+    console.log('Creating payment link with:', { amount, description, tripId, userId, baseUrl });
     
     const paymentLink = await createPaymentLink({
       amount,
@@ -19,8 +20,9 @@ export async function POST(request: NextRequest) {
       description,
       tripId,
       userId,
-      returnUrl: `${baseUrl}/?payment=success&tripId=${tripId}`,
-      failureReturnUrl: `${baseUrl}/?payment=failed&tripId=${tripId}`,
+      // ✅ تعديل: returnUrl يذهب لصفحة الـ callback
+      returnUrl: `${baseUrl}/payment/callback?status=success&tripId=${tripId}`,
+      failureReturnUrl: `${baseUrl}/payment/callback?status=failed&tripId=${tripId}`,
     });
 
     console.log('Mamo response:', paymentLink);
@@ -33,7 +35,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Payment link creation failed:', error.message, error.stack);
     return NextResponse.json(
-      { error: error.message || 'Failed to create payment link' },
+      { error: error.message || 'Failed to create payment' },
       { status: 500 }
     );
   }

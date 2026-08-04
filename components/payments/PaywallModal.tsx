@@ -53,6 +53,7 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
           description: `خطة سفر إلى ${tripData.to}`,
           tripId,
           userId: session.user.id,
+          origin: window.location.origin,
         }),
       });
 
@@ -69,30 +70,23 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
     }
   };
 
+  // ✅ تعديل: redirect مباشر بدلاً من popup
   const handlePayment = () => {
-    if (paymentUrl) {
-      const width = 520;
-      const height = 720;
-      const left = (window.innerWidth - width) / 2;
-      const top = (window.innerHeight - height) / 2;
-      
-      window.open(
-        paymentUrl,
-        'mamoPayment',
-        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,status=yes,toolbar=no,menubar=no,location=no`
-      );
-    }
-  };
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get('payment');
+    if (!paymentUrl) return;
     
-    if (paymentStatus === 'success') {
-      onPaymentSuccess();
-      window.history.replaceState({}, '', '/');
-    }
-  }, []);
+    // ✅ حفظ بيانات الرحلة في sessionStorage قبل الذهاب لـ Mamopay
+    // (لاستعادتها بعد العودة)
+    sessionStorage.setItem('rahhal_pending_trip', JSON.stringify({
+      from: tripData.from,
+      to: tripData.to,
+      departureDate: tripData.departureDate,
+      returnDate: tripData.returnDate,
+      timestamp: Date.now(),
+    }));
+    
+    // ✅ redirect مباشر إلى Mamopay
+    window.location.href = paymentUrl;
+  };
 
   if (!isOpen) return null;
 

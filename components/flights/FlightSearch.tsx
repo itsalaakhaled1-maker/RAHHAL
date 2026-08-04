@@ -371,7 +371,6 @@ export default function FlightSearch() {
   const { tripData, setTripData } = useTripStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  // ✅ إضافة: Auth + Paywall state
   const { user, hasPaid, loading: authLoading } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -387,23 +386,19 @@ export default function FlightSearch() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ تعديل: handleSearch مع Auth + Paywall
   const handleSearch = () => {
     if (!validate()) return;
 
-    // 1. لو مش مسجل دخول → نافذة تسجيل الدخول
     if (!user) {
       setShowAuth(true);
       return;
     }
 
-    // 2. لو مسجل بس ما دفع → نافذة الدفع
     if (!hasPaid) {
       setShowPaywall(true);
       return;
     }
 
-    // 3. مسجل ودافع → ابدأ البحث
     startSearch();
   };
 
@@ -439,15 +434,54 @@ export default function FlightSearch() {
 
   const handleAuthSuccess = () => {
     setShowAuth(false);
-    // بعد التسجيل، افتح نافذة الدفع
     setShowPaywall(true);
   };
 
+  // ✅ تعديل: بعد نجاح الدفع من صفحة الـ callback
   const handlePaymentSuccess = () => {
     setShowPaywall(false);
-    // بعد الدفع، ارجع للصفحة الرئيسية
-    window.location.href = '/?payment=success';
+    // ✅ استعادة بيانات الرحلة من sessionStorage إذا وُجدت
+    const pendingTrip = sessionStorage.getItem('rahhal_pending_trip');
+    if (pendingTrip) {
+      try {
+        const parsed = JSON.parse(pendingTrip);
+        setTripData({
+          from: parsed.from,
+          to: parsed.to,
+          departDate: parsed.departureDate,
+          returnDate: parsed.returnDate,
+        });
+        sessionStorage.removeItem('rahhal_pending_trip');
+      } catch (e) {
+        console.error('Failed to restore trip data:', e);
+      }
+    }
+    // ✅ ابدأ البحث مباشرة
+    startSearch();
   };
+
+  // ✅ إضافة: استمع لـ payment=success عند العودة من صفحة الـ callback
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    
+    if (paymentStatus === 'success') {
+      // نظف الـ URL
+      window.history.replaceState({}, '', window.location.pathname);
+      // ✅ استدعِ نجاح الدفع
+      handlePaymentSuccess();
+    } else if (paymentStatus === 'failed') {
+      window.history.replaceState({}, '', window.location.pathname);
+      // أبقِ النافذة مفتوحة (أو أظهر خطأ)
+    }
+    
+    // ✅ أيضاً: تحقق من sessionStorage (بديل)
+    const paymentSuccess = sessionStorage.getItem('rahhal_payment_success');
+    if (paymentSuccess === 'true') {
+      sessionStorage.removeItem('rahhal_payment_success');
+      handlePaymentSuccess();
+    }
+  }, []);
 
   const currencyOptions = currencies.map((c) => ({
     value: c.code,
@@ -598,7 +632,7 @@ export default function FlightSearch() {
         </motion.button>
       </motion.div>
 
-      {/* ✅ إضافة: النوافذ المنبثقة */}
+      {/* النوافذ المنبثقة */}
       <AuthModal
         isOpen={showAuth}
         onClose={() => setShowAuth(false)}
