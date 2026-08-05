@@ -14,8 +14,8 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isPaywallOpen, setIsPaywallOpen] = useState(false); // ✅ إضافة
-  const { user, credits, loading, signInWithGoogle, signOut, updateName } = useAuth();
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  const { user, credits, loading, signInWithGoogle, signOut, updateName, refreshCredits } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -25,6 +25,18 @@ export default function Header() {
     setDarkMode(isDark);
     document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
   }, []);
+
+  // ✅ أعد جلب الكريديتس عند العودة من الدفع
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    
+    if (paymentStatus === 'success') {
+      refreshCredits();
+    }
+  }, [refreshCredits]);
 
   const toggleDarkMode = () => {
     const newMode = !darkMode;
@@ -139,7 +151,7 @@ export default function Header() {
                         credits={credits}
                         onSignOut={signOut}
                         onUpdateName={updateName}
-                        onRecharge={() => setIsPaywallOpen(true)} // ✅ تمرير فتح Paywall
+                        onRecharge={() => setIsPaywallOpen(true)}
                       />
                     </>
                   ) : (
@@ -201,11 +213,14 @@ export default function Header() {
         )}
       </motion.header>
 
-      {/* ✅ PaywallModal مشترك */}
+      {/* PaywallModal مشترك */}
       <PaywallModal
         isOpen={isPaywallOpen}
         onClose={() => setIsPaywallOpen(false)}
-        onPaymentSuccess={() => setIsPaywallOpen(false)}
+        onPaymentSuccess={() => {
+          setIsPaywallOpen(false);
+          refreshCredits(); // ✅ أعد الجلب بعد نجاح الدفع من المودال نفسه
+        }}
         tripData={{ from: '', to: '', departureDate: '', returnDate: '' }}
       />
     </>

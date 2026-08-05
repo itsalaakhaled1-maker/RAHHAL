@@ -30,6 +30,16 @@ export function useAuth() {
     return userCredits;
   }, [supabase]);
 
+  // ✅ دالة لإعادة جلب الكريديتس (تُستخدم بعد الدفع)
+  const refreshCredits = useCallback(async () => {
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    if (currentUser) {
+      setUser(currentUser);
+      return await fetchCredits(currentUser.id);
+    }
+    return 0;
+  }, [fetchCredits, supabase]);
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -51,6 +61,23 @@ export function useAuth() {
 
     return () => subscription.unsubscribe();
   }, [fetchCredits]);
+
+  // ✅ استمع لـ ?payment=success في URL وأعد جلب الكريديتس
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    
+    if (paymentStatus === 'success') {
+      // أعد جلب الكريديتس بعد نجاح الدفع
+      refreshCredits();
+      
+      // نظف الـ URL من параметر الدفع
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [refreshCredits]);
 
   const deductCredits = useCallback(async (amount: number = 10) => {
     if (!user?.id) return false;
@@ -119,5 +146,5 @@ export function useAuth() {
     }));
   };
 
-  return { user, credits, loading, signInWithGoogle, signOut, updateName, deductCredits };
+  return { user, credits, loading, signInWithGoogle, signOut, updateName, deductCredits, refreshCredits };
 }

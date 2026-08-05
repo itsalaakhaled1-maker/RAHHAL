@@ -359,7 +359,7 @@ export default function FlightSearch() {
   const { tripData, setTripData } = useTripStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const { user, credits, loading: authLoading, deductCredits } = useAuth();
+  const { user, credits, loading: authLoading, deductCredits, refreshCredits } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -437,7 +437,8 @@ export default function FlightSearch() {
 
   const handlePaymentSuccess = () => {
     setShowPaywall(false);
-    // الكريديتس ستُحدث تلقائياً عبر useAuth
+    // ✅ أعد جلب الكريديتس فوراً بعد نجاح الدفع
+    refreshCredits();
   };
 
   const currencyOptions = currencies.map((c) => ({
