@@ -41,7 +41,7 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
         return;
       }
 
-      const newTripId = `trip_${Date.now()}`;
+      const newTripId = `credits_${Date.now()}`;
       setTripId(newTripId);
       
       const response = await fetch('/api/payments/create-link', {
@@ -51,8 +51,8 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
           'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({
-          amount: 3.00, // ← 3 دراهم للتجربة
-          description: `خطة سفر إلى ${tripData.to}`,
+          amount: 3.00, // ← 3 دراهم = 10 كريديتس (غيّر المبلغ كما تريد)
+          description: 'شحن 10 كريديتس - الرحّال',
           tripId: newTripId,
           userId: session.user.id,
           origin: window.location.origin,
@@ -74,18 +74,6 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
 
   const handlePayment = () => {
     if (!paymentUrl) return;
-    
-    // ✅ حفظ بيانات الرحلة + tripId في sessionStorage
-    sessionStorage.setItem('rahhal_pending_trip', JSON.stringify({
-      from: tripData.from,
-      to: tripData.to,
-      departureDate: tripData.departureDate,
-      returnDate: tripData.returnDate,
-      tripId: tripId,
-      timestamp: Date.now(),
-    }));
-    
-    // ✅ redirect مباشر
     window.location.href = paymentUrl;
   };
 
@@ -102,21 +90,27 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
 
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#C9944D] to-[#0C4938] rounded-full flex items-center justify-center">
-            <span className="text-3xl font-bold text-white">٣</span>
+            <span className="text-3xl font-bold text-white">١٠</span>
           </div>
-          <h2 className="text-3xl font-bold text-[#0C4938] mb-2">فقط ٣ دراهم</h2>
+          <h2 className="text-3xl font-bold text-[#0C4938] mb-2">اشحن 10 كريديتس</h2>
           <p className="text-[#0C4938]/70 text-lg">واحصل على خطّة سفرك الكاملة</p>
         </div>
 
         <div className="space-y-3 mb-8">
-          {['البحث عن الرحلات والفنادق','تقدير الميزانية','خطة يومية كاملة بالتفصيل','تعديل الخطة عدة مرات','حفظ الرحلة ومشاركتها'].map((f,i) => (
-            <div key={i} className="flex items-center gap-3 bg-white/50 rounded-lg p-3">
+          {[
+            'كل رحلة تكلف 10 كريديتس',
+            'الكريديتس لا تنتهي الصلاحية',
+            'استخدمها في أي وقت',
+            'خطّة يومية كاملة بالتفصيل',
+            'تعديل الخطة عدة مرات',
+          ].map((feature, index) => (
+            <div key={index} className="flex items-center gap-3 bg-white/50 rounded-lg p-3">
               <div className="w-6 h-6 bg-[#0C4938] rounded-full flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-[#C9944D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <span className="text-[#0C4938] font-medium">{f}</span>
+              <span className="text-[#0C4938] font-medium">{feature}</span>
             </div>
           ))}
         </div>
@@ -130,7 +124,7 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
           </div>
         ) : paymentUrl ? (
           <button onClick={handlePayment} className="w-full py-4 bg-[#0C4938] text-white rounded-2xl font-bold text-lg hover:bg-[#0C4938]/90 transition-all flex items-center justify-center gap-3 shadow-lg">
-            <span>ادفع ٣ دراهم</span>
+            <span>اشحن الآن (٣ دراهم)</span>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>

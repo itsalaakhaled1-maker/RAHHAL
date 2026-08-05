@@ -1,16 +1,14 @@
 // app/payment/callback/page.tsx
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { createClient } from '@/lib/supabase';
 
 export default function PaymentCallback() {
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<'loading' | 'success' | 'failed' | 'verifying'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
   const [message, setMessage] = useState('جاري معالجة الدفع...');
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const paymentStatus = searchParams.get('status');
 
@@ -30,98 +28,13 @@ export default function PaymentCallback() {
     }
 
     if (paymentStatus === 'success') {
-      setStatus('verifying');
-      setMessage('جاري التحقق من الدفع...');
-      verifyPayment();
-    }
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [paymentStatus]);
-
-  const verifyPayment = async () => {
-    try {
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session) {
-        setStatus('failed');
-        setMessage('يجب تسجيل الدخول أولاً');
-        setTimeout(() => { window.location.href = '/'; }, 3000);
-        return;
-      }
-
-      let attempts = 0;
-      const maxAttempts = 15;
-      
-      const checkPayment = async (): Promise<boolean> => {
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-        
-        const { data: payments, error } = await supabase
-          .from('user_payments')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .eq('status', 'paid')
-          .gte('paid_at', fiveMinutesAgo)
-          .order('paid_at', { ascending: false })
-          .limit(1);
-
-        if (error) {
-          console.error('Supabase error:', error);
-          return false;
-        }
-
-        return payments && payments.length > 0;
-      };
-
-      // فحص فوري
-      const immediate = await checkPayment();
-      if (immediate) {
-        setStatus('success');
-        setMessage('تم الدفع بنجاح! جاري تحضير رحلتك...');
-        setTimeout(() => {
-          // ✅ إعادة تحميل كاملة للصفحة الرئيسية (لإجبار useAuth على التحقق من جديد)
-          window.location.href = '/?payment=success';
-        }, 1500);
-        return;
-      }
-
-      // polling كل 2 ثانية
-      intervalRef.current = setInterval(async () => {
-        attempts++;
-        const found = await checkPayment();
-
-        if (found) {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          setStatus('success');
-          setMessage('تم الدفع بنجاح! جاري تحضير رحلتك...');
-          setTimeout(() => {
-            window.location.href = '/?payment=success';
-          }, 1500);
-          return;
-        }
-
-        if (attempts >= maxAttempts) {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          // fallback: افترض نجاح
-          setStatus('success');
-          setMessage('تم الدفع! جاري التحضير...');
-          setTimeout(() => {
-            window.location.href = '/?payment=success';
-          }, 1500);
-        }
-      }, 2000);
-
-    } catch (error) {
-      console.error('Payment verification error:', error);
       setStatus('success');
-      setMessage('تم الدفع! جاري التحضير...');
+      setMessage('تم شحن الكريديتس بنجاح! جاري التحضير...');
       setTimeout(() => {
         window.location.href = '/?payment=success';
-      }, 1500);
+      }, 2000);
     }
-  };
+  }, [paymentStatus]);
 
   return (
     <div className="min-h-screen bg-[#FDF7E9] flex items-center justify-center p-4">
@@ -149,12 +62,12 @@ export default function PaymentCallback() {
         )}
         
         <h1 className={`text-2xl font-bold mb-3 ${status === 'success' ? 'text-[#0C4938]' : status === 'failed' ? 'text-red-600' : 'text-[#0C4938]'}`}>
-          {status === 'success' ? 'تم الدفع بنجاح!' : status === 'failed' ? 'لم يتم الدفع' : 'جاري المعالجة'}
+          {status === 'success' ? 'تم الشحن بنجاح!' : status === 'failed' ? 'لم يتم الدفع' : 'جاري المعالجة'}
         </h1>
         
         <p className="text-[#0C4938]/60 text-lg mb-8">{message}</p>
 
-        {(status === 'loading' || status === 'verifying') && (
+        {status === 'loading' && (
           <div className="flex justify-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[#0C4938] animate-bounce" style={{ animationDelay: '0ms' }} />
             <div className="w-2 h-2 rounded-full bg-[#0C4938] animate-bounce" style={{ animationDelay: '150ms' }} />

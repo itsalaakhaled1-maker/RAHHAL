@@ -9,7 +9,6 @@ import { getIataCode, getAllSearchableItems, getCountryIata } from "@/lib/iata";
 import AuthModal from "@/components/auth/AuthModal";
 import PaywallModal from "@/components/payments/PaywallModal";
 import { useAuth } from "@/hooks/useAuth";
-import { createClient } from '@/lib/supabase';
 
 const currencies = [
   { code: "AED", label: "درهم إماراتي", symbol: "AED" },
@@ -360,7 +359,7 @@ export default function FlightSearch() {
   const { tripData, setTripData } = useTripStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const { user, hasPaid, loading: authLoading, refreshPaymentStatus } = useAuth();
+  const { user, credits, loading: authLoading, deductCredits } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -383,16 +382,19 @@ export default function FlightSearch() {
       return;
     }
 
-    // ✅ تحقق مباشر من الدفع إذا كان hasPaid false
-    if (!hasPaid) {
-      const paid = await refreshPaymentStatus();
-      if (!paid) {
-        setShowPaywall(true);
-        return;
-      }
+    // ✅ تحقق من الكريديتس (10 كريديتس لكل رحلة)
+    if (credits < 10) {
+      setShowPaywall(true);
+      return;
     }
 
-    startSearch();
+    // ✅ خصم 10 كريديتس وابدأ البحث
+    const deducted = await deductCredits(10);
+    if (deducted) {
+      startSearch();
+    } else {
+      setShowPaywall(true);
+    }
   };
 
   const startSearch = () => {
@@ -427,66 +429,16 @@ export default function FlightSearch() {
 
   const handleAuthSuccess = () => {
     setShowAuth(false);
-    setShowPaywall(true);
+    // بعد التسجيل، تحقق من الكريديتس
+    if (credits < 10) {
+      setShowPaywall(true);
+    }
   };
 
   const handlePaymentSuccess = () => {
     setShowPaywall(false);
-    const pendingTrip = sessionStorage.getItem('rahhal_pending_trip');
-    if (pendingTrip) {
-      try {
-        const parsed = JSON.parse(pendingTrip);
-        setTripData({
-          from: parsed.from,
-          to: parsed.to,
-          departDate: parsed.departureDate,
-          returnDate: parsed.returnDate,
-        });
-        sessionStorage.removeItem('rahhal_pending_trip');
-      } catch (e) {
-        console.error('Failed to restore trip data:', e);
-      }
-    }
-    startSearch();
+    // الكريديتس ستُحدث تلقائياً عبر useAuth
   };
-
-  // ✅ استمع لـ payment=success عند العودة من callback
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get('payment');
-    
-    if (paymentStatus === 'success') {
-      window.history.replaceState({}, '', window.location.pathname);
-      
-      const verifyAndSearch = async () => {
-        // ✅ أعد التحقق من الدفع
-        const paid = await refreshPaymentStatus();
-        
-        if (paid) {
-          const pendingTrip = sessionStorage.getItem('rahhal_pending_trip');
-          if (pendingTrip) {
-            try {
-              const parsed = JSON.parse(pendingTrip);
-              setTripData({
-                from: parsed.from,
-                to: parsed.to,
-                departDate: parsed.departureDate,
-                returnDate: parsed.returnDate,
-              });
-              sessionStorage.removeItem('rahhal_pending_trip');
-            } catch (e) {
-              console.error('Failed to restore trip data:', e);
-            }
-          }
-          startSearch();
-        }
-      };
-      
-      verifyAndSearch();
-    } else if (paymentStatus === 'failed') {
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-  }, [refreshPaymentStatus, setTripData]);
 
   const currencyOptions = currencies.map((c) => ({
     value: c.code,
@@ -510,6 +462,7 @@ export default function FlightSearch() {
         animate={{ opacity: 1, y: 0 }}
         className="search-card p-6 md:p-8"
       >
+        {/* Row 1: From - Swap - To */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
           <div className="md:col-span-5">
             <LocationAutocomplete
@@ -554,6 +507,7 @@ export default function FlightSearch() {
           </div>
         </div>
 
+        {/* Row 2: Dates */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
           <CustomDatePicker
             label="المغادرة"
@@ -578,6 +532,7 @@ export default function FlightSearch() {
           />
         </div>
 
+        {/* Row 3: Passengers - Class - Currency - Budget */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5">
           <CustomDropdown
             label="المسافرين"
@@ -621,6 +576,7 @@ export default function FlightSearch() {
           </div>
         </div>
 
+        {/* Search Button */}
         <motion.button
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
