@@ -26,10 +26,12 @@ export async function POST(request: NextRequest) {
       failureReturnUrl: `${baseUrl}/payment/callback?status=failed&tripId=${tripId}`,
     });
 
+    const linkId = paymentLink.id || paymentLink.link_id || paymentLink.payment_link_id;
+
     return NextResponse.json({
       success: true,
       paymentLinkUrl: paymentLink.url || paymentLink.payment_url || paymentLink.link_url,
-      paymentLinkId: paymentLink.id,
+      paymentLinkId: linkId,
       tripId,
     });
   } catch (error: any) {

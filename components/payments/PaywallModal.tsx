@@ -60,6 +60,11 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
       
       if (!response.ok) throw new Error(data.error);
       
+      // ✅ خزّن linkId للتحقق لاحقاً
+      if (data.paymentLinkId) {
+        localStorage.setItem('rahhal_last_link_id', data.paymentLinkId);
+      }
+      
       setPaymentUrl(data.paymentLinkUrl);
     } catch (err) {
       setError('حدث خطأ في إنشاء رابط الدفع. حاول مرة أخرى.');

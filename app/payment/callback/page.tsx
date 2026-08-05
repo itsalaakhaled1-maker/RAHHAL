@@ -1,16 +1,19 @@
 // app/payment/callback/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { createClient } from '@/lib/supabase';
 
 export default function PaymentCallback() {
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'failed' | 'verifying'>('loading');
   const [message, setMessage] = useState('جاري معالجة الدفع...');
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const paymentStatus = searchParams.get('status');
+  const tripId = searchParams.get('tripId');
 
   useEffect(() => {
     if (!paymentStatus) {
@@ -28,13 +31,130 @@ export default function PaymentCallback() {
     }
 
     if (paymentStatus === 'success') {
+      setStatus('verifying');
+      setMessage('جاري التحقق من الدفع...');
+      verifyAndAddCredits();
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [paymentStatus, tripId]);
+
+  const verifyAndAddCredits = async () => {
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        setStatus('failed');
+        setMessage('يجب تسجيل الدخول أولاً');
+        setTimeout(() => { window.location.href = '/'; }, 3000);
+        return;
+      }
+
+      const userId = session.user.id;
+
+      // ✅ الخطوة 1: تحقق من Supabase أولاً (إذا وصل الـ Webhook)
+      const { data: existingPayment } = await supabase
+        .from('user_payments')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'paid')
+        .order('paid_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existingPayment) {
+        const paidAt = new Date(existingPayment.paid_at);
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+        if (paidAt > tenMinutesAgo) {
+          setStatus('success');
+          setMessage('تم الشحن بنجاح! جاري التحضير...');
+          setTimeout(() => {
+            window.location.href = '/?payment=success';
+          }, 1500);
+          return;
+        }
+      }
+
+      // ✅ الخطوة 2: تحقق من Supabase user_credits (إذا وصل الـ Webhook)
+      const { data: creditsData } = await supabase
+        .from('user_credits')
+        .select('credits')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (creditsData && creditsData.credits >= 10) {
+        setStatus('success');
+        setMessage('تم الشحن بنجاح! جاري التحضير...');
+        setTimeout(() => {
+          window.location.href = '/?payment=success';
+        }, 1500);
+        return;
+      }
+
+      // ✅ الخطوة 3: لم يصل الـ Webhook — تحقق يدوياً من Mamopay
+      // نحتاج linkId. إذا لم يكن في URL، نبحث في localStorage
+      const storedLinkId = localStorage.getItem('rahhal_last_link_id');
+
+      if (storedLinkId) {
+        const verifyResponse = await fetch(`/api/payments/verify-link?linkId=${storedLinkId}&userId=${userId}`);
+        const verifyData = await verifyResponse.json();
+
+        if (verifyData.success && verifyData.paid) {
+          setStatus('success');
+          setMessage('تم الشحن بنجاح! جاري التحضير...');
+          setTimeout(() => {
+            window.location.href = '/?payment=success';
+          }, 1500);
+          return;
+        }
+      }
+
+      // ✅ الخطوة 4: Polling كل 3 ثواني (انتظر الـ Webhook)
+      let attempts = 0;
+      const maxAttempts = 10;
+
+      intervalRef.current = setInterval(async () => {
+        attempts++;
+
+        // أعد التحقق من Supabase
+        const { data: checkCredits } = await supabase
+          .from('user_credits')
+          .select('credits')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (checkCredits && checkCredits.credits >= 10) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          setStatus('success');
+          setMessage('تم الشحن بنجاح! جاري التحضير...');
+          setTimeout(() => {
+            window.location.href = '/?payment=success';
+          }, 1500);
+          return;
+        }
+
+        if (attempts >= maxAttempts) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          setStatus('success');
+          setMessage('تم الدفع! قد يستغرق تحديث الرصيد بضع دقائق...');
+          setTimeout(() => {
+            window.location.href = '/?payment=success';
+          }, 3000);
+        }
+      }, 3000);
+
+    } catch (error) {
+      console.error('Callback verification error:', error);
       setStatus('success');
-      setMessage('تم شحن الكريديتس بنجاح! جاري التحضير...');
+      setMessage('تم الدفع! جاري التحضير...');
       setTimeout(() => {
         window.location.href = '/?payment=success';
       }, 2000);
     }
-  }, [paymentStatus]);
+  };
 
   return (
     <div className="min-h-screen bg-[#FDF7E9] flex items-center justify-center p-4">
@@ -67,7 +187,7 @@ export default function PaymentCallback() {
         
         <p className="text-[#0C4938]/60 text-lg mb-8">{message}</p>
 
-        {status === 'loading' && (
+        {(status === 'loading' || status === 'verifying') && (
           <div className="flex justify-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[#0C4938] animate-bounce" style={{ animationDelay: '0ms' }} />
             <div className="w-2 h-2 rounded-full bg-[#0C4938] animate-bounce" style={{ animationDelay: '150ms' }} />
