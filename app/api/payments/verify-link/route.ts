@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing linkId or userId' }, { status: 400 });
     }
 
-    // ✅ استدعاء Mamopay API للتحقق من الـ link
+    // استدعاء Mamopay API للتحقق من الـ link
     const response = await fetch(`${MAMO_BASE_URL}/links/${linkId}`, {
       headers: {
         'Authorization': `Bearer ${MAMO_API_KEY}`,
@@ -32,17 +32,42 @@ export async function GET(request: NextRequest) {
     const linkData = await response.json();
     console.log('Mamopay link data:', JSON.stringify(linkData, null, 2));
 
-    // ✅ التحقق من حالة الدفع (حسب ما ترسله Mamopay)
-    // قد تكون: paid, captured, completed, successful
-    const isPaid = linkData.status === 'paid' 
-      || linkData.status === 'captured' 
-      || linkData.status === 'completed'
-      || linkData.status === 'successful'
-      || linkData.paid === true
-      || linkData.payment_status === 'paid';
+    // ✅ التحقق من حالة الدفع — status داخل charges array!
+    let isPaid = false;
+    let chargeId = linkId;
+
+    // الطريقة 1: charges array
+    if (linkData.charges && Array.isArray(linkData.charges) && linkData.charges.length > 0) {
+      const lastCharge = linkData.charges[linkData.charges.length - 1];
+      if (lastCharge.status === 'captured' || lastCharge.status === 'paid') {
+        isPaid = true;
+        chargeId = lastCharge.id || linkId;
+      }
+    }
+
+    // الطريقة 2: payment_status على مستوى الـ link
+    if (!isPaid && (linkData.payment_status === 'paid' || linkData.payment_status === 'captured')) {
+      isPaid = true;
+    }
+
+    // الطريقة 3: paid boolean
+    if (!isPaid && linkData.paid === true) {
+      isPaid = true;
+    }
+
+    // الطريقة 4: status على مستوى الـ link (نادر)
+    if (!isPaid && (linkData.status === 'paid' || linkData.status === 'captured' || linkData.status === 'completed')) {
+      isPaid = true;
+    }
+
+    console.log('isPaid:', isPaid, '| chargeId:', chargeId);
 
     if (!isPaid) {
-      return NextResponse.json({ success: false, status: linkData.status, paid: false });
+      return NextResponse.json({ 
+        success: false, 
+        status: linkData.charges?.[0]?.status || linkData.status || 'unknown', 
+        paid: false 
+      });
     }
 
     // ✅ الدفع ناجح — أضف الكريديتس
@@ -51,7 +76,7 @@ export async function GET(request: NextRequest) {
     // تسجيل الدفع
     await supabase.from('user_payments').upsert({
       user_id: userId,
-      transaction_id: linkData.id || linkId,
+      transaction_id: chargeId,
       status: 'paid',
       amount: linkData.amount,
       currency: linkData.amount_currency || 'AED',
