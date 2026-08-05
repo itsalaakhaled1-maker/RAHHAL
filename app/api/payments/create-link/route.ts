@@ -5,9 +5,15 @@ import { createPaymentLink } from '@/lib/mamopay';
 
 export async function POST(request: NextRequest) {
   try {
-    const { amount, description, tripId, origin } = await request.json();
+    const { amount, description, tripId, userId, origin } = await request.json();
     
-    const userId = 'test-user-id';
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Missing userId. User must be authenticated.' },
+        { status: 401 }
+      );
+    }
+    
     const baseUrl = origin || process.env.NEXT_PUBLIC_SITE_URL || 'https://tryrahhal.com';
     
     const paymentLink = await createPaymentLink({
@@ -24,7 +30,7 @@ export async function POST(request: NextRequest) {
       success: true,
       paymentLinkUrl: paymentLink.url || paymentLink.payment_url || paymentLink.link_url,
       paymentLinkId: paymentLink.id,
-      tripId, // ✅ أرسل tripId للـ frontend
+      tripId,
     });
   } catch (error: any) {
     return NextResponse.json(

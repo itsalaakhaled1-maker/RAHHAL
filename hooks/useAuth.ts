@@ -30,12 +30,13 @@ export function useAuth() {
     return userCredits;
   }, [supabase]);
 
-  // ✅ دالة لإعادة جلب الكريديتس (تُستخدم بعد الدفع)
   const refreshCredits = useCallback(async () => {
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     if (currentUser) {
       setUser(currentUser);
-      return await fetchCredits(currentUser.id);
+      const credits = await fetchCredits(currentUser.id);
+      console.log(`Refreshed credits for ${currentUser.id}: ${credits}`);
+      return credits;
     }
     return 0;
   }, [fetchCredits, supabase]);
@@ -62,7 +63,7 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, [fetchCredits]);
 
-  // ✅ استمع لـ ?payment=success في URL وأعد جلب الكريديتس
+  // ✅ استمع لـ ?payment=success في URL
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
@@ -70,10 +71,10 @@ export function useAuth() {
     const paymentStatus = urlParams.get('payment');
     
     if (paymentStatus === 'success') {
-      // أعد جلب الكريديتس بعد نجاح الدفع
+      console.log('Payment success detected in URL, refreshing credits...');
       refreshCredits();
       
-      // نظف الـ URL من параметر الدفع
+      // نظف الـ URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     }

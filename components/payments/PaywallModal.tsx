@@ -20,7 +20,6 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
   const [loading, setLoading] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [tripId, setTripId] = useState<string>('');
 
   useEffect(() => {
     if (isOpen && !paymentUrl) {
@@ -42,19 +41,17 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
       }
 
       const newTripId = `credits_${Date.now()}`;
-      setTripId(newTripId);
       
       const response = await fetch('/api/payments/create-link', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({
           amount: 3.00, // ← 3 دراهم = 10 كريديتس (غيّر المبلغ كما تريد)
           description: 'شحن 10 كريديتس - الرحّال',
           tripId: newTripId,
-          userId: session.user.id,
+          userId: session.user.id, // ✅ أرسل userId الحقيقي
           origin: window.location.origin,
         }),
       });
