@@ -52,7 +52,6 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, [fetchCredits]);
 
-  // ✅ خصم كريديتس
   const deductCredits = useCallback(async (amount: number = 10) => {
     if (!user?.id) return false;
     
@@ -65,7 +64,7 @@ export function useAuth() {
     const currentCredits = current?.credits || 0;
     
     if (currentCredits < amount) {
-      return false; // لا يوجد رصيد كافي
+      return false;
     }
     
     const { error } = await supabase
@@ -120,5 +119,5 @@ export function useAuth() {
     }));
   };
 
-  return { user, credits, loading, signInWithGoogle, signOut, updateName, deductCredits, fetchCredits };
+  return { user, credits, loading, signInWithGoogle, signOut, updateName, deductCredits };
 }

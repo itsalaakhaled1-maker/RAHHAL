@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, User, Mail, LogOut, Edit3, Check } from "lucide-react";
+import { X, User, Mail, LogOut, Edit3, Check, Coins, Zap } from "lucide-react";
 import { useState } from "react";
 import Portal from "@/components/ui/Portal";
 
@@ -15,11 +15,13 @@ interface ProfileModalProps {
       avatar_url?: string;
     };
   } | null;
+  credits: number;
   onSignOut: () => void;
   onUpdateName: (name: string) => void;
+  onRecharge?: () => void; // ✅ إضافة: فتح نافذة الشحن
 }
 
-export default function ProfileModal({ isOpen, onClose, user, onSignOut, onUpdateName }: ProfileModalProps) {
+export default function ProfileModal({ isOpen, onClose, user, credits, onSignOut, onUpdateName, onRecharge }: ProfileModalProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(user?.user_metadata?.full_name || "");
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -41,6 +43,11 @@ export default function ProfileModal({ isOpen, onClose, user, onSignOut, onUpdat
     onClose();
   };
 
+  const handleRecharge = () => {
+    onClose(); // أغلق الملف الشخصي
+    if (onRecharge) onRecharge(); // افتح نافذة الشحن
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -56,7 +63,7 @@ export default function ProfileModal({ isOpen, onClose, user, onSignOut, onUpdat
               onClick={onClose}
             />
 
-            {/* Profile Modal - Centered */}
+            {/* Profile Modal */}
             <div className="fixed top-0 left-0 w-full h-full z-50 flex items-center justify-center pointer-events-none overflow-y-auto">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8, y: 30 }}
@@ -105,6 +112,41 @@ export default function ProfileModal({ isOpen, onClose, user, onSignOut, onUpdat
 
                   {/* Body */}
                   <div className="p-6 space-y-4">
+                    {/* ✅ قسم الكريديتس + زر الشحن */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.35 }}
+                      className="bg-gradient-to-br from-[#C9944D]/10 to-[#0C4938]/5 rounded-xl p-4 border border-[#C9944D]/20"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-full bg-[#C9944D]/20 flex items-center justify-center">
+                            <Coins className="w-6 h-6 text-[#C9944D]" />
+                          </div>
+                          <div>
+                            <p className="text-sm text-[var(--text-muted)]">رصيد الكريديتس</p>
+                            <p className="text-2xl font-black text-[#0C4938]">{credits} <span className="text-sm font-medium">كريديت</span></p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-[var(--text-muted)]">كل رحلة = 10 كريديت</p>
+                          <p className="text-xs text-[var(--text-muted)]">الكريديتس لا تنتهي</p>
+                        </div>
+                      </div>
+
+                      {/* ✅ زر الشحن */}
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleRecharge}
+                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#0C4938] text-white font-bold hover:bg-[#0C4938]/90 transition-all shadow-lg"
+                      >
+                        <Zap className="w-5 h-5 text-[#C9944D]" />
+                        <span>اشحن 10 كريديتس (٣ دراهم)</span>
+                      </motion.button>
+                    </motion.div>
+
                     {/* Name */}
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-[var(--text-muted)]">
