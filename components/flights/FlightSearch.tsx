@@ -26,9 +26,6 @@ const travelClasses = [
   { value: "FIRST", label: "الأولى" },
 ];
 
-// ─────────────────────────────────────────
-// Custom Dropdown Component
-// ─────────────────────────────────────────
 function CustomDropdown({ label, value, options, onChange, icon: Icon, error }: any) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -88,9 +85,6 @@ function CustomDropdown({ label, value, options, onChange, icon: Icon, error }: 
   );
 }
 
-// ─────────────────────────────────────────
-// Autocomplete Location Input
-// ─────────────────────────────────────────
 function LocationAutocomplete({ label, value, onChange, icon: Icon, error, placeholder }: any) {
   const [input, setInput] = useState(value);
   const [open, setOpen] = useState(false);
@@ -217,9 +211,6 @@ function LocationAutocomplete({ label, value, onChange, icon: Icon, error, place
   );
 }
 
-// ─────────────────────────────────────────
-// Custom Date Picker
-// ─────────────────────────────────────────
 function CustomDatePicker({ label, value, onChange, icon: Icon, error, min }: any) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -364,16 +355,12 @@ function CustomDatePicker({ label, value, onChange, icon: Icon, error, min }: an
   );
 }
 
-// ─────────────────────────────────────────
-// Main FlightSearch Component
-// ─────────────────────────────────────────
 export default function FlightSearch() {
   const router = useRouter();
   const { tripData, setTripData } = useTripStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  // ✅ استخدم checkPaymentStatus من useAuth
-  const { user, hasPaid, loading: authLoading, checkPaymentStatus } = useAuth();
+  const { user, hasPaid, loading: authLoading, refreshPaymentStatus } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -388,7 +375,7 @@ export default function FlightSearch() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!validate()) return;
 
     if (!user) {
@@ -396,9 +383,13 @@ export default function FlightSearch() {
       return;
     }
 
+    // ✅ تحقق مباشر من الدفع إذا كان hasPaid false
     if (!hasPaid) {
-      setShowPaywall(true);
-      return;
+      const paid = await refreshPaymentStatus();
+      if (!paid) {
+        setShowPaywall(true);
+        return;
+      }
     }
 
     startSearch();
@@ -441,7 +432,6 @@ export default function FlightSearch() {
 
   const handlePaymentSuccess = () => {
     setShowPaywall(false);
-    // استعادة بيانات الرحلة من sessionStorage
     const pendingTrip = sessionStorage.getItem('rahhal_pending_trip');
     if (pendingTrip) {
       try {
@@ -460,7 +450,7 @@ export default function FlightSearch() {
     startSearch();
   };
 
-  // ✅ تعديل: استمع لـ payment=success وأعد التحقق من الدفع
+  // ✅ استمع لـ payment=success عند العودة من callback
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
@@ -468,41 +458,35 @@ export default function FlightSearch() {
     if (paymentStatus === 'success') {
       window.history.replaceState({}, '', window.location.pathname);
       
-      // ✅ أعد التحقق من الدفع ثم ابدأ البحث
       const verifyAndSearch = async () => {
-        if (user) {
-          const paid = await checkPaymentStatus(user.id);
-          if (paid) {
-            // استعادة البيانات وابدأ البحث
-            const pendingTrip = sessionStorage.getItem('rahhal_pending_trip');
-            if (pendingTrip) {
-              try {
-                const parsed = JSON.parse(pendingTrip);
-                setTripData({
-                  from: parsed.from,
-                  to: parsed.to,
-                  departDate: parsed.departureDate,
-                  returnDate: parsed.returnDate,
-                });
-                sessionStorage.removeItem('rahhal_pending_trip');
-              } catch (e) {
-                console.error('Failed to restore trip data:', e);
-              }
+        // ✅ أعد التحقق من الدفع
+        const paid = await refreshPaymentStatus();
+        
+        if (paid) {
+          const pendingTrip = sessionStorage.getItem('rahhal_pending_trip');
+          if (pendingTrip) {
+            try {
+              const parsed = JSON.parse(pendingTrip);
+              setTripData({
+                from: parsed.from,
+                to: parsed.to,
+                departDate: parsed.departureDate,
+                returnDate: parsed.returnDate,
+              });
+              sessionStorage.removeItem('rahhal_pending_trip');
+            } catch (e) {
+              console.error('Failed to restore trip data:', e);
             }
-            startSearch();
           }
-        } else {
-          // المستخدم غير مسجل، انتظر حتى يُحمل
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
+          startSearch();
         }
       };
+      
       verifyAndSearch();
     } else if (paymentStatus === 'failed') {
       window.history.replaceState({}, '', window.location.pathname);
     }
-  }, [user, checkPaymentStatus, setTripData]);
+  }, [refreshPaymentStatus, setTripData]);
 
   const currencyOptions = currencies.map((c) => ({
     value: c.code,
@@ -526,7 +510,6 @@ export default function FlightSearch() {
         animate={{ opacity: 1, y: 0 }}
         className="search-card p-6 md:p-8"
       >
-        {/* Row 1: From - Swap - To */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
           <div className="md:col-span-5">
             <LocationAutocomplete
@@ -571,7 +554,6 @@ export default function FlightSearch() {
           </div>
         </div>
 
-        {/* Row 2: Dates */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
           <CustomDatePicker
             label="المغادرة"
@@ -596,7 +578,6 @@ export default function FlightSearch() {
           />
         </div>
 
-        {/* Row 3: Passengers - Class - Currency - Budget */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-5">
           <CustomDropdown
             label="المسافرين"
@@ -640,7 +621,6 @@ export default function FlightSearch() {
           </div>
         </div>
 
-        {/* Search Button */}
         <motion.button
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
@@ -653,7 +633,6 @@ export default function FlightSearch() {
         </motion.button>
       </motion.div>
 
-      {/* النوافذ المنبثقة */}
       <AuthModal
         isOpen={showAuth}
         onClose={() => setShowAuth(false)}

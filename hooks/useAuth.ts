@@ -12,18 +12,36 @@ export function useAuth() {
   const supabase = createClient();
   const router = useRouter();
 
-  // ✅ إضافة: دالة لإعادة التحقق من الدفع
   const checkPaymentStatus = useCallback(async (userId: string) => {
-    const { data: payment } = await supabase
+    const { data: payment, error } = await supabase
       .from('user_payments')
       .select('*')
       .eq('user_id', userId)
       .eq('status', 'paid')
-      .single();
+      .maybeSingle();
+    
+    if (error) {
+      console.error('Payment check error:', error);
+      setHasPaid(false);
+      return false;
+    }
     
     setHasPaid(!!payment);
     return !!payment;
   }, [supabase]);
+
+  // ✅ دالة لإعادة التحقق من الدفع (تُستخدم بعد العودة من Mamopay)
+  const refreshPaymentStatus = useCallback(async () => {
+    if (!user?.id) {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        setUser(currentUser);
+        return await checkPaymentStatus(currentUser.id);
+      }
+      return false;
+    }
+    return await checkPaymentStatus(user.id);
+  }, [user, supabase, checkPaymentStatus]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -82,5 +100,5 @@ export function useAuth() {
     }));
   };
 
-  return { user, hasPaid, loading, signInWithGoogle, signOut, updateName, checkPaymentStatus };
+  return { user, hasPaid, loading, signInWithGoogle, signOut, updateName, checkPaymentStatus, refreshPaymentStatus };
 }
