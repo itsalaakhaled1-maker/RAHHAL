@@ -83,32 +83,40 @@ export function useAuth() {
   const deductCredits = useCallback(async (amount: number = 10) => {
     if (!user?.id) return false;
     
-    const { data: current } = await supabase
+    const { data: current, error: fetchError } = await supabase
       .from('user_credits')
       .select('credits')
       .eq('user_id', user.id)
       .maybeSingle();
     
-    const currentCredits = current?.credits || 0;
-    
-    if (currentCredits < amount) {
+    if (fetchError) {
+      console.error('Deduct credits fetch error:', fetchError);
       return false;
     }
     
-    const { error } = await supabase
+    const currentCredits = current?.credits ?? 0;
+    
+    if (currentCredits < amount) {
+      console.log(`Not enough credits: ${currentCredits} < ${amount}`);
+      return false;
+    }
+    
+    // ✅ استخدم update بدلاً من upsert (الصف موجود بالفعل)
+    const { error: updateError } = await supabase
       .from('user_credits')
-      .upsert({
-        user_id: user.id,
+      .update({
         credits: currentCredits - amount,
         updated_at: new Date().toISOString(),
-      });
+      })
+      .eq('user_id', user.id);
     
-    if (error) {
-      console.error('Deduct credits error:', error);
+    if (updateError) {
+      console.error('Deduct credits update error:', updateError);
       return false;
     }
     
     setCredits(currentCredits - amount);
+    console.log(`Deducted ${amount} credits. New balance: ${currentCredits - amount}`);
     return true;
   }, [user, supabase]);
 
