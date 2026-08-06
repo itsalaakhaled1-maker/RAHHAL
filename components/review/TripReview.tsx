@@ -274,7 +274,7 @@ export default function TripReview() {
           className="col-span-2 md:col-span-1 py-4 btn-primary text-white rounded-2xl font-bold shadow-gold hover:shadow-card-lg transition-all flex items-center justify-center gap-2"
         >
           <Printer className="w-5 h-5" />
-          طباعة الكتيب
+          تنزيل كتيب الرحلة
         </motion.button>
 
         <motion.button
