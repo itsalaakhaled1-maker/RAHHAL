@@ -312,7 +312,7 @@ export default function TripReview() {
           ) : (
             <Download className="w-5 h-5" />
           )}
-          PDF
+          تنزيل الميزانية
         </motion.button>
       </div>
     </div>
