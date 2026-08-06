@@ -129,7 +129,7 @@ export default function Header() {
                       >
                         <Coins className="w-4 h-4 text-[#C9944D]" />
                         <span className="text-sm font-bold text-[#C9944D]">{credits}</span>
-                        <span className="text-[10px] text-[#C9944D]/70">كريديت</span>
+                        <span className="text-[10px] text-[#C9944D]/70">رصيد الرحلات</span>
                       </motion.button>
 
                       <motion.button
