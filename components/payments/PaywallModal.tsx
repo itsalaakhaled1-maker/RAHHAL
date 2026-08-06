@@ -48,8 +48,8 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: 3.00, // ← 3 دراهم = 10 كريديتس (غيّر المبلغ كما تريد)
-          description: 'شحن 10 كريديتس - الرحّال',
+          amount: 9.00, // ← 3 دراهم = 10 كريديتس (غيّر المبلغ كما تريد)
+          description: 'شحن 1 رحلة - الرحّال',
           tripId: newTripId,
           userId: session.user.id, // ✅ أرسل userId الحقيقي
           origin: window.location.origin,
@@ -92,16 +92,15 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
 
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#C9944D] to-[#0C4938] rounded-full flex items-center justify-center">
-            <span className="text-3xl font-bold text-white">١٠</span>
+            <span className="text-3xl font-bold text-white">1</span>
           </div>
-          <h2 className="text-3xl font-bold text-[#0C4938] mb-2">اشحن 10 كريديتس</h2>
+          <h2 className="text-3xl font-bold text-[#0C4938] mb-2">ادفع 1 رحلة</h2>
           <p className="text-[#0C4938]/70 text-lg">واحصل على خطّة سفرك الكاملة</p>
         </div>
 
         <div className="space-y-3 mb-8">
           {[
-            'كل رحلة تكلف 10 كريديتس',
-            'الكريديتس لا تنتهي الصلاحية',
+            'كل رحلة تكلف 9 درهم',
             'استخدمها في أي وقت',
             'خطّة يومية كاملة بالتفصيل',
             'تعديل الخطة عدة مرات',
@@ -126,7 +125,7 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
           </div>
         ) : paymentUrl ? (
           <button onClick={handlePayment} className="w-full py-4 bg-[#0C4938] text-white rounded-2xl font-bold text-lg hover:bg-[#0C4938]/90 transition-all flex items-center justify-center gap-3 shadow-lg">
-            <span>اشحن الآن (٣ دراهم)</span>
+            <span>اشحن الآن (9 دراهم)</span>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
