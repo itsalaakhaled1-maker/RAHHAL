@@ -48,7 +48,7 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: 9.00, // ← 3 دراهم = 10 كريديتس (غيّر المبلغ كما تريد)
+          amount: 16.00, // ← 3 دراهم = 10 كريديتس (غيّر المبلغ كما تريد)
           description: 'شحن 1 رحلة - الرحّال',
           tripId: newTripId,
           userId: session.user.id, // ✅ أرسل userId الحقيقي
@@ -100,7 +100,7 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
 
         <div className="space-y-3 mb-8">
           {[
-            'كل رحلة تكلف 9 درهم',
+            'كل رحلة تكلف 16 درهم فقط',
             'استخدمها في أي وقت',
             'خطّة يومية كاملة بالتفصيل',
             'تعديل الخطة عدة مرات',
@@ -125,7 +125,7 @@ export default function PaywallModal({ isOpen, onClose, onPaymentSuccess, tripDa
           </div>
         ) : paymentUrl ? (
           <button onClick={handlePayment} className="w-full py-4 bg-[#0C4938] text-white rounded-2xl font-bold text-lg hover:bg-[#0C4938]/90 transition-all flex items-center justify-center gap-3 shadow-lg">
-            <span>اشحن الآن (9 دراهم)</span>
+            <span>اشحن الآن (16 دراهم)</span>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>

@@ -204,8 +204,8 @@ export default function Header() {
                   className="w-full flex items-center gap-2 px-4 py-3 rounded-xl bg-[#C9944D]/10"
                 >
                   <Coins className="w-5 h-5 text-[#C9944D]" />
-                  <span className="font-bold text-[#C9944D]">{credits} كريديت</span>
-                  <span className="text-xs text-[#C9944D]/70 mr-auto">اضغط للشحن</span>
+                  <span className="font-bold text-[#C9944D]">{credits} رصيد الرحلات</span>
+                  <span className="text-xs text-[#C9944D]/70 mr-auto">اضغط لإضافة رصيد رحلات</span>
                 </button>
               )}
             </div>
