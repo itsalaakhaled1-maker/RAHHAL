@@ -106,7 +106,7 @@ export default function TripReview() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-2xl font-bold text-[var(--text-heading)]">مراجعة الرحلة</h2>
-          <p className="text-[var(--text-muted)] mt-1">تأكد من كل التفاصيل قبل الحجز</p>
+          <p className="text-[var(--text-muted)] mt-1">خطتك جاهزة! ✨ لحفظها والعودة إليها لاحقًا، اضغط على «حفظ رحلتي». يرجى ملاحظة ان الرحلة لن تحفظ تلقائياً.</p>
         </div>
         <button
           onClick={() => setCurrentStep(4)}
