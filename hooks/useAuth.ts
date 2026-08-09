@@ -18,13 +18,13 @@ export function useAuth() {
       .select('credits')
       .eq('user_id', userId)
       .maybeSingle();
-    
+
     if (error) {
       console.error('Credits fetch error:', error);
       setCredits(0);
       return 0;
     }
-    
+
     const userCredits = data?.credits || 0;
     setCredits(userCredits);
     return userCredits;
@@ -45,11 +45,11 @@ export function useAuth() {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-      
+
       if (user) {
         await fetchCredits(user.id);
       }
-      
+
       setLoading(false);
     };
 
@@ -66,59 +66,47 @@ export function useAuth() {
   // ✅ استمع لـ ?payment=success في URL
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
-    
+
     if (paymentStatus === 'success') {
       console.log('Payment success detected in URL, refreshing credits...');
       refreshCredits();
-      
+
       // نظف الـ URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     }
   }, [refreshCredits]);
 
-  const deductCredits = useCallback(async (amount: number = 10) => {
+  // ✅ خصم الكريديتس من Server — لا يمكن تخطيه من Console
+  const deductCredits = useCallback(async (amount: number = 1) => {
     if (!user?.id) return false;
-    
-    const { data: current, error: fetchError } = await supabase
-      .from('user_credits')
-      .select('credits')
-      .eq('user_id', user.id)
-      .maybeSingle();
-    
-    if (fetchError) {
-      console.error('Deduct credits fetch error:', fetchError);
+
+    try {
+      const response = await fetch('/api/credits/deduct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description: 'Trip search' }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Deduct credits failed:', data.error);
+        return false;
+      }
+
+      setCredits(data.credits);
+      console.log(`Deducted ${amount} credits via server. New balance: ${data.credits}`);
+      return true;
+    } catch (err) {
+      console.error('Deduct credits error:', err);
       return false;
     }
-    
-    const currentCredits = current?.credits ?? 0;
-    
-    if (currentCredits < amount) {
-      console.log(`Not enough credits: ${currentCredits} < ${amount}`);
-      return false;
-    }
-    
-    // ✅ استخدم update بدلاً من upsert (الصف موجود بالفعل)
-    const { error: updateError } = await supabase
-      .from('user_credits')
-      .update({
-        credits: currentCredits - amount,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('user_id', user.id);
-    
-    if (updateError) {
-      console.error('Deduct credits update error:', updateError);
-      return false;
-    }
-    
-    setCredits(currentCredits - amount);
-    console.log(`Deducted ${amount} credits. New balance: ${currentCredits - amount}`);
-    return true;
   }, [user, supabase]);
+  
 
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
