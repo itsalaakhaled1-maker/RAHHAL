@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import ProfileModal from "@/components/ui/ProfileModal";
 import PaywallModal from "@/components/payments/PaywallModal";
 import { motion } from "framer-motion";
-import { Sun, Moon, Menu, X, LogIn, User, Coins } from "lucide-react";
+import { Sun, Moon, Menu, X, LogIn, User, Coins, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,13 +26,13 @@ export default function Header() {
     document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
   }, []);
 
-  // ✅ أعد جلب الكريديتس عند العودة من الدفع
+  // Re-fetch credits on return from payment
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
-    
+
     if (paymentStatus === 'success') {
       refreshCredits();
     }
@@ -44,6 +44,14 @@ export default function Header() {
     const theme = newMode ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
+  };
+
+  const scrollToFeedback = () => {
+    const footer = document.getElementById('feedback-section');
+    if (footer) {
+      footer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    setMenuOpen(false);
   };
 
   if (!mounted) return null;
@@ -102,6 +110,17 @@ export default function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
+              {/* Feedback Button - Desktop */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={scrollToFeedback}
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--color-primary-500)]/5 hover:text-[var(--color-primary-500)] transition-all"
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span>للشكاوي والاقتراحات</span>
+              </motion.button>
+
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggleDarkMode}
@@ -120,7 +139,7 @@ export default function Header() {
                 <>
                   {user ? (
                     <>
-                      {/* ✅ شارة الكريديتس (تفتح Paywall عند الضغط) */}
+                      {/* Credits Badge */}
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -195,6 +214,16 @@ export default function Header() {
                   {item.label}
                 </Link>
               ))}
+
+              {/* Feedback Button - Mobile */}
+              <button
+                onClick={scrollToFeedback}
+                className="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-medium text-[var(--text-secondary)] hover:bg-[var(--color-primary-500)]/5 hover:text-[var(--color-primary-500)]"
+              >
+                <MessageSquare className="w-5 h-5" />
+                <span>للشكاوي والاقتراحات</span>
+              </button>
+
               {user && (
                 <button
                   onClick={() => {
@@ -213,13 +242,13 @@ export default function Header() {
         )}
       </motion.header>
 
-      {/* PaywallModal مشترك */}
+      {/* PaywallModal */}
       <PaywallModal
         isOpen={isPaywallOpen}
         onClose={() => setIsPaywallOpen(false)}
         onPaymentSuccess={() => {
           setIsPaywallOpen(false);
-          refreshCredits(); // ✅ أعد الجلب بعد نجاح الدفع من المودال نفسه
+          refreshCredits();
         }}
         tripData={{ from: '', to: '', departureDate: '', returnDate: '' }}
       />
