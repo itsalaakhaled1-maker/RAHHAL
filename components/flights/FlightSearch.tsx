@@ -253,7 +253,11 @@ function CustomDatePicker({ label, value, onChange, icon: Icon, error, min }: an
 
   const handleSelect = (day: number) => {
     const date = new Date(viewYear, viewMonth, day);
-    const formatted = date.toISOString().split("T")[0];
+    // ✅ استخدم التوقيت المحلي بدلاً من UTC
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    const formatted = `${year}-${month}-${d}`;
     onChange(formatted);
     setOpen(false);
   };
