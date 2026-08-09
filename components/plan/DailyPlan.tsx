@@ -407,7 +407,7 @@ export default function DailyPlan() {
         <p className="text-[var(--text-muted)] font-medium">جاري إنشاء خطتك اليومية بالذكاء الاصطناعي...</p>
         <div className="flex items-center gap-2 mt-4 text-sm text-[var(--text-muted)]">
           <Sparkles className="w-4 h-4" />
-          <span>Gemini يخطط لرحلتك</span>
+          <span>الرحال يخطط لرحلتك</span>
         </div>
       </div>
     );
