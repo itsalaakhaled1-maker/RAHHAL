@@ -1,14 +1,36 @@
 // app/api/credits/deduct/route.ts
 
-// ✅ خصم الكريديتس من Server — لا يمكن تخطيه من Console
-
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase-server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
   try {
-    // ✅ 1. Authenticate user server-side (cannot be faked)
-    const supabase = createClient();
+    // ✅ Create server client inline (avoids supabase-server.ts issues)
+    const cookieStore = await cookies();
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              );
+            } catch {
+              // Ignore if called from Server Component
+            }
+          },
+        },
+      }
+    );
+
+    // ✅ 1. Authenticate user server-side
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
@@ -29,7 +51,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ 3. Check credits with row lock (prevents race conditions)
+    // ✅ 3. Check credits
     const { data: creditRow, error: fetchError } = await supabase
       .from("user_credits")
       .select("credits")
@@ -53,7 +75,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ 4. Deduct atomically (update, not upsert)
+    // ✅ 4. Deduct credits
     const newCredits = currentCredits - amount;
 
     const { error: updateError } = await supabase
@@ -72,14 +94,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ 5. Log transaction for audit
-    await supabase.from("credit_transactions").insert({
-      user_id: user.id,
-      type: "deduct",
-      amount,
-      description,
-      created_at: new Date().toISOString(),
-    });
+    // ✅ 5. Log transaction (optional - table may not exist yet)
+    try {
+      await supabase.from("credit_transactions").insert({
+        user_id: user.id,
+        type: "deduct",
+        amount,
+        description,
+        created_at: new Date().toISOString(),
+      });
+    } catch (logError) {
+      // Ignore if table doesn't exist yet
+      console.log("Credit transaction logging skipped:", logError);
+    }
 
     return NextResponse.json({
       success: true,
