@@ -386,14 +386,14 @@ export default function FlightSearch() {
       return;
     }
 
-    // ✅ تحقق من الكريديتس (10 كريديتس لكل رحلة)
-    if (credits < 10) {
+    // ✅ تحقق من الكريديتس (1 كريديتس لكل رحلة)
+    if (credits < 1) {
       setShowPaywall(true);
       return;
     }
 
-    // ✅ خصم 10 كريديتس وابدأ البحث
-    const deducted = await deductCredits(10);
+    // ✅ خصم 1 كريديتس وابدأ البحث
+    const deducted = await deductCredits(1);
     if (deducted) {
       startSearch();
     } else {

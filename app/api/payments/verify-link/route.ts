@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle();
 
     const currentCredits = existing?.credits || 0;
-    const newCredits = currentCredits + 10;
+    const newCredits = currentCredits + 1;
 
     await supabase.from('user_credits').upsert({
       user_id: userId,
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
       updated_at: new Date().toISOString(),
     });
 
-    console.log(`✅ Manual verify: Added 10 credits to ${userId}. Balance: ${newCredits}`);
+    console.log(`✅ Manual verify: Added 1 credits to ${userId}. Balance: ${newCredits}`);
 
     return NextResponse.json({ 
       success: true, 

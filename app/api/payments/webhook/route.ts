@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         console.error('Webhook: Payment insert error:', paymentError);
       }
 
-      // ✅ إضافة/تحديث الكريديتس (10 كريديتس لكل دفع)
+      // ✅ إضافة/تحديث الكريديتس (1 كريديتس لكل دفع)
       const { data: existing } = await supabase
         .from('user_credits')
         .select('credits')
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         .maybeSingle();
 
       const currentCredits = existing?.credits || 0;
-      const newCredits = currentCredits + 10;
+      const newCredits = currentCredits + 1;
 
       const { error: creditsError } = await supabase
         .from('user_credits')
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: creditsError.message }, { status: 500 });
       }
 
-      console.log(`Webhook: Added 10 credits to user ${userId}. New balance: ${newCredits}`);
+      console.log(`Webhook: Added 1 credits to user ${userId}. New balance: ${newCredits}`);
     }
 
     return NextResponse.json({ received: true });

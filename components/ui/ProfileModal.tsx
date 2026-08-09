@@ -125,13 +125,13 @@ export default function ProfileModal({ isOpen, onClose, user, credits, onSignOut
                             <Coins className="w-6 h-6 text-[#C9944D]" />
                           </div>
                           <div>
-                            <p className="text-sm text-[var(--text-muted)]">رصيد الكريديتس</p>
-                            <p className="text-2xl font-black text-[#0C4938]">{credits} <span className="text-sm font-medium">كريديت</span></p>
+                            <p className="text-sm text-[var(--text-muted)]">رصيد الرحلات</p>
+                            <p className="text-2xl font-black text-[#0C4938]">{credits} <span className="text-sm font-medium">رصيد رحلات</span></p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs text-[var(--text-muted)]">كل رحلة = 10 كريديت</p>
-                          <p className="text-xs text-[var(--text-muted)]">الكريديتس لا تنتهي</p>
+                          <p className="text-xs text-[var(--text-muted)]">كل رحلة = 1 رصيد رحلات</p>
+                          <p className="text-xs text-[var(--text-muted)]">رصيد الرحلات لا ينتهي</p>
                         </div>
                       </div>
 
@@ -143,7 +143,7 @@ export default function ProfileModal({ isOpen, onClose, user, credits, onSignOut
                         className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#0C4938] text-white font-bold hover:bg-[#0C4938]/90 transition-all shadow-lg"
                       >
                         <Zap className="w-5 h-5 text-[#C9944D]" />
-                        <span>اشحن 10 كريديتس (٣ دراهم)</span>
+                        <span>اشحن 1 رصيد رحلات (16 درهم)</span>
                       </motion.button>
                     </motion.div>
 
