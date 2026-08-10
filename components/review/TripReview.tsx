@@ -106,8 +106,9 @@ export default function TripReview() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-2xl font-bold text-[var(--text-heading)]">مراجعة الرحلة</h2>
-          <p className="text-[var(--text-muted)] mt-1">خطتك جاهزة! ✨ لحفظها والعودة إليها لاحقًا، اضغط على «حفظ رحلتي». يرجى ملاحظة ان الرحلة لن تحفظ تلقائياً.</p>
+          <h3 className="text-[var(--text-muted)] mt-1">خطتك جاهزة! ✨ لحفظها والعودة إليها لاحقًا، اضغط على «حفظ رحلتي». يرجى ملاحظة ان الرحلة لن تحفظ تلقائياً.</h3>
         </div>
+        
         <button
           onClick={() => setCurrentStep(4)}
           className="flex items-center gap-2 text-[var(--color-primary-500)] font-bold hover:underline"
